@@ -1,0 +1,180 @@
+/* Darkest Idle Dungeon — shared mockup styles. Function over beauty. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #17171c;
+  color: #ddd;
+  font-family: 'Courier New', monospace;
+  padding: 20px;
+}
+a { color: #f0d890; }
+h1 { font-size: 20px; color: #f0d890; margin-bottom: 4px; }
+.note { color: #888; font-size: 12px; margin-bottom: 18px; max-width: 900px; }
+.label { color: #9ad; font-size: 12px; margin: 14px 0 6px; text-transform: uppercase; }
+
+.row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+
+/* Panels — stand-in for the 9-slice panel background */
+.panel {
+  background: #26262e;
+  border: 3px solid #6b6b7a;
+  box-shadow: 0 0 0 3px #101014;
+  padding: 14px;
+  width: 300px;
+}
+.panel.wide { width: auto; max-width: 960px; }
+.panel-title { text-align: center; font-weight: bold; font-size: 16px; color: #f0d890; margin-bottom: 8px; }
+.sep { border-top: 2px solid #6b6b7a; margin: 10px 0; }
+
+/* Stats */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 14px; font-size: 13px; }
+.stat { display: flex; gap: 5px; line-height: 1.7; white-space: nowrap; }
+.icon { width: 20px; text-align: center; flex: none; }
+
+/* Buttons — stand-in for the 9-slice button */
+.btn {
+  display: inline-block;
+  background: #3a3a46;
+  border: 2px solid #8a8a9a;
+  color: #eee;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.btn:hover { background: #4a4a58; }
+.btn.primary { background: #4a3a22; border-color: #c9a15a; color: #ffe9b0; }
+.btn.disabled, .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btnrow { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+
+/* Panel header widgets (hero panel) */
+.hdr { position: relative; }
+.hdr .title { text-align: center; font-weight: bold; font-size: 18px; color: #f0d890; padding-top: 8px; }
+.hdr .subtitle { text-align: center; font-size: 13px; color: #aab; font-style: italic; }
+/* Corners hang fully outside the panel edges (panel padding 14 + border 3 + shadow 3 = 20px to the outer edge) */
+.corner { position: absolute; top: 0; text-align: center; width: 48px; }
+.corner.left { left: -72px; }
+.corner.right { right: -72px; }
+.circle {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #3d3d4a; border: 2px solid #8a8a9a;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin: 0 auto;
+}
+.banner {
+  width: 28px; margin: -6px auto 0; padding: 5px 0 9px;
+  background: #4a3a22; color: #ffe9b0;
+  font-size: 13px; font-weight: bold; text-align: center;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+}
+.corner .amount { font-size: 13px; color: #f0d890; font-weight: bold; margin-top: 2px; }
+.banner.mini {
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 20px; padding: 3px 0 7px; margin: 0; font-size: 11px;
+}
+.banner.inline { position: static; transform: none; flex: none; width: 18px; padding: 3px 0 6px; margin: 0; font-size: 10px; }
+/* Coin pile: 1 coin per 3-6 gold earned (min 1), overlapping coins wrap into a fuller pile as gold grows (cap 100 coins) */
+.coins { flex: none; width: 56px; font-size: 12px; letter-spacing: -5px; line-height: 10px; word-break: break-all; }
+.coins .amt { display: block; font-size: 10px; letter-spacing: 0; color: #f0d890; margin-top: 2px; }
+
+/* Separator with a centered label */
+.sep-label { display: flex; align-items: center; gap: 8px; margin: 10px 0; color: #9ad; font-size: 11px; text-transform: uppercase; }
+.sep-label::before, .sep-label::after { content: ""; flex: 1; border-top: 2px solid #6b6b7a; }
+
+/* Sprite placeholders */
+.sprite {
+  width: 48px; height: 48px;
+  background: #3d3d4a;
+  border: 2px solid #666;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex: none;
+}
+.sprite.small { width: 34px; height: 34px; font-size: 18px; }
+.sprite.dead { transform: rotate(90deg); background: #4a2222; border-color: #a33; }
+
+/* Bars */
+.bar { height: 8px; background: #101014; border: 1px solid #555; margin-top: 2px; }
+.bar i { display: block; height: 100%; }
+.bar.hp i { background: #c0392b; }
+.bar.morale i { background: #2980b9; }
+.bar.xp i { background: #d4b000; }
+
+/* Image placeholder (screenshots, sprites-to-be) */
+.imgph {
+  background: repeating-linear-gradient(45deg, #2e2e36, #2e2e36 8px, #26262e 8px, #26262e 16px);
+  border: 2px dashed #777;
+  color: #999;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  min-height: 110px;
+  padding: 8px;
+  position: relative;
+}
+.callout { position: absolute; color: #ffd35a; font-weight: bold; font-size: 14px; }
+
+/* Misc widgets */
+.kbd { border: 1px solid #999; border-bottom-width: 3px; padding: 0 6px; background: #222; border-radius: 3px; font-size: 12px; }
+.pip { width: 11px; height: 11px; border: 1px solid #888; display: inline-block; margin-right: 2px; }
+.pip.on { background: #d4b000; }
+.tag { font-size: 11px; background: #333; border: 1px solid #666; padding: 1px 5px; color: #bbb; }
+.gold { color: #f0d890; }
+.status { font-size: 12px; margin-top: 4px; }
+.status.good { color: #7ec97e; }
+.status.bad { color: #d66; }
+.status.neutral { color: #aaa; }
+
+/* Dungeon level biome header (expedition summary) */
+.biome {
+  height: 64px; border: 2px solid #555;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 20px; margin-bottom: 12px; position: relative;
+}
+.biome .lvl { position: absolute; top: 3px; left: 6px; font-size: 10px; color: rgba(255,255,255,0.75); }
+.biome.forest { background: linear-gradient(#7fb069, #4a7a3a 60%, #2e5426); }
+.biome.swamp { background: linear-gradient(#5a6b52, #3a4a35 60%, #232e20); }
+
+/* Hero chip (party formation) */
+.chip {
+  display: flex; align-items: center; gap: 8px;
+  background: #30303a; border: 2px solid #666;
+  padding: 5px 8px; margin-bottom: 6px; font-size: 13px;
+}
+.chip.selected { border-color: #ffd35a; background: #3c3828; }
+.chip.empty { border-style: dashed; color: #777; justify-content: center; }
+
+/* Dungeon battle rows */
+.battlerow {
+  border: 3px solid #6b6b7a; background: #1e1e26;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px; margin-bottom: 8px; min-height: 150px;
+  position: relative;
+}
+.battlerow.inactive { opacity: 0.35; }
+.fog {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, rgba(10,10,14,0), rgba(10,10,14,0.95) 50px);
+  pointer-events: none;
+}
+.group { position: absolute; top: 50%; transform: translateY(-50%); display: flex; gap: 14px; }
+.marker { position: absolute; top: 55%; color: #555; font-size: 15px; }
+.side { display: flex; gap: 16px; }
+.unit { text-align: center; font-size: 11px; width: 64px; position: relative; }
+.unit .name { margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.turnmark { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); color: #ffd35a; }
+.floatdmg { position: absolute; font-weight: bold; font-size: 14px; }
+.portraits { position: absolute; top: 6px; left: 10px; display: flex; flex-direction: column; gap: 4px; }
+
+/* Town HUD fake viewport */
+.viewport {
+  width: 960px; height: 540px; max-width: 100%;
+  background: linear-gradient(#23281e, #2c2620);
+  border: 3px solid #6b6b7a;
+  position: relative; overflow: hidden;
+}
+.hudcorner { position: absolute; background: rgba(16,16,20,0.85); border: 2px solid #6b6b7a; padding: 5px 10px; font-size: 13px; }
+.prompt {
+  position: absolute; background: rgba(16,16,20,0.9); border: 2px solid #c9a15a;
+  padding: 4px 8px; font-size: 12px; color: #ffe9b0; white-space: nowrap;
+}
+.worldsprite { position: absolute; text-align: center; font-size: 11px; color: #bbb; }

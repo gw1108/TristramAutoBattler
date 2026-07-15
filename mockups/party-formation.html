@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="mock.css">
+<title>Party Formation</title>
+<h1>Call to Arms — Party Formation</h1>
+<p class="note">After ringing the bell, adventurers form up to 3 parties of 1-3 in the world. Clicking a hero opens their normal hero stat panel with one extra section at the bottom: a "Party:" label, Kick and Swap buttons, and the actions-remaining counter — all on one horizontal row. The number of actions per day comes from the player's stats (default 3). Kick disables when there is no benched adventurer to swap in (town total ≤ 9).</p>
+
+<div class="row" style="gap:140px; padding-left:60px">
+  <div>
+    <div class="label">Selected hero — actions available</div>
+    <div class="panel">
+      <div class="hdr">
+        <div class="corner left">
+          <div class="circle">🛡</div>
+          <div class="banner">1</div>
+        </div>
+        <div class="corner right">
+          <div class="circle">💰</div>
+          <div class="amount">3</div>
+        </div>
+        <div class="title">Aldric</div>
+        <div class="subtitle">The Unyielding</div>
+      </div>
+      <div class="sep"></div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">❤️</span> HP: 14</div>
+        <div class="stat"><span class="icon">💪</span> Power: 2</div>
+        <div class="stat"><span class="icon">😤</span> Morale: 12</div>
+      </div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">➕</span> HP Regen: 1</div>
+        <div class="stat" style="grid-column:span 2"><span class="icon">🙏</span> Morale Regen: 1</div>
+      </div>
+      <div class="grid2">
+        <div class="stat"><span class="icon">⚡</span> Speed: 3</div>
+        <div class="stat"><span class="icon">🛡️</span> Armor: 2</div>
+        <div class="stat"><span class="icon">🖐️</span> Guard: 25%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 43%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 96%</div>
+        <div class="stat"><span class="icon">✨</span> Crit: 5%</div>
+        <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
+      </div>
+      <div class="sep-label">Inventory</div>
+      <div class="grid2" style="grid-template-columns:1fr">
+        <div class="stat"><span class="icon">🗡️</span> Rusty Sword</div>
+        <div class="stat"><span class="icon">🛡️</span> Wooden Shield</div>
+      </div>
+      <div class="sep"></div>
+      <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Answering the call to arms</div>
+      <div class="sep"></div>
+      <div style="display:flex; align-items:center; gap:8px; font-size:12px; white-space:nowrap">
+        <b>Party:</b>
+        <button class="btn" style="font-size:11px; padding:4px 8px">Kick</button>
+        <button class="btn" style="font-size:11px; padding:4px 8px">Swap</button>
+        <span style="margin-left:auto; color:#ffd35a">3/3 Actions Today</span>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="label">Selected hero — kick disabled (no benched adventurers)</div>
+    <div class="panel">
+      <div class="hdr">
+        <div class="corner left">
+          <div class="circle">🪓</div>
+          <div class="banner">1</div>
+        </div>
+        <div class="corner right">
+          <div class="circle">💰</div>
+          <div class="amount">1</div>
+        </div>
+        <div class="title">Grom</div>
+        <div class="subtitle">The Wailing</div>
+      </div>
+      <div class="sep"></div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">❤️</span> HP: 12</div>
+        <div class="stat"><span class="icon">💪</span> Power: 5</div>
+        <div class="stat"><span class="icon">😤</span> Morale: 10</div>
+      </div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">➕</span> HP Regen: 1</div>
+        <div class="stat" style="grid-column:span 2"><span class="icon">🙏</span> Morale Regen: 1</div>
+      </div>
+      <div class="grid2">
+        <div class="stat"><span class="icon">⚡</span> Speed: 5</div>
+        <div class="stat"><span class="icon">🛡️</span> Armor: 0</div>
+        <div class="stat"><span class="icon">🖐️</span> Guard: 0%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 21%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 96%</div>
+        <div class="stat"><span class="icon">✨</span> Crit: 15%</div>
+        <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
+      </div>
+      <div class="sep-label">Inventory</div>
+      <div class="grid2" style="grid-template-columns:1fr">
+        <div class="stat"><span class="icon">🪓</span> Chipped Axe</div>
+      </div>
+      <div class="sep"></div>
+      <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Answering the call to arms</div>
+      <div class="sep"></div>
+      <div style="display:flex; align-items:center; gap:8px; font-size:12px; white-space:nowrap">
+        <b>Party:</b>
+        <button class="btn disabled" style="font-size:11px; padding:4px 8px">Kick</button>
+        <button class="btn" style="font-size:11px; padding:4px 8px">Swap</button>
+        <span style="margin-left:auto; color:#ffd35a">1/3 Actions Today</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:24px; font-size:14px">Press <span class="kbd">ENTER</span> to begin the expedition</div>

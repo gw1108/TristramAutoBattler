@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="mock.css">
+<title>Town View</title>
+<h1>Town View &amp; Interact Prompts</h1>
+<p class="note">Fake 960×540 viewport. There is no HUD in the town — the only UI is the gold proximity prompt that appears when the player is near an interactable (the same UIs also open via left-click + auto-pathfind). Emoji are placeholder world sprites.</p>
+
+<div class="viewport">
+  <!-- player -->
+  <div class="worldsprite" style="left:440px; top:280px">
+    <div class="sprite">👴</div>
+    <div>You</div>
+  </div>
+
+  <!-- inn + hireable hero with proximity hire prompt -->
+  <div class="worldsprite" style="left:130px; top:90px">
+    <div class="sprite" style="width:80px; height:64px; font-size:34px">🏨</div>
+    <div>Inn</div>
+  </div>
+  <div class="worldsprite" style="left:250px; top:120px">
+    <div class="sprite small">🧙</div>
+  </div>
+  <div class="prompt" style="left:290px; top:118px"><span class="kbd">E</span> Hire — Morwen · Mage · Lv 1 · 8g</div>
+
+  <!-- ruined building with upgrade prompt -->
+  <div class="worldsprite" style="left:150px; top:330px">
+    <div class="sprite" style="width:80px; height:64px; font-size:34px">🏚️</div>
+    <div>Item Shop (ruined)</div>
+  </div>
+  <div class="prompt" style="left:250px; top:350px"><span class="kbd">E</span> Rebuild — 10g</div>
+
+  <!-- summoning horn -->
+  <div class="worldsprite" style="left:330px; top:180px">
+    <div class="sprite small">📯</div>
+    <div>Horn</div>
+  </div>
+  <div class="prompt" style="left:375px; top:185px"><span class="kbd">E</span> Summon today's heroes</div>
+
+  <!-- dungeon entrance + bell -->
+  <div class="worldsprite" style="right:120px; bottom:120px">
+    <div class="sprite" style="width:90px; height:80px; font-size:40px">⛪</div>
+    <div>Dungeon (theme TBD)</div>
+  </div>
+  <div class="worldsprite" style="right:70px; bottom:150px">
+    <div class="sprite small">🔔</div>
+    <div>Bell</div>
+  </div>
+  <div class="prompt" style="right:40px; bottom:210px"><span class="kbd">E</span> Ring the bell — Call to Arms</div>
+
+  <!-- graveyard -->
+  <div class="worldsprite" style="left:620px; top:80px">
+    <div class="sprite" style="width:70px; height:50px; font-size:26px">🪦🪦</div>
+    <div>Graveyard</div>
+  </div>
+
+  <!-- a hired hero wandering -->
+  <div class="worldsprite" style="left:520px; top:200px">
+    <div class="sprite small">🛡</div>
+    <div>Aldric</div>
+  </div>
+</div>

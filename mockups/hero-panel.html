@@ -1,0 +1,100 @@
+<link rel="stylesheet" href="mock.css">
+<title>Hero Stat Panel</title>
+<h1>Hero Stat Panel</h1>
+<p class="note">Opened by left-clicking a hero (or approach + interact). Header: name as title, epithet as subtitle, class icon circle + level shield banner top-left, gold bag circle + wealth top-right. Stats: row 1 = HP / Power / Morale, row 2 = HP Regen / Morale Regen, then the rest (gold removed from the list). Labeled inventory separator, then current activity; hireable heroes add centered class info + hire buttons.</p>
+
+<div class="row" style="gap:140px; padding-left:60px">
+  <div>
+    <div class="label">Variant A — hired hero (wandering town)</div>
+    <div class="panel">
+      <div class="hdr">
+        <div class="corner left">
+          <div class="circle">🛡</div>
+          <div class="banner">1</div>
+        </div>
+        <div class="corner right">
+          <div class="circle">💰</div>
+          <div class="amount">3</div>
+        </div>
+        <div class="title">Aldric</div>
+        <div class="subtitle">The Unyielding</div>
+      </div>
+      <div class="sep"></div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">❤️</span> HP: 14</div>
+        <div class="stat"><span class="icon">💪</span> Power: 2</div>
+        <div class="stat"><span class="icon">😤</span> Morale: 12</div>
+      </div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">➕</span> HP Regen: 1</div>
+        <div class="stat" style="grid-column:span 2"><span class="icon">🙏</span> Morale Regen: 1</div>
+      </div>
+      <div class="grid2">
+        <div class="stat"><span class="icon">⚡</span> Speed: 3</div>
+        <div class="stat"><span class="icon">🛡️</span> Armor: 2</div>
+        <div class="stat"><span class="icon">🖐️</span> Guard: 25%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 43%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 96%</div>
+        <div class="stat"><span class="icon">✨</span> Crit: 5%</div>
+        <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
+      </div>
+      <div class="sep-label">Inventory</div>
+      <div class="grid2" style="grid-template-columns:1fr">
+        <div class="stat"><span class="icon">🗡️</span> Rusty Sword</div>
+        <div class="stat"><span class="icon">🛡️</span> Wooden Shield</div>
+        <div class="stat"><span class="icon">🧪</span> Minor Tonic</div>
+      </div>
+      <div class="sep"></div>
+      <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Chatting with Morwen</div>
+    </div>
+  </div>
+
+  <div>
+    <div class="label">Variant B — hireable hero (at the inn)</div>
+    <div class="panel">
+      <div class="hdr">
+        <div class="corner left">
+          <div class="circle">🧙</div>
+          <div class="banner">1</div>
+        </div>
+        <div class="corner right">
+          <div class="circle">💰</div>
+          <div class="amount">0</div>
+        </div>
+        <div class="title">Morwen</div>
+        <div class="subtitle">The Ashen</div>
+      </div>
+      <div class="sep"></div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">❤️</span> HP: 6</div>
+        <div class="stat"><span class="icon">💪</span> Power: 2</div>
+        <div class="stat"><span class="icon">😤</span> Morale: 8</div>
+      </div>
+      <div class="grid2" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="stat"><span class="icon">➕</span> HP Regen: 0</div>
+        <div class="stat" style="grid-column:span 2"><span class="icon">🙏</span> Morale Regen: 1</div>
+      </div>
+      <div class="grid2">
+        <div class="stat"><span class="icon">⚡</span> Speed: 4</div>
+        <div class="stat"><span class="icon">🛡️</span> Armor: 0</div>
+        <div class="stat"><span class="icon">🖐️</span> Guard: 0%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 24%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 99%</div>
+        <div class="stat"><span class="icon">✨</span> Crit: 5%</div>
+        <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
+      </div>
+      <div class="sep-label">Inventory</div>
+      <div class="grid2" style="grid-template-columns:1fr">
+        <div class="stat"><span class="icon">🪄</span> Splintered Wand</div>
+      </div>
+      <div class="sep"></div>
+      <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Looking for work</div>
+      <div class="sep"></div>
+      <div style="font-size:13px; text-align:center"><b>Mage</b><br><span style="color:#aab">Hurls elemental ruin at every enemy at once. Devastating, but fragile.</span></div>
+      <div class="btnrow" style="flex-direction:column">
+        <button class="btn primary" style="width:100%">Hire (8 Gold)</button>
+        <button class="btn" style="width:100%">Hire and Sponsor (16 Gold)</button>
+      </div>
+    </div>
+  </div>
+</div>

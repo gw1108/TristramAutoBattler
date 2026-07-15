@@ -1,0 +1,106 @@
+<link rel="stylesheet" href="mock.css">
+<title>Expedition Summary</title>
+<h1>Expedition Summary</h1>
+<p class="note">Post-dungeon panel sized to ~80% of the window in both dimensions; the results area scrolls vertically if it doesn't fit. Three equal-width columns, one per party, each reserving vertical space for 3 adventurers. Above each party: a visual of the dungeon level it traversed (level 1 = gentle grassy forest, level 2 = swampy forest) — parties pick the hardest unlocked level fitting their character levels, so columns can show different biomes in one expedition. Per living member: current level banner → XP bar → next level banner → coin pile (1 coin per 3-6 gold, min 1, cap 100; hidden at 0). Dead members show no XP bar and no gold.</p>
+
+<div class="panel wide" style="width:80vw; height:80vh; display:flex; flex-direction:column">
+  <div class="panel-title">Expedition Summary Day 3</div>
+  <div class="sep"></div>
+  <div style="flex:1; overflow-y:auto">
+    <div style="display:flex; align-items:stretch; min-height:100%">
+
+      <div style="flex:1; padding:0 14px; border-right:2px solid #6b6b7a">
+        <div class="biome forest"><span class="lvl">LEVEL 1</span>🌳 🌲 🌿 🌳</div>
+        <div style="min-height:200px">
+          <div style="display:flex; gap:10px; margin-bottom:16px">
+            <div class="sprite">🛡</div>
+            <div style="flex:1; font-size:12px">
+              Aldric the Unyielding
+              <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
+                <div class="banner inline">1</div>
+                <div style="flex:1"><div class="bar xp"><i style="width:70%"></i></div></div>
+                <div class="banner inline">2</div>
+                <div class="coins">🪙<span class="amt">+3</span></div>
+              </div>
+              <div class="status good">Heroically cleared the way to Level 2</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; margin-bottom:16px">
+            <div class="sprite">🧙</div>
+            <div style="flex:1; font-size:12px">
+              Morwen the Ashen <span style="color:#ffd35a; font-size:11px">▲ Level up!</span>
+              <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
+                <div class="banner inline" style="background:#7a5a1a">2</div>
+                <div style="flex:1"><div class="bar xp"><i style="width:100%"></i></div></div>
+                <div class="banner inline">3</div>
+                <div class="coins">🪙🪙🪙<span class="amt">+14</span></div>
+              </div>
+              <div class="status good">Heroically cleared the way to Level 2</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1; padding:0 14px; border-right:2px solid #6b6b7a">
+        <div class="biome forest"><span class="lvl">LEVEL 1</span>🌲 🌳 🌿 🌲</div>
+        <div style="min-height:200px">
+          <div style="display:flex; gap:10px; margin-bottom:16px">
+            <div class="sprite">🪓</div>
+            <div style="flex:1; font-size:12px">
+              Grom the Wailing
+              <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
+                <div class="banner inline">1</div>
+                <div style="flex:1"><div class="bar xp"><i style="width:35%"></i></div></div>
+                <div class="banner inline">2</div>
+                <div class="coins">🪙🪙🪙🪙🪙🪙🪙🪙<span class="amt">+37</span></div>
+              </div>
+              <div class="status neutral">Fled</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; margin-bottom:16px">
+            <div class="sprite">📿</div>
+            <div style="flex:1; font-size:12px">
+              Sister Ede
+              <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
+                <div class="banner inline">1</div>
+                <div style="flex:1"><div class="bar xp"><i style="width:35%"></i></div></div>
+                <div class="banner inline">2</div>
+                <div class="coins"><span class="amt" style="margin-top:0">0 gold: hidden</span></div>
+              </div>
+              <div class="status neutral">Fled</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1; padding:0 14px">
+        <div class="biome swamp"><span class="lvl">LEVEL 2</span>🌲 🌫️ 🐸 🪵</div>
+        <div style="min-height:200px">
+          <div style="display:flex; gap:10px; margin-bottom:16px">
+            <div style="position:relative; flex:none">
+              <div class="sprite dead">🔪</div>
+              <span style="position:absolute; right:-4px; bottom:-6px; font-size:16px">🩸</span>
+            </div>
+            <div style="flex:1; font-size:12px">
+              Vex the Grey
+              <div class="status bad" style="margin-top:8px">Murdered by a Grunt</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:10px; margin-bottom:16px">
+            <div style="position:relative; flex:none">
+              <div class="sprite dead">📯</div>
+              <span style="position:absolute; right:-4px; bottom:-6px; font-size:16px">🩸</span>
+            </div>
+            <div style="flex:1; font-size:12px">
+              Captain Roswald
+              <div class="status bad" style="margin-top:8px">Slain by a Caster</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="sep"></div>
+  <div class="btnrow"><button class="btn primary">Close</button></div>
+</div>
