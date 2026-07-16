@@ -55,9 +55,11 @@ existing ramp works, and add it to this guide when you do.
   means more money*).
 - **Red** = damage and death. Damage numbers, HP fill, blood, death tint. Keep costume reds on
   sprites desaturated so they don't compete.
-- **Blue** = morale and panic. Morale bar, cower spiral.
+- **Blue** = morale and panic. Morale bar, cower spiral. (The blue Slime stays a desaturated
+  slate — never the bright morale blue.)
 - **Green** = healing and regen (and, desaturated, the swamp — heal green is bright and clean,
-  swamp green is gray and murky; they never look alike).
+  swamp green is gray and murky; they never look alike). Slime green sits with the forest
+  flora: leafy and mid-saturated, never as bright as heal green.
 - Every color meaning also gets a **redundant shape/value cue** (color-blind rule): damage
   numbers are bold+outlined, heals have a `+`, the turn marker is a shape not just a color.
 
@@ -107,7 +109,8 @@ the constant; the world changes around them.
   lit windows, lantern pools painted in. Warm gold lights against the cool blue night is the
   money shot of the whole game — spend polish here.
 - **Glow budget:** emissive glow only on — Mage/caster VFX, tier-5 relic icons, phylactery,
-  lava, Gilded glint, lit windows at night. If everything glows, nothing glows.
+  lava, the Gilded shader's glint sweep, lit windows at night. If everything glows, nothing
+  glows.
 
 ## 5. Readability stack (dungeon dive rows)
 
@@ -154,9 +157,15 @@ identifiable. Rerun whenever a variant is added.
 Each dungeon level keeps the same four-silhouette pattern so encounters parse instantly:
 **beast/low** (Wolf, Leech, Zombie, Imp), **humanoid grunt** (Bandit, Lizardfolk, Skeleton,
 Demon Soldier), **hunched caster** (all witches/Necromancer/Flamecaller share a "bent figure +
-raised implement" envelope), **big boss** (64px+). Enemies lean triangle/jagged overall —
-they get the aggressive shape language the adventurers avoid. Casters across biomes may share
-a base silhouette with redress (explicitly OK per asset list: Bog Witch = Hedge Witch redress).
+raised implement" envelope), **big boss** (64px+). Level 1 alone adds a fifth: the **tutorial
+blob** (Slime, green/blue palette variants). Enemies lean triangle/jagged overall — they get
+the aggressive shape language the adventurers avoid — with the Slime as the one deliberate
+exception: it is pure circle on purpose, because the first enemy a player ever fights should
+read as harmless. The two blob enemies must never share an outline: Slime = symmetric upright
+dome, Giant Leech = long low horizontal taper. A Slime that rolls the Gilded trait renders as
+the **Golden Slime** via the Gilded gold shader — no dedicated sprite. Casters across biomes
+may share a base silhouette with redress (explicitly OK per asset list: Bog Witch = Hedge
+Witch redress).
 
 ### Buildings (must read as trades at a glance)
 Each building gets a signature **sign shape + accent color + one unique silhouette feature**:
@@ -201,7 +210,7 @@ from its ruined state through max.
 
 ### Anchor assets (make these first, to final quality — everything else must match)
 1. Knight (variant 1) — the character rendering benchmark
-2. Wolf + Bandit — enemy benchmark
+2. Slime + Wolf + Bandit — enemy benchmark (the Slime is the first enemy a player ever sees)
 3. Forest biome backdrop + one full dive row composited with UI bars/markers
 4. Inn (level 1) + a 3×3 screen of town ground tiles + the Player Lord
 5. Panel + button 9-slice + the pixel font in place

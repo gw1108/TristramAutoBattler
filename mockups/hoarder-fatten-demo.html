@@ -1,0 +1,342 @@
+<title>Hoarder Fatten Shader — Feasibility Demo</title>
+<style>
+  /* Matches mock.css tokens — self-contained so it can be published as an artifact. */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #17171c;
+    color: #ddd;
+    font-family: 'Courier New', monospace;
+    padding: 20px;
+  }
+  a { color: #f0d890; }
+  h1 { font-size: 20px; color: #f0d890; margin-bottom: 4px; }
+  .note { color: #888; font-size: 12px; margin-bottom: 18px; max-width: 900px; }
+  .label { color: #9ad; font-size: 12px; margin: 14px 0 6px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .panel {
+    background: #26262e;
+    border: 3px solid #6b6b7a;
+    box-shadow: 0 0 0 3px #101014;
+    padding: 14px;
+    max-width: 960px;
+    margin-bottom: 24px;
+  }
+  .panel-title { text-align: center; font-weight: bold; font-size: 16px; color: #f0d890; margin-bottom: 8px; }
+
+  .controls { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+  .controls input[type=range] { width: 220px; accent-color: #c9a15a; }
+  .controls label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+  #fatval { color: #f0d890; font-weight: bold; min-width: 4ch; display: inline-block; }
+
+  .gridwrap { overflow-x: auto; }
+  .grid {
+    display: grid;
+    grid-template-columns: 130px repeat(5, 136px);
+    gap: 10px 8px;
+    align-items: center;
+    min-width: 840px;
+  }
+  .colhead { font-size: 11px; color: #9ad; text-transform: uppercase; text-align: center; line-height: 1.5; }
+  .colhead .star { color: #f0d890; }
+  .ename { font-size: 13px; color: #ddd; line-height: 1.4; }
+  .ename .sub { color: #888; font-size: 11px; }
+  .cell {
+    width: 128px; height: 128px;
+    background: #1c1c22;
+    border: 2px solid #44444f;
+    display: block;
+    margin: 0 auto;
+  }
+  .cell.pick { border-color: #c9a15a; }
+  #custom {
+    background: #1c1c22; border: 2px solid #8a8a9a; color: #eee;
+    font-family: inherit; font-size: 16px; width: 64px; padding: 4px 6px; text-align: center;
+  }
+
+  pre {
+    background: #101014;
+    border: 2px solid #44444f;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.55;
+    overflow-x: auto;
+    color: #cfcfd8;
+  }
+  pre .c { color: #6a8a5a; }   /* comments */
+  pre .k { color: #9ad; }      /* keywords/types */
+  pre .u { color: #f0d890; }   /* uniforms/params */
+
+  ul.notes { font-size: 13px; line-height: 1.7; padding-left: 20px; max-width: 900px; }
+  ul.notes li { margin-bottom: 8px; }
+  ul.notes b { color: #f0d890; font-weight: bold; }
+  .verdict { color: #8c8; }
+</style>
+
+<h1>Hoarder Trait — “Fattened” Treatment Feasibility</h1>
+<p class="note">
+  One shader + one line of scale code, reused across every enemy sprite. Emoji stand in for sprites
+  (same convention as the other mockups). The distortion below is computed per-pixel in JS with the
+  exact same math the Godot <b>canvas_item</b> shader would run — what you see is what the shader does.
+</p>
+
+<div class="panel">
+  <div class="panel-title">Live Comparison</div>
+  <div class="controls">
+    <label>Fatness <input type="range" id="fat" min="0" max="100" value="83"> <span id="fatval">83%</span></label>
+    <label><input type="checkbox" id="bounce" checked> Idle bounce (B ↔ C)</label>
+  </div>
+  <div class="label">Normal vs. treatments — same parameters applied to every sprite</div>
+  <div class="gridwrap">
+    <div class="grid" id="grid">
+      <div class="colhead">Enemy</div>
+      <div class="colhead">Normal</div>
+      <div class="colhead">A · Squash only<br>(code, no shader)</div>
+      <div class="colhead">B · Belly bulge<br>(UV shader)</div>
+      <div class="colhead"><span class="star">★</span> C · Squash + bulge<br>(recommended)</div>
+      <div class="colhead"><span class="star">★</span> Live in-game<br>(bounces B ↔ C)</div>
+    </div>
+  </div>
+  <p class="note" style="margin:10px 0 0">
+    A is one line of GDScript (wider/shorter scale, feet-anchored). B keeps the silhouette footprint but inflates
+    the belly region via UV distortion. C combines both — squash reads at battlefield distance, bulge sells it up close.
+    The live column is the in-game idle: the belly bulge stays constant while the squash bounces between B and C —
+    a heavy body settling, at zero shader cost per frame (squash is pure scale).
+  </p>
+</div>
+
+<div class="panel">
+  <div class="panel-title">The Actual Godot Shader</div>
+  <div class="label">hoarder_fatten.gdshader — canvas_item, one material reused for all enemies</div>
+<pre>shader_type canvas_item;
+
+<span class="c">// Hoarder "fatten": belly-bulge UV distortion.</span>
+<span class="c">// Sprite frames need transparent padding (~15%) or the bulge clips at the texture edge.</span>
+<span class="k">uniform float</span> <span class="u">fatness</span> : hint_range(0.0, 1.0) = 0.83;
+<span class="k">uniform vec2</span>  <span class="u">belly_center</span> = vec2(0.5, 0.58);  <span class="c">// tweak per body shape if needed</span>
+<span class="k">uniform float</span> <span class="u">belly_radius</span> = 0.46;
+<span class="k">uniform float</span> <span class="u">belly_width</span>  = 1.3;   <span class="c">// ellipse: bulge reaches wider than tall</span>
+
+<span class="k">void</span> fragment() {
+    <span class="k">vec2</span> d = UV - belly_center;
+    <span class="k">float</span> r = length(vec2(d.x / belly_width, d.y)) / belly_radius;
+    <span class="k">if</span> (r &lt; 1.0) {
+        <span class="c">// f &lt; 1 near the center: sample inward, so the texture magnifies outward</span>
+        <span class="k">float</span> f = 1.0 - (0.55 * fatness) * pow(1.0 - r * r, 1.5);
+        COLOR = texture(TEXTURE, belly_center + d * f);
+    } <span class="k">else</span> {
+        COLOR = texture(TEXTURE, UV);
+    }
+}</pre>
+  <div class="label">Applying the trait (GDScript)</div>
+<pre><span class="c"># Enemy definition: all enemies are fatten-eligible unless a designer opts one out.</span>
+@export <span class="k">var</span> <span class="u">can_fatten</span>: <span class="k">bool</span> = <span class="k">true</span>
+
+<span class="c"># When the Hoarder trait rolls (5% of non-boss spawns) and can_fatten is true:</span>
+sprite.material = hoarder_material.duplicate()  <span class="c"># per-instance copy; trivial at 5% spawn rate</span>
+sprite.material.set_shader_parameter(<span class="u">"fatness"</span>, 0.83)
+
+<span class="c"># Idle "heavy bounce": bulge stays constant, squash oscillates B -> C -> B.</span>
+<span class="c"># Per frame (feet-anchored sprite); abs(sin) makes the turnaround read as a body settling:</span>
+<span class="k">var</span> p := absf(sin(time * TAU / 1.1))
+sprite.scale = Vector2(1.0 + 0.30 * <span class="u">fatness</span> * p, 1.0 - 0.12 * <span class="u">fatness</span> * p)</pre>
+</div>
+
+<div class="panel">
+  <div class="panel-title">Feasibility Notes</div>
+  <ul class="notes">
+    <li><span class="verdict"><b>Verdict: fully feasible and cheap.</b></span> The shader works in normalized UV space, so the
+      identical material applies to every enemy sprite regardless of resolution or silhouette — exactly the
+      “one treatment reused for all” the asset list calls for.</li>
+    <li><b>Padding requirement.</b> The bulge pushes pixels outward, so each sprite frame needs ~15% transparent
+      margin around the body. If frames are authored tight, the belly clips at the frame edge. This is the only
+      real asset-side constraint.</li>
+    <li><b>Pixel-art fidelity.</b> The game renders at 960×540 native and integer-scales, so the shader resamples
+      at art resolution and the distortion stays on the pixel grid. Curved outlines can go slightly lumpy at high
+      strength — keep the effective strength ≤ ~0.6 (the 0.55 factor in the shader caps this).</li>
+    <li><b>Per-enemy tuning is optional, not required.</b> Default <code>belly_center</code> works for humanoids;
+      a quadruped like the Wolf can nudge it lower. That’s one exported vec2, not new art.</li>
+    <li><b>Material sharing.</b> Duplicate the material per hoarder instance (negligible at 5% spawns), or use
+      <code>instance uniform</code> if the Godot version supports it in canvas_item shaders — then one material
+      serves every hoarder with per-instance fatness.</li>
+    <li><b>Chosen defaults.</b> <code>fatness = 0.83</code>, idle "heavy bounce" between B and C (bulge constant,
+      squash oscillating with <code>abs(sin)</code> timing, period ~1.1s) — the live column above previews it.
+      Squash is pure scale, so the animation has zero shader cost per frame.</li>
+    <li><b>Per-enemy opt-out.</b> Enemy definitions carry <code>can_fatten = true</code> by default, so every
+      enemy is fatten-eligible unless a designer disables it for a specific one. An opted-out enemy that rolls
+      Hoarder keeps the stats and falls back to the coin-purse overlay alone.</li>
+    <li><b>Extras that come free.</b> The coin-purse overlay from the asset list layers on top independently —
+      the shader doesn’t conflict with it. Full written spec: <code>LordofHirelings_HoarderFattenTech.md</code>.</li>
+  </ul>
+</div>
+
+<p class="note">Sources this is based on: the <a href="https://godotshaders.com/shader/squish-sprite/">Squish Sprite shader (godotshaders.com)</a> uses the same UV-displacement principle; general technique per <a href="https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html">Godot canvas_item shader docs</a>.</p>
+
+<script>
+(function () {
+  const SRC = 128;                      // native frame resolution of the demo "sprites"
+  const ENEMIES = [
+    { emoji: '🐺', name: 'Wolf',             sub: 'L1 forest' },
+    { emoji: '💀', name: 'Skeleton Warrior', sub: 'L3 crypt' },
+    { emoji: '🧟', name: 'Zombie',           sub: 'L3 crypt' },
+    { emoji: '👹', name: 'Demon Soldier',    sub: 'L4 volcano' },
+  ];
+
+  // Bulge parameters — mirror the Godot shader uniforms exactly.
+  const CX = 0.5, CY = 0.58, RADIUS = 0.46, WIDTH = 1.3, STRENGTH = 0.55;
+  const SQUASH_X = 0.30, SQUASH_Y = 0.12, FOOT_Y = 0.86;
+
+  function makeSource(emoji) {
+    const c = document.createElement('canvas');
+    c.width = c.height = SRC;
+    const g = c.getContext('2d');
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.font = '84px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif';
+    g.fillText(emoji, SRC / 2, SRC / 2 + 4);
+    // Premultiplied float copy for clean bilinear sampling at alpha edges.
+    const d = g.getImageData(0, 0, SRC, SRC).data;
+    const pm = new Float32Array(SRC * SRC * 4);
+    for (let i = 0; i < SRC * SRC; i++) {
+      const a = d[i * 4 + 3] / 255;
+      pm[i * 4]     = d[i * 4]     * a;
+      pm[i * 4 + 1] = d[i * 4 + 1] * a;
+      pm[i * 4 + 2] = d[i * 4 + 2] * a;
+      pm[i * 4 + 3] = d[i * 4 + 3];
+    }
+    return { canvas: c, pm: pm };
+  }
+
+  function samplePM(pm, u, v, out, oi) {
+    const x = u * SRC - 0.5, y = v * SRC - 0.5;
+    const x0 = Math.floor(x), y0 = Math.floor(y);
+    const fx = x - x0, fy = y - y0;
+    let r = 0, g = 0, b = 0, a = 0;
+    for (let j = 0; j <= 1; j++) {
+      const yy = y0 + j;
+      if (yy < 0 || yy >= SRC) continue;
+      const wy = j ? fy : 1 - fy;
+      for (let i = 0; i <= 1; i++) {
+        const xx = x0 + i;
+        if (xx < 0 || xx >= SRC) continue;
+        const w = (i ? fx : 1 - fx) * wy;
+        const p = (yy * SRC + xx) * 4;
+        r += pm[p] * w; g += pm[p + 1] * w; b += pm[p + 2] * w; a += pm[p + 3] * w;
+      }
+    }
+    const inv = a > 1 ? 255 / a : 0;   // un-premultiply
+    out[oi] = r * inv; out[oi + 1] = g * inv; out[oi + 2] = b * inv; out[oi + 3] = a;
+  }
+
+  // The "fragment shader": dest pixel -> distorted UV -> sample source.
+  function renderBulge(pm, ctx, fat) {
+    const img = ctx.createImageData(SRC, SRC);
+    const o = img.data;
+    const k = STRENGTH * fat;
+    for (let y = 0; y < SRC; y++) {
+      for (let x = 0; x < SRC; x++) {
+        const u = (x + 0.5) / SRC, v = (y + 0.5) / SRC;
+        const dx = u - CX, dy = v - CY;
+        const ex = dx / WIDTH;
+        const r = Math.sqrt(ex * ex + dy * dy) / RADIUS;
+        let su = u, sv = v;
+        if (r < 1) {
+          const f = 1 - k * Math.pow(1 - r * r, 1.5);
+          su = CX + dx * f;
+          sv = CY + dy * f;
+        }
+        samplePM(pm, su, sv, o, (y * SRC + x) * 4);
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    return img;
+  }
+
+  function drawSquash(ctx, srcCanvas, fat) {
+    ctx.clearRect(0, 0, SRC, SRC);
+    const foot = SRC * FOOT_Y;
+    ctx.save();
+    ctx.translate(SRC / 2, foot);
+    ctx.scale(1 + SQUASH_X * fat, 1 - SQUASH_Y * fat);
+    ctx.drawImage(srcCanvas, -SRC / 2, -foot);
+    ctx.restore();
+  }
+
+  const grid = document.getElementById('grid');
+  const rows = [];
+
+  function addRow(enemy, isCustom) {
+    const name = document.createElement('div');
+    name.className = 'ename';
+    if (isCustom) {
+      name.innerHTML = '<input id="custom" value="🧌" maxlength="4"><div class="sub">try any emoji</div>';
+    } else {
+      name.innerHTML = enemy.name + '<br><span class="sub">' + enemy.sub + '</span>';
+    }
+    grid.appendChild(name);
+
+    const row = { src: null, ctxs: [], bulgeTmp: document.createElement('canvas') };
+    row.bulgeTmp.width = row.bulgeTmp.height = SRC;
+    for (let i = 0; i < 5; i++) {
+      const c = document.createElement('canvas');
+      c.width = c.height = SRC;
+      c.className = 'cell' + (i >= 3 ? ' pick' : '');
+      grid.appendChild(c);
+      row.ctxs.push(c.getContext('2d'));
+    }
+    row.setEmoji = function (e) { row.src = makeSource(e); };
+    row.setEmoji(enemy.emoji);
+    rows.push(row);
+    return row;
+  }
+
+  ENEMIES.forEach(function (e) { addRow(e, false); });
+  const customRow = addRow({ emoji: '🧌' }, true);
+  document.getElementById('custom').addEventListener('input', function (ev) {
+    if (ev.target.value.trim()) { customRow.setEmoji(ev.target.value.trim()); render(); }
+  });
+
+  function renderRow(row, fat) {
+    const g0 = row.ctxs[0];
+    g0.clearRect(0, 0, SRC, SRC);
+    g0.drawImage(row.src.canvas, 0, 0);
+    drawSquash(row.ctxs[1], row.src.canvas, fat);                       // A: squash only
+    const bulged = renderBulge(row.src.pm, row.ctxs[2], fat);           // B: bulge only
+    row.bulgeTmp.getContext('2d').putImageData(bulged, 0, 0);
+    drawSquash(row.ctxs[3], row.bulgeTmp, fat);                         // C: combined
+    drawSquash(row.ctxs[4], row.bulgeTmp, fat);                         // live: animated by bounceLoop
+  }
+
+  const fatSlider = document.getElementById('fat');
+  const fatVal = document.getElementById('fatval');
+  const bounceBox = document.getElementById('bounce');
+  let bounceT = null;
+
+  function render() {
+    const fat = fatSlider.value / 100;
+    fatVal.textContent = fatSlider.value + '%';
+    rows.forEach(function (r) { renderRow(r, fat); });
+  }
+
+  fatSlider.addEventListener('input', function () { render(); });
+
+  // Idle "heavy bounce": bulge constant (baked in bulgeTmp), squash oscillates B -> C -> B.
+  // abs(sin) gives a sharp turnaround at zero squash — a heavy body settling. Period ~1.1s.
+  // Only the live column redraws per frame, and squash is a plain drawImage — no shader cost.
+  function bounceLoop(t) {
+    if (!bounceBox.checked) { bounceT = null; render(); return; }
+    const fat = fatSlider.value / 100;
+    const p = Math.abs(Math.sin(t / 350));
+    rows.forEach(function (r) { drawSquash(r.ctxs[4], r.bulgeTmp, fat * p); });
+    bounceT = requestAnimationFrame(bounceLoop);
+  }
+  bounceBox.addEventListener('change', function () {
+    if (bounceBox.checked && bounceT === null) bounceT = requestAnimationFrame(bounceLoop);
+  });
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    bounceBox.checked = false;
+  }
+
+  render();
+  if (bounceBox.checked) bounceT = requestAnimationFrame(bounceLoop);
+})();
+</script>
