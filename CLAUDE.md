@@ -34,7 +34,7 @@ This is Godot 4.7
 - `design` — the Game Design Document(s). Source of truth for what to build.
 
 **Art:**
-- `SourceArt/*` — Art assets and audio assets which do not need to be opened or reasoned over unless specified.
+- `SourceArt/*` — Art assets and audio assets which do not need to be opened or reasoned over unless specified or fetching art assets.
 
 **Visual / rendering rules:**
 - `VISUAL_RULES.md` (repo root) — **this is a pixel-art game.** Read it before importing or rendering any texture, sprite, or VFX.
