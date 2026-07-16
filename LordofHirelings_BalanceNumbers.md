@@ -11,11 +11,13 @@ These numbers are a first draft authored to satisfy the anchor points in the gam
 ## Core rules used by these numbers
 
 - Damage roll: uniform integer in [power - 1, power + 1], minimum 1, rolled before armor. Armor subtracts flat damage from the roll (minimum 1 damage on a landed hit).
+- Rounding: whenever a rule produces a fractional HP, morale, XP, gold, or stat value, round to the nearest integer with exact halves rounded up, unless that rule explicitly says to floor or ceil instead.
 - Chance to hit: `AA * 1.25 * 100 / (AA + DE * 0.3)`, clamped to [5%, 100%] (per the GDD).
 - Crit: all or nothing — the whole attack either crits or it does not, multiplying the damage roll by (1 + crit damage bonus) before armor. An AOE attack rolls damage and crit **once** and applies that single result against every target; each target still resolves accuracy, guard, the crit-downgrade evasion check, and armor individually. Only an attack that explicitly fires multiple projectiles rolls damage and crit per projectile — no current ability does; the rule exists for future content. A crit must also beat evasion twice: if the attack crits and the defender failed the first evasion check, a second evasion check is rolled at the same odds — success downgrades the hit to non-critical (it still lands, just without the crit bonus).
 - Guard: a blocked attack deals 0 HP damage but full morale damage. Guard is checked before the crit roll, so a blocked attack never rolls a crit at all. All enemies have 0% guard and 0% crit, so blocking and critting are adventurer-side mechanics in practice.
 - Resolution order for an attack: accuracy check → guard check → crit roll → (on crit) second evasion check, which on success downgrades the crit to a normal hit → armor subtraction.
-- Morale damage: applied on every landed (non-evaded) hit, including blocked ones.
+- Adventurer attacks deal no morale damage; enemies are immune to morale, so player-side morale damage is not a hero stat. Enemy attacks use the morale-damage values in the enemy table.
+- Morale damage: an enemy's listed morale damage is applied on every landed (non-evaded) hit, including blocked ones.
 - When a party member dies, each surviving party member takes 2 morale damage.
 - HP regen and morale regen apply at the end of each battle (not per turn).
 - Adventurers heal to full HP and full morale whenever they are outside the dungeon, so every expedition begins with the whole roster fresh. Regen only matters between battles within a single dive.
@@ -61,6 +63,17 @@ Ties are broken in this order, stopping at the first rule that separates them:
 - The Lich's Raise Dead ("the first time it drops below 50% HP") re-arms at the start of each battle. In practice it only ever appears in one battle, so this is a formality.
 - The Knight's Shield Bash guard doubling lasts until his next turn and does not carry across battles.
 - The Berserker's Frenzy is a continuous passive, evaluated at the moment of each attack, and has no counter at all.
+
+## Status effects
+
+Every buff and debuff has a duration measured in the affected character's turns. Decrement its duration by 1 at the end of that character's turn, including a cower turn; remove it when it reaches 0. Each effect also defines one of three stacking modes: separate instances stack; a single instance increases in magnitude; or reapplying the effect does not stack and only refreshes its duration.
+
+## Combat event order
+
+1. At the start of a round, roll initiative for every living combatant already in the battle.
+2. Resolve those turns in initiative order. A combatant that dies or flees before its turn skips it; a summoned minion enters immediately but waits until the next round to act.
+3. On a landed attack, apply HP damage, then resolve immediate effects. Lifesteal restores the actual HP damage dealt, capped at the attacker's max HP. The Lich's Raise Dead triggers immediately only if it crossed below half HP and remains alive after the damage. A death immediately deals 2 morale damage to each surviving party member; fleeing does not.
+4. At the end of the round, resolve enemy end-of-round effects (such as Swamp Troll regeneration), then evaluate the party's zero-damage stalemate counter.
 
 ## Morale, panic, and cowering
 
@@ -120,12 +133,12 @@ The Cleric's power is **2, not 0**. It has no attack, so its power never produce
 
 ## Class abilities (first draft)
 
-- Knight — Shield Bash: single target attack; after attacking, guard chance is doubled until his next turn (his "defensively attack").
-- Captain — Attack normally; every 3rd turn uses Rallying Horn instead: restores 2 morale to every living party member and grants them +1 power on their next attack.
+- Knight — Shield Bash: single target attack; after attacking, his total guard chance (including gear and upgrades) is doubled and capped at 75% through the end of his next turn (his "defensively attack"). This effect does not stack; reapplication refreshes its duration.
+- Captain — Attack normally; every 3rd turn uses Rallying Horn instead: restores 2 morale to every living party member and grants them +1 power on their next attack. The power buff lasts through the recipient's next turn if unconsumed; Horn power is one shared stacking instance, so repeated Horns increase its magnitude and refresh that duration.
 - Berserker — Attack normally; passive Frenzy: +1 power while below 50% HP.
 - Mage — AOE bolt: hits every enemy in the battle. Damage and crit are rolled once for the whole volley and applied against every enemy; each enemy still resolves its own evasion, crit-downgrade check, and armor (the standard AOE rule — the bolt is not a multi-projectile attack).
 - Rogue — Attack normally; relies on high crit chance and crit damage.
-- Cleric — Heal: restores **power + 1** HP to the lowest-HP living ally (the Cleric itself is a valid target), capped at that ally's max HP. The heal is deterministic — it does not roll ±1 like a damage roll, and it cannot crit (the Cleric's crit chance is 0%). If all allies are at full HP, casts Blessing instead: +1 armor to a random ally until the end of the battle.
+- Cleric — Heal: restores **power + 1** HP to the lowest-HP living ally (the Cleric itself is a valid target), capped at that ally's max HP. The heal is deterministic — it does not roll ±1 like a damage roll, and it cannot crit (the Cleric's crit chance is 0%). If multiple allies tie for lowest HP, select uniformly among them. If all allies are at full HP, casts Blessing instead: +1 armor to a random ally for 3 of that ally's turns. Blessing does not stack; reapplying it refreshes its duration.
 
 Targeting for single-target attacks (both sides): pick a random living enemy, uniformly. Buff/debuff-ability counts used for initiative tiebreak rule 3: Captain 1, Cleric 1, Knight 1, all others 0.
 
@@ -456,6 +469,8 @@ A summoned enemy carries the **minion** tag. Minions:
 
 Since Raise Dead re-arms per battle but the Lich only ever appears in its one boss battle, the repeat-summon case is a formality today — the rule exists so no future summoner can ever be farmed. The Lich's skeletons are currently the only minions in the game.
 
+For reward tracking, a "summon" means one specific summoning-enemy instance in one party's one expedition. If two future summoners appear in the same battle, each can pay its minion XP once; if the same summoner creates another wave after its first paid wave was defeated, that later wave pays no XP.
+
 ### Enemy gold traits
 
 Each non-boss enemy rolls for at most one trait when it spawns. Traits only affect gold and the tanking needed to earn it — they never change what the encounter is fundamentally doing.
@@ -514,7 +529,18 @@ A level is unlocked once any party has ever cleared the previous one; level 1 is
 
 Endless mode adds **no new dungeon levels** — there are only ever 4. After the game is won the player keeps sending parties down the same dungeon, and **each expedition in which at least one party fully clears level 4 increments the endless tier by exactly 1**. The increment is per expedition, not per clearing party: three parties all clearing on the same day is still +1, which matches the existing rule that only one party has to beat the boss for a level to count as completed. Since every party at that point averages well over level 7, all three run level 4 and the practical pace is +1 tier per day.
 
-Per tier: all enemies gain +25% HP and +1 power; gold and XP rewards gain +20%. Evasion and accuracy are untouched by endless tiers, which is why the hero panel's display rule needs no endless-mode special case.
+Endless tier starts at **0**. The winning, first clear of dungeon level 4 is fought at tier 0. Each later expedition that has at least one party fully clear level 4 first resolves all rewards using its starting tier, then increases the tier by exactly 1. Every party in one expedition always uses the same starting tier.
+
+At tier `T`, apply the following additive scaling to the base enemy or reward value:
+
+```
+enemy_hp(T) = round(base_hp * (1 + 0.25 * T))
+enemy_power(T) = base_power + T
+xp_reward(T) = max(1, round(base_xp * (1 + 0.20 * T)))
+gold_reward(T) = round(base_gold_roll * (1 + 0.20 * T))
+```
+
+The scaling is additive rather than compounded so endless enemies stay on the same broadly linear growth curve as uncapped adventurer levels. For enemies with a gold trait, first scale the rolled gold by tier, then apply the trait multiplier. For a Hoarder, first calculate its tier-scaled HP and then apply its +50% HP, rounding again. A minion's 50% XP penalty is applied after endless XP scaling and still rounds down. Evasion and accuracy are untouched by endless tiers, which is why the hero panel's display rule needs no endless-mode special case.
 
 ## Building upgrade costs
 
@@ -592,13 +618,13 @@ They help, and they do not close the problem. With a roster of 30 (9 veterans at
 
 (Seasoned Replacements moves a single Kick's odds of pulling a veteran from 28% to 53%, and the War Table's third action is what makes three Kicks possible.)
 
-So the player goes from fielding a quarter veterans to just over half. **This is a known, deliberate partial fix.** Hero Capacity at its max of 8 hires/day grows the roster faster than these two nodes scale, and there is still no way to dismiss an adventurer, so past roughly 18 hires the dilution starts winning again. If playtesting confirms that, the cheapest next lever is a dismiss action on the hero panel — let the player prune rather than making them out-upgrade their own hiring.
+So the player goes from fielding a quarter veterans to just over half. **This is a known, deliberate partial fix.** Hero Capacity at its max of 8 hires/day can still dilute the parties, but the hired roster has a hard cap of 100. There is no roster browser, retirement action, or direct party assignment; random formation plus Kick/Swap remains the intended party-control model.
 
 ## Economy
 
 - Player starts with 19 gold.
 - The inn starts built at level 1. All four other buildings — the weapon shop, the armor shop, the jewelry shop, and the training grounds — start ruined, at 10 gold each to rebuild.
-- Maximum roster: 300 hired adventurers in town; hiring is disabled while at the cap.
+- Maximum roster: 100 hired adventurers in town; hiring is disabled while at the cap.
 - Recruit class is rolled uniformly at random from the six classes, independently per slot. Duplicates are common; a day producing three Rogues is normal and correct.
 - Unhired recruits do not persist. They leave at nightfall and the next crow generates a fresh set.
 - **All enemy gold goes to the adventurers.** The player receives nothing directly from the dungeon.
@@ -663,7 +689,7 @@ So a plain 8 gold hire pays out 1 gold to roughly every second recruit, and a sp
 
 > **Implementation note, and this one matters:** compute the tax-copy on the **summed total across all adventurers for the whole expedition**, then take 10%, then floor — **once**, at the end. Flooring per drop pays the player exactly zero: a dungeon level 1 grunt drops 0-2 gold, and `floor(0.1 × 2) = 0`. Every single drop on level 1 rounds away to nothing. Accumulate → multiply → floor.
 
-Gold already tax-copied stays in the treasury even if the adventurer who earned it dies later in the run and loses their purse. The copy is minted at the moment of earning.
+Gold counted toward the tax-copy remains eligible even if the adventurer who earned it dies later in the run and loses their purse. The player receives the total tax-copy when the expedition resolves, after summing all eligible gold and flooring once.
 
 **2. The sales commission — 10% of every purchase at a player-owned shop, minimum 1 gold, rounded up.** This is a cut of the vendor's revenue, not a surcharge; the adventurer pays the listed price either way. Tier 1 at 8g → 1g. Tier 2 at 16g → 2g. Tier 5 at 128g → 13g.
 
