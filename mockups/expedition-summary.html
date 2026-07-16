@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="mock.css">
 <title>Expedition Summary</title>
 <h1>Expedition Summary</h1>
-<p class="note">Post-dungeon panel sized to ~80% of the window in both dimensions; the results area scrolls vertically if it doesn't fit. Three equal-width columns, one per party, each reserving vertical space for 3 adventurers. Above each party: a visual of the dungeon level it traversed (level 1 = gentle grassy forest, level 2 = swampy forest) — parties pick the hardest unlocked level fitting their character levels, so columns can show different biomes in one expedition. Per living member: current level banner → XP bar → next level banner → coin pile (1 coin per 3-6 gold, min 1, cap 100; hidden at 0). Dead members show no XP bar and no gold.</p>
+<p class="note">Post-dungeon panel sized to ~80% of the window in both dimensions; the results area scrolls vertically if it doesn't fit. Three equal-width columns, one per party, each reserving vertical space for 3 adventurers. Above each party: a visual of the dungeon level it traversed (level 1 = gentle grassy forest, level 2 = swampy forest) — parties pick the hardest unlocked level whose minimum average party level they meet (1/3/5 for dungeon 1/2/3, no upper bound), so columns can show different biomes during the ramp-up. Per living member: current level banner → XP bar → next level banner → coin pile (1 coin per 3-6 gold, min 1, cap 100; hidden at 0). The coins are that <i>adventurer's own</i> gold, headed for their pocket to spend at your shops — the player earns nothing directly from the dungeon, only a minted 10% tax-copy of what they earned (which does not reduce these piles) plus a 10% commission later when it gets spent. Dead members show no XP bar and no gold, and lose all their gear and carried gold. XP and gold are awarded per living member, not split.<br><br><b>This panel is where levelling up happens.</b> XP accrues silently during the dive but stats stay frozen at what the party walked in with; every level is applied here, as it animates. An adventurer can gain several levels at once — a full dungeon level 1 clear is worth 22 XP, nearly two levels to a fresh recruit — so the bar <b>loops</b>: it fills to full, both banners increment by one, the bar snaps back to empty, and it repeats until the leftover XP is placed. Fled adventurers still level up, since they keep all XP earned before fleeing.</p>
 
 <div class="panel wide" style="width:80vw; height:80vh; display:flex; flex-direction:column">
   <div class="panel-title">Expedition Summary Day 3</div>
@@ -15,12 +15,12 @@
           <div style="display:flex; gap:10px; margin-bottom:16px">
             <div class="sprite">🛡</div>
             <div style="flex:1; font-size:12px">
-              Aldric the Unyielding
+              Aldric the Unyielding <span style="color:#ffd35a; font-size:11px">▲ Level up!</span>
               <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
-                <div class="banner inline">1</div>
-                <div style="flex:1"><div class="bar xp"><i style="width:70%"></i></div></div>
-                <div class="banner inline">2</div>
-                <div class="coins">🪙<span class="amt">+3</span></div>
+                <div class="banner inline" style="background:#7a5a1a">2</div>
+                <div style="flex:1"><div class="bar xp"><i style="width:87%"></i></div></div>
+                <div class="banner inline">3</div>
+                <div class="coins">🪙🪙🪙🪙🪙<span class="amt">+21</span></div>
               </div>
               <div class="status good">Heroically cleared the way to Level 2</div>
             </div>
@@ -31,9 +31,9 @@
               Morwen the Ashen <span style="color:#ffd35a; font-size:11px">▲ Level up!</span>
               <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
                 <div class="banner inline" style="background:#7a5a1a">2</div>
-                <div style="flex:1"><div class="bar xp"><i style="width:100%"></i></div></div>
+                <div style="flex:1"><div class="bar xp"><i style="width:87%"></i></div></div>
                 <div class="banner inline">3</div>
-                <div class="coins">🪙🪙🪙<span class="amt">+14</span></div>
+                <div class="coins">🪙🪙🪙🪙🪙🪙<span class="amt">+26</span></div>
               </div>
               <div class="status good">Heroically cleared the way to Level 2</div>
             </div>
@@ -50,9 +50,9 @@
               Grom the Wailing
               <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
                 <div class="banner inline">1</div>
-                <div style="flex:1"><div class="bar xp"><i style="width:35%"></i></div></div>
+                <div style="flex:1"><div class="bar xp"><i style="width:37.5%"></i></div></div>
                 <div class="banner inline">2</div>
-                <div class="coins">🪙🪙🪙🪙🪙🪙🪙🪙<span class="amt">+37</span></div>
+                <div class="coins">🪙🪙🪙<span class="amt">+12</span></div>
               </div>
               <div class="status neutral">Fled</div>
             </div>
@@ -60,10 +60,10 @@
           <div style="display:flex; gap:10px; margin-bottom:16px">
             <div class="sprite">📿</div>
             <div style="flex:1; font-size:12px">
-              Sister Ede
+              Ede the Meek
               <div style="display:flex; align-items:center; gap:5px; margin:6px 0 4px">
                 <div class="banner inline">1</div>
-                <div style="flex:1"><div class="bar xp"><i style="width:35%"></i></div></div>
+                <div style="flex:1"><div class="bar xp"><i style="width:37.5%"></i></div></div>
                 <div class="banner inline">2</div>
                 <div class="coins"><span class="amt" style="margin-top:0">0 gold: hidden</span></div>
               </div>
@@ -83,7 +83,7 @@
             </div>
             <div style="flex:1; font-size:12px">
               Vex the Grey
-              <div class="status bad" style="margin-top:8px">Murdered by a Grunt</div>
+              <div class="status bad" style="margin-top:8px">Murdered by a Lizardfolk Raider</div>
             </div>
           </div>
           <div style="display:flex; gap:10px; margin-bottom:16px">
@@ -92,8 +92,8 @@
               <span style="position:absolute; right:-4px; bottom:-6px; font-size:16px">🩸</span>
             </div>
             <div style="flex:1; font-size:12px">
-              Captain Roswald
-              <div class="status bad" style="margin-top:8px">Slain by a Caster</div>
+              Roswald the Bright
+              <div class="status bad" style="margin-top:8px">Slain by a Bog Witch</div>
             </div>
           </div>
         </div>

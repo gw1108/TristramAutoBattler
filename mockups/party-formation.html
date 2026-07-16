@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="mock.css">
 <title>Party Formation</title>
 <h1>Call to Arms — Party Formation</h1>
-<p class="note">After ringing the bell, adventurers form up to 3 parties of 1-3 in the world. Clicking a hero opens their normal hero stat panel with one extra section at the bottom: a "Party:" label, Kick and Swap buttons, and the actions-remaining counter — all on one horizontal row. The number of actions per day comes from the player's stats (default 3). Kick disables when there is no benched adventurer to swap in (town total ≤ 9).</p>
+<p class="note">After ringing the bell, adventurers form up to 3 parties of 1-3 in the world. Clicking a hero opens their normal hero stat panel with one extra section at the bottom: a "Party:" label, Kick and Swap buttons, and the actions-remaining counter — all on one horizontal row. Actions per day are <b>2 by default, raised to 3 by the War Table upgrade at the inn</b>. Kick disables when there is no benched adventurer to swap in (town total ≤ 9). Swap with no valid target (e.g. only one party is non-empty) is a no-op and does not consume an action.<br><br>Two inn upgrades change formation: <b>Guild Champion</b> (inn 2) seeds the highest-level adventurer into a random party before the shuffle, so your best is never benched. <b>Seasoned Replacements</b> (inn 1) triples the weight of reserves within ±1 level of the target party's average or highest when Kick rolls a replacement.</p>
 
 <div class="row" style="gap:140px; padding-left:60px">
   <div>
@@ -33,15 +33,16 @@
         <div class="stat"><span class="icon">⚡</span> Speed: 3</div>
         <div class="stat"><span class="icon">🛡️</span> Armor: 2</div>
         <div class="stat"><span class="icon">🖐️</span> Guard: 25%</div>
-        <div class="stat"><span class="icon">💨</span> Evasion: 43%</div>
-        <div class="stat"><span class="icon">🎯</span> Accuracy: 96%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 8%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 100%</div>
         <div class="stat"><span class="icon">✨</span> Crit: 5%</div>
         <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
       </div>
       <div class="sep-label">Inventory</div>
       <div class="grid2" style="grid-template-columns:1fr">
-        <div class="stat"><span class="icon">🗡️</span> Rusty Sword</div>
-        <div class="stat"><span class="icon">🛡️</span> Wooden Shield</div>
+        <div class="stat"><span class="icon">🗡️</span> Rusted Longsword</div>
+        <div class="stat"><span class="icon">🛡️</span> Dented Hauberk</div>
+        <div class="stat"><span class="icon">🎗️</span> Frayed Sword-Belt</div>
       </div>
       <div class="sep"></div>
       <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Answering the call to arms</div>
@@ -50,7 +51,7 @@
         <b>Party:</b>
         <button class="btn" style="font-size:11px; padding:4px 8px">Kick</button>
         <button class="btn" style="font-size:11px; padding:4px 8px">Swap</button>
-        <span style="margin-left:auto; color:#ffd35a">3/3 Actions Today</span>
+        <span style="margin-left:auto; color:#ffd35a">2/2 Actions Today</span>
       </div>
     </div>
   </div>
@@ -84,14 +85,16 @@
         <div class="stat"><span class="icon">⚡</span> Speed: 5</div>
         <div class="stat"><span class="icon">🛡️</span> Armor: 0</div>
         <div class="stat"><span class="icon">🖐️</span> Guard: 0%</div>
-        <div class="stat"><span class="icon">💨</span> Evasion: 21%</div>
-        <div class="stat"><span class="icon">🎯</span> Accuracy: 96%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 4%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 100%</div>
         <div class="stat"><span class="icon">✨</span> Crit: 15%</div>
         <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
       </div>
       <div class="sep-label">Inventory</div>
       <div class="grid2" style="grid-template-columns:1fr">
         <div class="stat"><span class="icon">🪓</span> Chipped Axe</div>
+        <div class="stat"><span class="icon">🧥</span> Torn Furs</div>
+        <div class="stat"><span class="icon">💍</span> Bent Iron Ring</div>
       </div>
       <div class="sep"></div>
       <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Answering the call to arms</div>
@@ -100,7 +103,7 @@
         <b>Party:</b>
         <button class="btn disabled" style="font-size:11px; padding:4px 8px">Kick</button>
         <button class="btn" style="font-size:11px; padding:4px 8px">Swap</button>
-        <span style="margin-left:auto; color:#ffd35a">1/3 Actions Today</span>
+        <span style="margin-left:auto; color:#ffd35a">1/2 Actions Today</span>
       </div>
     </div>
   </div>

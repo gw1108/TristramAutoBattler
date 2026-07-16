@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="mock.css">
 <title>Hero Stat Panel</title>
 <h1>Hero Stat Panel</h1>
-<p class="note">Opened by left-clicking a hero (or approach + interact). Header: name as title, epithet as subtitle, class icon circle + level shield banner top-left, gold bag circle + wealth top-right. Stats: row 1 = HP / Power / Morale, row 2 = HP Regen / Morale Regen, then the rest (gold removed from the list). Labeled inventory separator, then current activity; hireable heroes add centered class info + hire buttons.</p>
+<p class="note">Opened by left-clicking a hero (or approach + interact). Header: name as title, epithet as subtitle, class icon circle + level shield banner top-left, gold bag circle + wealth top-right. Stats: row 1 = HP / Power / Morale, row 2 = HP Regen / Morale Regen, then the rest (gold removed from the list). Labeled inventory separator, then current activity; hireable heroes add centered class info + hire buttons.<br><br>Inventory is <b>always exactly three rows</b> — Weapon, Armor, Jewelry — because everyone is wearing at least tier 0 in all three slots. Each slot is sold by its own building (weapon shop / armor shop / jewelry shop). There are no consumables and no fourth slot. Item names are per class per slot per tier (these two heroes are showing tier 0 in everything). Jewelry type is fixed per class: Knight wears a belt, Berserker and Rogue wear rings, Captain/Mage/Cleric wear amulets. Evasion and Accuracy percentages are derived by pitting the hero's raw rating against a reference grunt from the dungeon level they'd be sent to; see the display formula in LordofHirelings_BalanceNumbers.md. A level 1 Mage really does read 0% evasion, and accuracy really is pegged at 100% this early.</p>
 
 <div class="row" style="gap:140px; padding-left:60px">
   <div>
@@ -33,16 +33,16 @@
         <div class="stat"><span class="icon">⚡</span> Speed: 3</div>
         <div class="stat"><span class="icon">🛡️</span> Armor: 2</div>
         <div class="stat"><span class="icon">🖐️</span> Guard: 25%</div>
-        <div class="stat"><span class="icon">💨</span> Evasion: 43%</div>
-        <div class="stat"><span class="icon">🎯</span> Accuracy: 96%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 8%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 100%</div>
         <div class="stat"><span class="icon">✨</span> Crit: 5%</div>
         <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
       </div>
       <div class="sep-label">Inventory</div>
       <div class="grid2" style="grid-template-columns:1fr">
-        <div class="stat"><span class="icon">🗡️</span> Rusty Sword</div>
-        <div class="stat"><span class="icon">🛡️</span> Wooden Shield</div>
-        <div class="stat"><span class="icon">🧪</span> Minor Tonic</div>
+        <div class="stat"><span class="icon">🗡️</span> Rusted Longsword</div>
+        <div class="stat"><span class="icon">🛡️</span> Dented Hauberk</div>
+        <div class="stat"><span class="icon">🎗️</span> Frayed Sword-Belt</div>
       </div>
       <div class="sep"></div>
       <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Chatting with Morwen</div>
@@ -78,14 +78,16 @@
         <div class="stat"><span class="icon">⚡</span> Speed: 4</div>
         <div class="stat"><span class="icon">🛡️</span> Armor: 0</div>
         <div class="stat"><span class="icon">🖐️</span> Guard: 0%</div>
-        <div class="stat"><span class="icon">💨</span> Evasion: 24%</div>
-        <div class="stat"><span class="icon">🎯</span> Accuracy: 99%</div>
+        <div class="stat"><span class="icon">💨</span> Evasion: 0%</div>
+        <div class="stat"><span class="icon">🎯</span> Accuracy: 100%</div>
         <div class="stat"><span class="icon">✨</span> Crit: 5%</div>
         <div class="stat"><span class="icon">💥</span> Crit Dmg: +50%</div>
       </div>
       <div class="sep-label">Inventory</div>
       <div class="grid2" style="grid-template-columns:1fr">
         <div class="stat"><span class="icon">🪄</span> Splintered Wand</div>
+        <div class="stat"><span class="icon">🧥</span> Moth-Eaten Robes</div>
+        <div class="stat"><span class="icon">📿</span> Clouded Bead</div>
       </div>
       <div class="sep"></div>
       <div style="font-size:13px; color:#aab; font-style:italic; text-align:center">Looking for work</div>
