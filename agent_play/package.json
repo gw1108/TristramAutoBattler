@@ -1,0 +1,16 @@
+{
+  "name": "agent_play",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Let an AI agent play a Godot WebGL game in a browser to find bugs and evaluate art direction, juiciness, and audio.",
+  "scripts": {
+    "setup": "node setup.mjs",
+    "serve": "node server.mjs",
+    "play": "node harness.mjs"
+  },
+  "dependencies": {
+    "dotenv": ">=16.0.0",
+    "playwright": ">=1.40.0"
+  }
+}

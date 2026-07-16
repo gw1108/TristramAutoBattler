@@ -14,7 +14,7 @@ an escalating color script from sunny forest to hellfire. The contrast IS the ga
 
 | Spec | Decision | Rationale |
 |---|---|---|
-| Native art resolution | **960×540** | Mockup viewport; integer-scales to 1080p (2×), 1440p (~2.67 → use 2× letterboxed or 3× crop — engine decision), 4K (4×) |
+| Native art resolution | **960×540** | The current project target is lower than the 1280×720 cap, so it remains the native art resolution; integer-scales to 1080p (2×), 1440p (2× letterboxed), and 4K (4×) |
 | Screen scaling | **Integer scale only, nearest-neighbor.** Never fractionally scale a sprite. | Mixed pixel densities are the #1 "cheap pixel art" tell |
 | Adventurer / grunt sprite canvas | **48×48** (figure fills ~40–46px tall) | Matches mockup `.sprite`; reads at dive-row scale |
 | Boss sprite canvas | **64×64** (Swamp Troll, Bandit King, Lich) | Matches mockup boss note |
@@ -25,7 +25,7 @@ an escalating color script from sunny forest to hellfire. The contrast IS the ga
 | Pivot | Bottom-center on every character/enemy/prop | Required by the rotate + squash/stretch locomotion tween |
 | Portraits | **Never downscale.** Reuse the sprite at 1:1, or crop a 32×32 head/torso region at 1:1 | Non-integer scaling destroys pixel art; mockup's 34px scale-down is NOT the plan |
 | Rotation tweens | Keep code rotation within **±8°**; rendered at 2× screen scale the off-grid pixels stay chunky and read as style | Full-speed rotation shimmer would fight the pixel look |
-| Font | One pixel font, 2 weights (regular + bold for CRIT). Must have excellent digits. Candidates: m5x7 / Pixel Operator / Monogram (all free) | Digits are 80% of what this UI renders |
+| Font | **Pixel Operator** regular + bold. CC0 1.0; source files and license live in `lord-of-hirelings/source-assets/fonts/pixel-operator/`. | Its excellent digits and compact pixel rhythm suit the stat-dense UI; bold is reserved for CRIT and other high-attention text. |
 
 ## 2. Master palette & color rules
 
@@ -212,7 +212,7 @@ from its ruined state through max.
 1. Knight (variant 1) — the character rendering benchmark
 2. Slime + Wolf + Bandit — enemy benchmark (the Slime is the first enemy a player ever sees)
 3. Forest biome backdrop + one full dive row composited with UI bars/markers
-4. Inn (level 1) + a 3×3 screen of town ground tiles + the Player Lord
+4. Final town art: Inn (level 1), the town ground tileset, and the Player Lord, assembled directly into the scrollable town map — no separate graybox-art phase
 5. Panel + button 9-slice + the pixel font in place
 
 This set IS the vertical slice. Screenshot it, grayscale it, squint at it. When it passes,
@@ -229,4 +229,3 @@ anchors are approved.
 
 ### Open items this guide does not decide
 - Exact tier-5 relic glow treatment (decide when the first relic icon is drawn).
-- 1440p scaling policy (2× letterbox vs 3× crop) — engine-side decision.

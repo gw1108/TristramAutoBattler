@@ -626,7 +626,7 @@ So the player goes from fielding a quarter veterans to just over half. **This is
 - Player starts with 19 gold.
 - The inn starts built at level 1. All four other buildings — the weapon shop, the armor shop, the jewelry shop, and the training grounds — start ruined, at 10 gold each to rebuild.
 - Maximum roster: 100 hired adventurers in town; hiring is disabled while at the cap.
-- Recruit class is rolled uniformly at random from the six classes, independently per slot. Duplicates are common; a day producing three Rogues is normal and correct.
+- Recruit class is rolled uniformly at random from the six classes, independently per slot. Duplicates are common; a day producing three Rogues is normal and correct. Elite chance is also checked independently per recruit slot: `0.05 * Elite Recruits pips`; a successful recruit gains `randint(1, 3)` levels and therefore arrives at level 2-4.
 - Unhired recruits do not persist. They leave at nightfall and the next crow generates a fresh set.
 - **All enemy gold goes to the adventurers.** The player receives nothing directly from the dungeon.
 

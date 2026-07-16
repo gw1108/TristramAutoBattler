@@ -1,0 +1,7 @@
+{
+  "_comment": "Optional per-repo config. Copy to agent_play.config.json and edit. All fields optional — the toolkit auto-detects the Godot project if you omit godotProject. Env vars (AGENT_GODOT_PROJECT, AGENT_BUILD_DIR, AGENT_EXPORT_PRESET, AGENT_MODEL, AGENT_PORT, GODOT) take precedence.",
+  "godotProject": "path/to/godot/project/dir",
+  "exportPreset": "Web",
+  "model": "claude-opus-4-8",
+  "port": 8099
+}
