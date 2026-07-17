@@ -14,6 +14,13 @@ deep warm brown (never pure black), lightened on lit top edges. Shares the
 weathered-wood ramps of the other town generators so the props read as one
 town.
 
+The portal is the subject and the rock is its frame, so the value budget runs
+that way (style guide §7, 60/30/10): the mouth owns the darkest value and the
+timber owns the detail, the crest terraces support, and the big rock face stays
+a quiet flat mass. The outcrop is massed into a few large facets rather than
+textured per-pixel — the guide's squint test wants 2-3 clean value blocks, and
+a noise field over the whole mass both fails that and out-shouts the mouth.
+
 Mine canvas is 128x128 with a bottom-center pivot (base at y=127). The prop
 stands at the EAST end of the path arm with its east flank running off the
 map edge, so the rock mass peaks east and the dark portal mouth sits at the
@@ -38,17 +45,19 @@ W, H = 128, 128
 BASE = 127
 
 # --- palette (3-step hue-shifted ramps; shadows cool, lights warm) ---------
-ROCK_DK = (52, 52, 66, 255)     # cold granite outcrop, deeper than headstones
-ROCK_MD = (92, 94, 106, 255)
-ROCK_LT = (140, 138, 128, 255)
-ROCK_DEEP = (38, 38, 50, 255)   # crevices and the outcrop's shadowed skirt
+ROCK_DEEP = (34, 32, 48, 255)   # crevices and the outcrop's shadowed skirt
+ROCK_DK = (52, 52, 76, 255)     # cold granite, shifted violet in shadow
+ROCK_MD = (84, 88, 108, 255)    # the big quiet face; saturation peaks here
+ROCK_LT = (146, 142, 126, 255)  # facets turned to the key light
+ROCK_HI = (176, 168, 142, 255)  # the sun-struck crest lip
 
 WOOD_DK = (58, 46, 42, 255)     # weathered support timber (shared town ramp)
 WOOD_MD = (108, 90, 70, 255)
 WOOD_LT = (156, 138, 104, 255)
 
-DARK_IN = (14, 12, 18, 255)     # the unlit interior — pitch, faintly cold
-DARK_RIM = (26, 24, 34, 255)    # where the last light dies at the mouth
+DARK_RIM = (38, 36, 50, 255)    # the last cold light on the hewn jamb
+DARK_MID = (24, 22, 32, 255)    # where the light gives up
+DARK_IN = (16, 16, 20, 255)     # pitch — the style guide's deepest value
 
 RAIL_MD = (96, 100, 112, 255)   # rusted-dull steel rails
 RAIL_LT = (150, 152, 156, 255)
@@ -71,6 +80,15 @@ POST_W = 4                      # timber posts flanking the mouth
 LINTEL_TOP = 82                 # main beam over the opening
 RAIL_YS = (116, 122)            # cart rails along the bottom rows (path band)
 
+# Crest control points: a low west toe rising over alternating steep and
+# shallow facets to the east map edge. Authored rather than hashed — a
+# per-pixel hash gives a periodic comb, which is the "even stripes" tell the
+# style guide bans and which the 1px outline then eats into brown teeth.
+CREST = ((10, 123), (20, 104), (31, 98), (44, 74), (57, 67), (73, 45),
+         (91, 37), (108, 23), (127, 11))
+
+STRATA = (19, 41, 63)           # depth below the crest of each bedding ledge
+
 
 def px(img, x, y, c):
     if 0 <= x < img.width and 0 <= y < img.height:
@@ -83,70 +101,135 @@ def rect(img, x0, y0, x1, y1, c):
             px(img, x, y, c)
 
 
-def _rock_top(x):
-    """Silhouette of the outcrop: low on the west, peaking past the east edge
-    where the map ends, with deterministic jaggedness."""
-    if x < 12:
-        return None                                  # grass west of the rocks
-    t = (x - 12) / (W - 12)
-    top = int(96 - 78 * (t ** 0.8))                  # 96 down to ~18
-    top += ((x * 13) % 7) - 3                        # jagged crest
-    return max(10, top)
+def _crest_jitter(rng):
+    """Low-frequency crest wobble: plateaus 4-8px wide, so the skyline breaks
+    into facets a 1px outline can trace instead of a per-pixel comb."""
+    j = []
+    while len(j) < W:
+        j.extend([rng.choice((-2, -1, -1, 0, 0, 1, 2))] * rng.randint(4, 8))
+    return j[:W]
 
 
-def draw_rock(img):
-    """The outcrop mass: cool granite facets, lit from the top-left."""
+def _crest_span(x):
+    for a, b in zip(CREST, CREST[1:]):
+        if a[0] <= x <= b[0]:
+            return a, b
+    return CREST[-2], CREST[-1]
+
+
+def _rock_top(x, jitter):
+    """Silhouette of the outcrop; None where the grass shows west of it."""
+    if x < CREST[0][0]:
+        return None
+    (x0, y0), (x1, y1) = _crest_span(x)
+    t = (x - x0) / float(x1 - x0)
+    return max(8, int(round(y0 + (y1 - y0) * t)) + jitter[x])
+
+
+def _lit_depth(x):
+    """How far the key light runs below the crest. Near-flat facets face the
+    sky and take it; steep ones catch only a lip. This is what breaks the slope
+    into terraces instead of one pillow-shaded ridge."""
+    (x0, y0), (x1, y1) = _crest_span(x)
+    slope = abs((y1 - y0) / float(x1 - x0))
+    if slope < 0.8:
+        return 6
+    if slope < 1.3:
+        return 3
+    return 1
+
+
+def draw_rock(img, rng):
+    """The outcrop: cool granite massed into flat facets, lit from the
+    top-left. Value does the work and the face stays quiet, so the portal —
+    not the stone — is what the eye lands on."""
+    jitter = _crest_jitter(rng)
     for x in range(W):
-        top = _rock_top(x)
+        top = _rock_top(x, jitter)
         if top is None:
             continue
+        lit = _lit_depth(x)
         for y in range(top, BASE + 1):
-            h = (x * 7 + y * 13) % 29
             depth = y - top
-            if depth <= 1 or (depth <= 3 and (x * 5 + y) % 4 == 0):
-                c = ROCK_LT                          # lit crest facets
-            elif h == 0:
-                c = ROCK_DEEP
-            elif h in (7, 19):
-                c = ROCK_LT if (x + y) % 2 else ROCK_MD
-            elif h in (3, 11, 23):
+            if depth <= 1:
+                c = ROCK_HI                      # sun-struck lip
+            elif depth <= lit:
+                c = ROCK_LT                      # the facet's lit terrace
+            elif y >= BASE - 1:
+                c = ROCK_DEEP                    # skirt, where it meets dirt
+            elif y >= BASE - 4:
                 c = ROCK_DK
             else:
-                c = ROCK_MD
+                c = ROCK_MD                      # the big quiet face
             px(img, x, y, c)
-    # long diagonal cracks so the mass reads as split, weathered stone
-    for sx, sy, n in ((30, 104, 14), (62, 60, 18), (94, 40, 22), (112, 26, 16)):
-        x, y = sx, sy
-        for i in range(n):
+    draw_strata(img, jitter)
+    draw_clefts(img, jitter)
+    draw_boulders(img)
+
+
+def draw_strata(img, jitter):
+    """Bedding ledges running parallel to the crest: a lit lip with its own
+    shadow thrown under it. The face is bedded, not fluted — ledges echo the
+    crest terraces and break the mass horizontally. A cleft per facet break
+    corrugates it instead (style guide: never even stripes), and texturing it
+    is the noise the squint test exists to catch."""
+    for k, depth in enumerate(STRATA):
+        for x in range(CREST[0][0], W):
+            # the ledge steps in chunky runs so it is a bed, not a ruler line
+            y = _rock_top(x, jitter) + depth + ((x // (7 + k * 3)) % 2)
+            if y >= BASE - 5:
+                continue
+            px(img, x, y, ROCK_LT)
+            for s in range(1, 3 + (k % 2)):
+                px(img, x, y + s, ROCK_DK)
+
+
+def draw_clefts(img, jitter):
+    """A few cracks splitting the mass — enough to read as weathered stone,
+    few enough to leave the face quiet under the portal."""
+    for x0, length, lean in ((36, 22, 3), (84, 40, 3), (110, 44, 4)):
+        x, y = x0, _rock_top(x0, jitter) + 3
+        for i in range(length):
+            if y >= BASE - 5 or x >= W:
+                break
+            px(img, x - 1, y, ROCK_LT)           # lit lip above the cleft
             px(img, x, y, ROCK_DEEP)
-            px(img, x + 1, y, ROCK_DK)
-            x += 1 if (i * 7 + sx) % 3 else 0
+            px(img, x + 1, y, ROCK_DK)           # its own shadow, thrown right
             y += 1
-    # shadowed skirt where the rock meets the ground
-    for x in range(12, W):
-        top = _rock_top(x)
-        if top is not None and top < BASE - 1:
-            px(img, x, BASE, ROCK_DEEP)
-            px(img, x, BASE - 1, ROCK_DK)
-    # a few fallen boulders at the west toe of the slope
-    for bx, by, r in ((16, 122, 3), (26, 124, 2), (8, 125, 2)):
-        for y in range(by - r, by + r):
+            if i % lean == 0:
+                x += 1                           # leans away from the light
+
+
+def draw_boulders(img):
+    """Fallen rubble at the west toe — the outcrop shedding itself."""
+    for bx, by, r in ((16, 122, 3), (26, 125, 2), (7, 125, 2)):
+        for y in range(by - r, by + r + 1):
             for x in range(bx - r, bx + r + 1):
                 if (x - bx) ** 2 + (y - by) ** 2 * 2 <= r * r + 2:
-                    lit = (x - bx) < 0 and (y - by) < 0
+                    lit = (x - bx) + (y - by) * 2 < -1
                     px(img, x, y, ROCK_LT if lit else ROCK_MD)
-        px(img, bx + r - 1, by, ROCK_DK)
+        px(img, bx + r - 1, by + 1, ROCK_DK)
 
 
 def draw_mouth(img):
-    """The portal opening: pitch dark, a cold rim where daylight gives up."""
+    """The portal opening: a cold rim where daylight gives up, deepening to
+    pitch. Graded so it reads as a shaft going somewhere, not a flat panel."""
     for y in range(MOUTH_TOP, BASE + 1):
         # the opening narrows slightly toward the top — a hewn arch, not a door
         inset = max(0, (MOUTH_TOP + 6 - y)) // 3
-        for x in range(MOUTH_L + inset, MOUTH_R - inset + 1):
-            edge = (y <= MOUTH_TOP + 2 or x <= MOUTH_L + inset + 1
-                    or x >= MOUTH_R - inset - 1)
-            px(img, x, y, DARK_RIM if edge else DARK_IN)
+        left, right = MOUTH_L + inset, MOUTH_R - inset
+        for x in range(left, right + 1):
+            edge = min(x - left, right - x, y - MOUTH_TOP)
+            if edge <= 0:
+                c = DARK_RIM
+            elif edge <= 2:
+                c = DARK_MID
+            else:
+                c = DARK_IN
+            px(img, x, y, c)
+        # the top-left key reaches a sliver of the near jamb and stops
+        if y < MOUTH_TOP + 22:
+            px(img, left, y, ROCK_DK)
 
 
 def draw_timber(img):
@@ -166,8 +249,9 @@ def draw_timber(img):
         rect(img, x, y0, x, y0 + 5, WOOD_MD)
         px(img, x, y0, WOOD_LT)
         px(img, x, y0 + 5, WOOD_DK)
-    # a cracked secondary brace leaning across the west post
-    for i in range(14):
+    # a cracked secondary brace leaning on the west post — stopped short of the
+    # opening, or it reads as a stick floating in the dark
+    for i in range(8):
         x = MOUTH_L - POST_W - 4 + i
         y = BASE - 2 - i * 2
         rect(img, x, y, x + 1, y + 1, WOOD_MD)
@@ -179,25 +263,49 @@ def draw_timber(img):
          LINTEL_TOP + 3, ROCK_MD)
 
 
-def draw_tracks(img):
-    """Cart tracks running west along the path band and into the dark."""
+def draw_tracks(img, rng):
+    """Cart tracks running west along the path band and into the dark. Drawn
+    AFTER the outline pass: rails are 1px and west of the rock they are their
+    own island, so outlining would swallow them into a dark ladder. They lie on
+    the ground in front of the outcrop, and ground takes no outline anyway."""
     mouth_cx = (MOUTH_L + MOUTH_R) // 2
-    for tx in range(2, mouth_cx, 8):                 # half-buried sleepers
-        rect(img, tx, RAIL_YS[0] - 1, tx + 2, RAIL_YS[1] + 2, TIE_DK)
-        px(img, tx, RAIL_YS[0] - 1, WOOD_MD)
+    tx = 2                                       # half-buried sleepers
+    while tx < mouth_cx:
+        # they die at the threshold with the rails: a lit sleeper standing in
+        # the pitch reads as a post in the doorway, not as track
+        if tx > MOUTH_L - 2:
+            tie, lip = DARK_MID, DARK_RIM
+        else:
+            tie, lip = TIE_DK, WOOD_MD
+        rect(img, tx, RAIL_YS[0] - 1, tx + 2, RAIL_YS[1] + 2, tie)
+        px(img, tx, RAIL_YS[0] - 1, lip)
+        tx += rng.randint(6, 11)                 # never an even stripe rhythm
     for ry in RAIL_YS:
-        for x in range(0, mouth_cx + 10):
-            into_dark = x > MOUTH_L + 2
-            px(img, x, ry, DARK_RIM if into_dark else RAIL_LT)
-            px(img, x, ry + 1, DARK_IN if into_dark else RAIL_MD)
-    # an abandoned ore cart wheel leaning on the west post
-    wx, wy = MOUTH_L - POST_W - 7, BASE - 5
-    for a in range(-4, 5):
-        for b in range(-4, 5):
+        for x in range(0, mouth_cx + 8):
+            if x < MOUTH_L - 8:
+                top_c, bot_c = RAIL_LT, RAIL_MD
+            elif x < MOUTH_L + 2:
+                top_c, bot_c = RAIL_MD, TIE_DK   # dulled at the threshold
+            elif x < MOUTH_L + 10:
+                top_c, bot_c = DARK_RIM, DARK_MID  # the last glint, dying
+            else:
+                continue                         # swallowed whole
+            px(img, x, ry, top_c)
+            px(img, x, ry + 1, bot_c)
+    # an abandoned ore cart wheel, leaned on the rock west of the portal and
+    # clear of the rails — nothing here has rolled in a long time. Steel on
+    # granite is nearly the same value, so it carries its own dark ring or it
+    # vanishes into the face.
+    wx, wy = 26, 110
+    for a in range(-5, 6):
+        for b in range(-5, 6):
             d = a * a + b * b
             if 8 <= d <= 17:
                 px(img, wx + a, wy + b, RAIL_MD if a + b > 0 else RAIL_LT)
-    px(img, wx, wy, RAIL_MD)
+            elif 17 < d <= 26 or 4 <= d < 8:
+                px(img, wx + a, wy + b, ROCK_DEEP)     # separation ring
+    px(img, wx, wy, RAIL_MD)                     # hub
+    rect(img, wx - 3, wy + 6, wx + 3, wy + 6, ROCK_DEEP)   # contact shadow
 
 
 def outline(img):
@@ -219,12 +327,13 @@ def outline(img):
 
 
 def build_mine():
+    rng = random.Random(0x6D696E65)              # 'mine'
     img = Image.new("RGBA", (W, H))
-    draw_rock(img)
+    draw_rock(img, rng)
     draw_mouth(img)
     draw_timber(img)
-    draw_tracks(img)
     outline(img)
+    draw_tracks(img, rng)
     return img
 
 
@@ -234,21 +343,24 @@ HANG_X, HANG_Y = 16, 10         # cell-local hanging point of the bell
 
 
 def draw_bell_frame(img):
-    """Cell 0: small wooden arch — two posts, a crossbar, angle braces."""
-    for x0 in (5, 24):
-        rect(img, x0, 12, x0 + 2, 46, WOOD_MD)
-        rect(img, x0, 12, x0, 46, WOOD_LT)
-        rect(img, x0 + 2, 14, x0 + 2, 46, WOOD_DK)
+    """Cell 0: small wooden arch — two posts, a crossbar, angle braces. Posts
+    are 4px so the outline pass leaves a 2px wood core; at 3px the ramp is
+    eaten entirely and the arch reads as two dark sticks."""
+    for x0 in (4, 24):
+        rect(img, x0, 12, x0 + 3, 47, WOOD_MD)
+        rect(img, x0, 12, x0, 47, WOOD_LT)           # lit west face
+        rect(img, x0 + 3, 14, x0 + 3, 47, WOOD_DK)   # shaded east face
+        for y in range(20, 44, 9):                   # split-grain checks
+            px(img, x0 + 1, y, WOOD_DK)
+            px(img, x0 + 2, y + 4, WOOD_DK)
     rect(img, 2, 8, 29, 11, WOOD_MD)                 # crossbar
     rect(img, 2, 8, 29, 8, WOOD_LT)
     rect(img, 2, 11, 29, 11, WOOD_DK)
-    px(img, 2, 12, WOOD_DK)                          # bar-end weathering
-    px(img, 29, 12, WOOD_DK)
-    for i in range(4):                               # angle braces
-        px(img, 8 + i, 15 - i if 15 - i > 11 else 12, WOOD_DK)
-        px(img, 23 - i, 15 - i if 15 - i > 11 else 12, WOOD_DK)
-    rect(img, 4, 46, 8, 46, WOOD_DK)                 # feet in the dirt
-    rect(img, 23, 46, 27, 46, WOOD_DK)
+    for i in range(4):                               # solid angle gussets
+        rect(img, 8, 12 + i, 11 - i, 12 + i, WOOD_DK)
+        rect(img, 20 + i, 12 + i, 23, 12 + i, WOOD_DK)
+    rect(img, 2, 46, 7, 47, WOOD_DK)                 # feet spread in the dirt
+    rect(img, 24, 46, 29, 47, WOOD_DK)
 
 
 def draw_bell(img, ox=CELL_W):
@@ -276,11 +388,19 @@ def draw_bell(img, ox=CELL_W):
     px(img, cx - 8, HANG_Y + 10, BRONZE_MD)
     px(img, cx, HANG_Y + 12, BRONZE_DK)              # clapper below the lip
     px(img, cx, HANG_Y + 13, BRONZE_MD)
-    for i, y in enumerate(range(HANG_Y + 14, HANG_Y + 26)):  # the pull rope
+
+
+def draw_rope(img, ox=CELL_W):
+    """The pull rope, drawn AFTER the outline pass — at 1-2px every column
+    borders transparency, so outlining swallows the whole rope and leaves a
+    dark dashed line that reads as chain. Unoutlined it stays rope."""
+    cx = ox + HANG_X
+    for i, y in enumerate(range(HANG_Y + 14, HANG_Y + 26)):
         x = cx + (1 if i in (4, 5, 9) else 0)        # slack, not plumb
-        px(img, x, y, ROPE if i % 3 else ROPE_DK)
+        px(img, x, y, ROPE)
+        px(img, x + 1, y, ROPE_DK)                   # the twist's shaded side
     rect(img, cx - 1, HANG_Y + 26, cx + 1, HANG_Y + 28, ROPE_DK)  # frayed knot
-    px(img, cx, HANG_Y + 26, ROPE)
+    rect(img, cx - 1, HANG_Y + 26, cx, HANG_Y + 26, ROPE)
 
 
 def build_bell_sheet():
@@ -288,6 +408,7 @@ def build_bell_sheet():
     draw_bell_frame(img)
     draw_bell(img)
     outline(img)
+    draw_rope(img)
     return img
 
 
