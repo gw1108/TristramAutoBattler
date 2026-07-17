@@ -38,6 +38,7 @@ training_grounds_town_pos_y,512,Training grounds Y position in the town (px; bot
 training_grounds_interact_radius,80,Distance in px from the yard's base within which the rebuild prompt shows (wider than the shops — the yard is 160px wide)
 graveyard_town_pos_x,608,Graveyard plot X position in the town (px; bottom-center pivot; south side of the west path arm, across from the Training grounds)
 graveyard_town_pos_y,712,Graveyard plot Y position in the town (px; bottom-center pivot; base aligned with the south-side shops)
+graveyard_name_reveal_radius,96,Distance in px from a grave within which the Lord reveals that headstone's name label (nearest grave only)
 rooster_town_pos_x,1056,Rooster interactable X position in the town (px)
 rooster_town_pos_y,444,Rooster interactable Y position in the town (px)
 rooster_interact_radius,40,Distance in px within which the rooster's interact prompt shows

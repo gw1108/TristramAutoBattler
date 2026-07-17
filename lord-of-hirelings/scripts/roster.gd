@@ -3,10 +3,13 @@ extends Node
 ## appends an entry here; the hero panel and party formation read from it in
 ## later slices. Also owns the GDD name generator: display names are
 ## "<first name> <epithet>", unique across everything the player can currently
-## see referenced — hired adventurers and recruits standing at the inn (the
-## graveyard's headstone names join the check once the graveyard exists).
+## see referenced — hired adventurers, recruits standing at the inn, and the
+## names carved on the graveyard's headstones.
 
 signal roster_changed
+## A hired adventurer died and left the roster; the graveyard listens to this
+## to raise a grave.
+signal member_died(display_name: String)
 
 ## The six adventurer classes (BalanceNumbers "Base stats per class").
 ## Recruit class is rolled uniformly from these, independently per recruit.
@@ -41,6 +44,10 @@ var members: Array[Dictionary] = []
 ## Display names currently reserved by unhired recruits standing at the inn,
 ## so two visible recruits can never share a name (GDD uniqueness rule).
 var _reserved_names := {}
+
+## Display names currently carved on graveyard headstones; the graveyard
+## records/releases these as graves are added and overwritten.
+var _grave_names := {}
 
 
 func max_size() -> int:
@@ -94,8 +101,31 @@ func add_member(display_name: String, adventurer_class: String, level: int = 1) 
 	return true
 
 
+## Removes a hired adventurer from the roster (death). Returns whether the
+## name was found. Emits member_died before roster_changed so the graveyard
+## records the grave name ahead of any reroll a roster listener might cause.
+func kill_member(display_name: String) -> bool:
+	for i in members.size():
+		if members[i]["name"] == display_name:
+			members.remove_at(i)
+			member_died.emit(display_name)
+			roster_changed.emit()
+			return true
+	return false
+
+
+## Marks a name as carved on a headstone so later rolls avoid it (GDD rule).
+func record_grave_name(display_name: String) -> void:
+	_grave_names[display_name] = true
+
+
+## Frees a headstone name when its grave is overwritten by a newer one.
+func release_grave_name(display_name: String) -> void:
+	_grave_names.erase(display_name)
+
+
 func _is_name_taken(display_name: String) -> bool:
-	if _reserved_names.has(display_name):
+	if _reserved_names.has(display_name) or _grave_names.has(display_name):
 		return true
 	for member in members:
 		if member["name"] == display_name:

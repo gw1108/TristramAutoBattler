@@ -17,8 +17,10 @@ func _ready() -> void:
 
 
 func _sync_to_roster() -> void:
+	var live := {}
 	for member in Roster.members:
 		var member_name: String = member["name"]
+		live[member_name] = true
 		if _spawned.has(member_name):
 			continue
 		var npc := HiredAdventurerScript.new() as Node2D
@@ -32,3 +34,8 @@ func _sync_to_roster() -> void:
 		npc.position += Vector2(randf_range(-24.0, 24.0), randf_range(12.0, 36.0))
 		add_child(npc)
 		_spawned[member_name] = npc
+	# Despawn wanderers whose roster entry is gone (deaths remove members).
+	for member_name in _spawned.keys():
+		if not live.has(member_name):
+			_spawned[member_name].queue_free()
+			_spawned.erase(member_name)
