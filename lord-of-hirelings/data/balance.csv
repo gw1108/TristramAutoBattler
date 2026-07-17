@@ -10,6 +10,24 @@ guard_chance_max,0.75,Max guard/block chance for any adventurer
 panic_morale_threshold,0.5,Morale fraction (of max) below which panic checks begin
 cowering_morale_restore_pct,0.2,Fraction of max morale restored after a cowering turn
 stalemate_rounds,3,Consecutive no-damage rounds before a party auto-flees
+initiative_die_sides,20,Sides of the die each combatant rolls and adds their speed to for initiative (re-rolled every round)
+death_morale_damage,2,Morale damage every surviving party member takes when a party member dies (fleeing deals none)
+battle_max_rounds,200,Safety cap on rounds in one auto battle; hitting it is a bug (real fights end by a wipe/flee/the stalemate rule)
+knight_shield_bash_guard_mult,2,Multiplier applied to the Knight's guard chance after his Shield Bash (still capped by guard_chance_max)
+knight_shield_bash_duration_turns,1,Knight turns his Shield Bash guard doubling lasts (through the end of his next turn)
+captain_horn_turn_interval,3,The Captain uses Rallying Horn on every Nth turn of his own within a battle
+captain_horn_morale,2,Morale the Rallying Horn restores to every living party member
+captain_horn_power,1,Power the Rallying Horn grants each living party member on their next attack
+captain_horn_power_duration_turns,1,Recipient turns the Rallying Horn's power buff lasts if unconsumed
+berserker_frenzy_power,1,Power the Berserker's Frenzy passive adds while he is below the frenzy HP threshold
+berserker_frenzy_hp_threshold,0.5,HP fraction below which the Berserker's Frenzy passive is active
+cleric_heal_power_bonus,1,Added to the Cleric's power to size its heal (heal = power + this; deterministic and cannot crit)
+cleric_blessing_armor,1,Armor the Cleric's Blessing grants when every living ally is already at full HP
+cleric_blessing_duration_turns,3,Turns of the target's own that the Cleric's Blessing lasts
+enemy_regeneration_hp,3,HP a regeneration enemy (the Swamp Troll) restores at the end of every round
+lich_raise_dead_count,2,Skeleton Warriors the Lich raises the first time it drops below the raise-dead HP threshold in a battle
+lich_raise_dead_hp_threshold,0.5,HP fraction the Lich must cross below (and survive) to trigger Raise Dead
+demon_prince_eruption_turn_interval,3,The Demon Prince's attack erupts across the whole party on every Nth turn of his own within a battle
 sales_commission_pct,0.1,Player's cut of adventurer purchases at player-owned shops
 sales_commission_min_gold,1,Minimum gold the player earns from a single sales commission
 tax_copy_pct,0.1,Player's tax-copy percent of adventurer gold earned in the dungeon
