@@ -13,6 +13,9 @@ signal member_died(display_name: String)
 ## Parties were (re)formed by the call to arms; the dungeon dive and the
 ## party-actions UI read the parties array when this fires.
 signal parties_formed
+## A Kick or Swap rearranged the formed parties (and spent an action); the
+## hero panel's party row redraws on this.
+signal parties_changed
 
 ## The six adventurer classes (BalanceNumbers "Base stats per class").
 ## Recruit class is rolled uniformly from these, independently per recruit.
@@ -56,6 +59,10 @@ var members: Array[Dictionary] = []
 ## summary column.
 var parties: Array[Array] = []
 
+## Party actions (Kick/Swap) spent today. The budget refills each dawn, not
+## each call to arms, so it is the day that gates the player's meddling.
+var party_actions_used: int = 0
+
 ## Display names currently reserved by unhired recruits standing at the inn,
 ## so two visible recruits can never share a name (GDD uniqueness rule).
 var _reserved_names := {}
@@ -70,6 +77,8 @@ func _ready() -> void:
 	GameState.phase_changed.connect(func(new_phase: GameState.Phase) -> void:
 		if new_phase == GameState.Phase.NIGHT:
 			clear_parties())
+	GameState.day_advanced.connect(func(_day: int) -> void:
+		party_actions_used = 0)
 
 
 func max_size() -> int:
@@ -179,6 +188,77 @@ func reserves() -> Array[Dictionary]:
 		if not drafted.has(member["name"]):
 			out.append(member)
 	return out
+
+
+## Party actions the player gets per day: 2 by default, raised to 3 once the
+## inn's War Table upgrade exists (GDD; the upgrade tree is a later slice).
+func party_actions_max() -> int:
+	return int(BalanceData.get_value("party_actions_per_day", 2.0))
+
+
+func party_actions_left() -> int:
+	return maxi(party_actions_max() - party_actions_used, 0)
+
+
+## The index into parties of the party holding [param display_name], or -1 if
+## they are a reserve (or no parties are formed).
+func party_index_of(display_name: String) -> int:
+	return _slot_of(display_name).x
+
+
+## Kick (GDD party formation): trades [param display_name] out of their party
+## for a reserve rolled uniformly, spending one party action. Returns whether
+## it happened; an action is only spent on a real swap.
+func kick(display_name: String) -> bool:
+	if party_actions_left() <= 0:
+		return false
+	var slot := _slot_of(display_name)
+	if slot.x < 0:
+		return false
+	var pool := reserves()
+	if pool.is_empty():
+		return false
+	parties[slot.x][slot.y] = pool.pick_random()
+	party_actions_used += 1
+	parties_changed.emit()
+	return true
+
+
+## Swap (GDD party formation): trades [param display_name] with a uniformly
+## rolled member of a *different* party, spending one party action. With no
+## valid target — only one non-empty party — this is a no-op that costs
+## nothing, exactly as the GDD spells out.
+func swap(display_name: String) -> bool:
+	if party_actions_left() <= 0:
+		return false
+	var slot := _slot_of(display_name)
+	if slot.x < 0:
+		return false
+	var targets: Array[Vector2i] = []
+	for i in parties.size():
+		if i == slot.x:
+			continue
+		for j in parties[i].size():
+			targets.append(Vector2i(i, j))
+	if targets.is_empty():
+		return false
+	var target: Vector2i = targets.pick_random()
+	var moved: Dictionary = parties[slot.x][slot.y]
+	parties[slot.x][slot.y] = parties[target.x][target.y]
+	parties[target.x][target.y] = moved
+	party_actions_used += 1
+	parties_changed.emit()
+	return true
+
+
+## (party index, index within that party) for [param display_name], or (-1, -1)
+## when they hold no party slot.
+func _slot_of(display_name: String) -> Vector2i:
+	for i in parties.size():
+		for j in parties[i].size():
+			if parties[i][j]["name"] == display_name:
+				return Vector2i(i, j)
+	return Vector2i(-1, -1)
 
 
 ## GDD free-fallback rule: a call to arms with an empty roster always summons

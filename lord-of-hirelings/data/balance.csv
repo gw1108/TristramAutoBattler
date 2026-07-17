@@ -77,3 +77,4 @@ dungeon_bell_town_pos_y,528,Dungeon bell Y position in the town (px; on the nort
 dungeon_bell_interact_radius,48,Distance in px within which the bell's interact prompt shows
 fallback_adventurers_min,1,Minimum free level 1 adventurers summoned by a call to arms with an empty roster (GDD anti-stuck rule)
 fallback_adventurers_max,2,Maximum free level 1 adventurers summoned by a call to arms with an empty roster
+party_actions_per_day,2,Kick/Swap actions the player may spend per day during the call to arms; the inn's War Table upgrade raises this to 3 (GDD)

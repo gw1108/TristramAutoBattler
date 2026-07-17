@@ -9,6 +9,9 @@ extends PanelContainer
 ## panel closes it; clicking another adventurer switches to them (the close
 ## runs on unhandled input, the open on physics picking, which the viewport
 ## processes afterwards).
+## During Phase.CALL_TO_ARMS a hired adventurer holding a party slot also gets
+## the GDD's extra bottom row: a "Party:" label, Kick and Swap buttons, and the
+## day's "X/Y Actions Today" budget.
 ## Variant B: left-clicking an unhired recruit at the inn opens the same
 ## panel via open_for_recruit with a "Looking for work" activity plus a hire
 ## section — class name, one-line class description, and Hire / Hire and
@@ -67,6 +70,13 @@ var _hire_class_label: Label
 var _hire_desc_label: Label
 var _hire_button: Button
 var _sponsor_button: Button
+var _party_section: VBoxContainer
+var _kick_button: Button
+var _swap_button: Button
+var _actions_label: Label
+## The roster name this panel is open for in Variant A, "" in hire mode. The
+## party row acts on this adventurer.
+var _member_name := ""
 ## The inn recruit this panel is currently open for (Variant B), or null in
 ## the plain Variant A stat view.
 var _recruit: Node
@@ -91,6 +101,7 @@ func _ready() -> void:
 	# Keep the hire buttons' enabled state honest while the panel sits open.
 	GameState.gold_changed.connect(func(_g: int) -> void: _refresh_hire_buttons())
 	Roster.roster_changed.connect(_refresh_hire_buttons)
+	Roster.parties_changed.connect(_refresh_party_row)
 
 
 ## Opens (or retargets) the panel for the roster member with this name.
@@ -98,9 +109,11 @@ func open(display_name: String) -> void:
 	for member in Roster.members:
 		if member["name"] == display_name:
 			_recruit = null
+			_member_name = display_name
 			_hire_section.hide()
 			_activity_label.text = "Wandering the town"
 			_populate(member)
+			_refresh_party_row()
 			_present()
 			return
 
@@ -110,6 +123,8 @@ func open(display_name: String) -> void:
 ## there is no Roster entry yet.
 func open_for_recruit(recruit: Node) -> void:
 	_recruit = recruit
+	_member_name = ""
+	_party_section.hide()
 	_populate({
 		"name": recruit.display_name,
 		"class": recruit.adventurer_class,
@@ -217,6 +232,28 @@ func _build() -> void:
 	_sponsor_button = _hire_button_node(COLOR_TEXT)
 	_sponsor_button.pressed.connect(_on_hire_pressed.bind(true))
 	_hire_section.add_child(_sponsor_button)
+	# Party row (GDD call to arms) — one horizontal row, hidden outside the
+	# call to arms and for reserves, who hold no party slot to act on.
+	_party_section = VBoxContainer.new()
+	_party_section.add_theme_constant_override("separation", 6)
+	_party_section.hide()
+	root.add_child(_party_section)
+	_party_section.add_child(_separator())
+	var party_row := HBoxContainer.new()
+	party_row.add_theme_constant_override("separation", 6)
+	_party_section.add_child(party_row)
+	party_row.add_child(_label("Party:", COLOR_MUTED, HORIZONTAL_ALIGNMENT_LEFT))
+	_kick_button = _hire_button_node(COLOR_TEXT)
+	_kick_button.text = "Kick"
+	_kick_button.pressed.connect(_on_party_action_pressed.bind(true))
+	party_row.add_child(_kick_button)
+	_swap_button = _hire_button_node(COLOR_TEXT)
+	_swap_button.text = "Swap"
+	_swap_button.pressed.connect(_on_party_action_pressed.bind(false))
+	party_row.add_child(_swap_button)
+	_actions_label = _label("", COLOR_MUTED, HORIZONTAL_ALIGNMENT_RIGHT)
+	_actions_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	party_row.add_child(_actions_label)
 
 
 func _populate(member: Dictionary) -> void:
@@ -273,6 +310,33 @@ func _on_hire_pressed(sponsored: bool) -> void:
 		return
 	if _recruit.hire(sponsored):
 		hide()
+
+
+func _on_party_action_pressed(is_kick: bool) -> void:
+	# Both are no-ops with nothing to act on — Swap with only one non-empty
+	# party spends no action, per the GDD.
+	if is_kick:
+		Roster.kick(_member_name)
+	else:
+		Roster.swap(_member_name)
+	# A successful action emits parties_changed, which redraws this row; a
+	# no-op leaves it exactly as it was.
+
+
+## Shows the party row only during the call to arms and only for an adventurer
+## actually holding a party slot; Kick additionally greys out with no reserves
+## to swap in, and both grey out once the day's actions are spent (GDD).
+func _refresh_party_row() -> void:
+	if _member_name.is_empty() or GameState.phase != GameState.Phase.CALL_TO_ARMS \
+			or Roster.party_index_of(_member_name) < 0:
+		_party_section.hide()
+		return
+	var actions_left := Roster.party_actions_left()
+	_actions_label.text = "%d/%d Actions Today" % [actions_left, Roster.party_actions_max()]
+	_kick_button.disabled = actions_left <= 0 or Roster.reserves().is_empty()
+	_swap_button.disabled = actions_left <= 0
+	_party_section.show()
+	reset_size()
 
 
 ## Greys the hire buttons out while the roster is full or the treasury cannot
