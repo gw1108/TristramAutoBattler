@@ -1,10 +1,11 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
 [ext_resource type="Script" path="res://scripts/town/player_lord.gd" id="3_player"]
 [ext_resource type="Texture2D" uid="uid://blps3k1g45bam" path="res://sprites/lord/lord_sheet.png" id="4_lordsheet"]
 [ext_resource type="Script" path="res://scripts/ui/town_hud.gd" id="5_hud"]
+[ext_resource type="Script" path="res://scripts/town/contact_shadow.gd" id="6_shadow"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_down0"]
 atlas = ExtResource("4_lordsheet")
@@ -142,6 +143,9 @@ color = Color(0.13, 0.15, 0.11, 1)
 
 [node name="Player" type="CharacterBody2D" parent="."]
 script = ExtResource("3_player")
+
+[node name="ContactShadow" type="Node2D" parent="Player"]
+script = ExtResource("6_shadow")
 
 [node name="Sprite" type="AnimatedSprite2D" parent="Player"]
 offset = Vector2(0, -24)

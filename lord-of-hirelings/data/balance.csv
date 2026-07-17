@@ -18,3 +18,6 @@ town_map_width,1920,Bounded town map width in px (player and camera clamp)
 town_map_height,1080,Bounded town map height in px (player and camera clamp)
 player_sprite_scale,1,Uniform scale of the Lord sprite (keep integer for pixel crispness)
 player_walk_anim_fps,8,Frames per second of the Lord walk animation
+contact_shadow_radius_x,12,Contact-shadow ellipse horizontal radius under characters (px)
+contact_shadow_radius_y,4,Contact-shadow ellipse vertical radius under characters (px)
+contact_shadow_opacity,0.35,Total opacity of the contact-shadow ellipse (0-1)
