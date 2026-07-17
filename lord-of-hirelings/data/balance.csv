@@ -61,3 +61,14 @@ hired_idle_max_sec,4,Maximum pause between a hired adventurer's wander legs (sec
 hired_wander_step_px,160,Maximum length of one hired-adventurer wander leg (px)
 hired_wander_margin_x,480,Horizontal margin from the town-map edges that hired adventurers stay inside (keeps them in the built-up center)
 hired_wander_margin_y,320,Vertical margin from the town-map edges that hired adventurers stay inside
+growth_hp_per_level,2,HP gained per adventurer level after 1 (BalanceNumbers growth)
+growth_hp_per_level_knight,3,Knight's HP gained per level after 1 (grows tougher than the rest)
+growth_power_per_2_levels,1,Power gained on each even adventurer level
+growth_evasion_accuracy_per_level,12,Evasion and accuracy rating gained per adventurer level after 1
+growth_morale_per_2_levels,1,Max morale gained on each odd adventurer level after 1
+hit_formula_accuracy_mult,1.25,Accuracy multiplier in the hit-chance formula (drives displayed accuracy/evasion %)
+hit_formula_evasion_weight,0.3,Evasion weight in the hit-chance formula denominator
+ref_grunt_accuracy_per_level,40,Reference-grunt accuracy per dungeon level (displayed-% formulas: 40R + base)
+ref_grunt_accuracy_base,60,Reference-grunt accuracy base term (displayed-% formulas)
+ref_grunt_evasion_per_level,40,Reference-grunt evasion per dungeon level (displayed-% formulas: 40R + base)
+ref_grunt_evasion_base,20,Reference-grunt evasion base term (displayed-% formulas)

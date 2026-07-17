@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3]
+[gd_scene load_steps=39 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://scripts/town/rebuildable_building.gd" id="12_building"]
 [ext_resource type="Script" path="res://scripts/town/graveyard.gd" id="16_graveyard"]
 [ext_resource type="Script" path="res://scripts/town/hired_adventurer_spawner.gd" id="17_hired"]
+[ext_resource type="Script" path="res://scripts/ui/hero_panel.gd" id="18_heropanel"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
 texture = ExtResource("7_groundtiles")
@@ -351,3 +352,7 @@ theme_override_constants/shadow_offset_y = 2
 theme_override_fonts/font = ExtResource("2_body")
 theme_override_font_sizes/font_size = 16
 text = "Gold: 0"
+
+[node name="HeroPanel" type="PanelContainer" parent="HUD"]
+visible = false
+script = ExtResource("18_heropanel")

@@ -4,7 +4,8 @@ extends CharacterBody2D
 ## hired_adventurer_spawner.gd. Wander is a simple idle/walk drift: pause,
 ## pick a nearby point inside the town's built-up bounds, walk there, repeat.
 ## Collides with buildings (mask) but sits on no layer itself, so it never
-## blocks the player. The left-click hero panel comes in a later slice.
+## blocks the player. Left-clicking the sprite opens the hero panel (mouse
+## only — no keyboard interact required).
 
 const ContactShadowScript := preload("res://scripts/town/contact_shadow.gd")
 
@@ -22,6 +23,11 @@ const CLASS_VARIANTS := {
 
 ## Matches the Lord's collider so both characters hug buildings identically.
 const COLLIDER_RADIUS := 7.0
+
+## Layer the click-pick Area2D sits on. Physics picking ignores objects with
+## no layer, so it needs one — this bit is masked by nothing, so the area
+## never collides with anything.
+const CLICK_PICK_LAYER := 1 << 7
 
 ## Progress below this fraction of full speed counts as stuck against a wall.
 const STUCK_PROGRESS_FRACTION := 0.25
@@ -75,6 +81,20 @@ func _ready() -> void:
 	shape.shape = circle
 	shape.position = Vector2(0, -COLLIDER_RADIUS)
 	add_child(shape)
+	# Left-click-to-inspect: a pickable Area2D sized to the whole sprite gives
+	# a far bigger click target than the feet collider.
+	var click_area := Area2D.new()
+	click_area.collision_layer = CLICK_PICK_LAYER
+	click_area.collision_mask = 0
+	click_area.input_pickable = true
+	var click_shape := CollisionShape2D.new()
+	var click_rect := RectangleShape2D.new()
+	click_rect.size = Vector2(SHEET_CELL_PX, SHEET_CELL_PX) * sprite_scale
+	click_shape.shape = click_rect
+	click_shape.position = Vector2(0.0, -SHEET_CELL_PX * sprite_scale / 2.0)
+	click_area.add_child(click_shape)
+	click_area.input_event.connect(_on_click_area_input)
+	add_child(click_area)
 	_start_idle()
 
 
@@ -101,6 +121,14 @@ func _physics_process(delta: float) -> void:
 			_start_idle()
 	else:
 		_stuck_time = 0.0
+
+
+func _on_click_area_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton \
+			and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var panel := get_tree().get_first_node_in_group("hero_panel")
+		if panel != null:
+			panel.open(display_name)
 
 
 func _start_idle() -> void:
