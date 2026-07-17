@@ -1,0 +1,18 @@
+id,display_name,dungeon,archetype,stock_grunt,hp_delta,power_delta,speed_delta,signature
+slime,Slime,1,grunt,0,-3,-1,-1,
+wolf,Wolf,1,grunt,1,-1,0,2,
+bandit,Bandit,1,grunt,1,0,0,0,
+hedge_witch,Hedge Witch,1,caster,0,0,0,0,
+bandit_king,Bandit King,1,boss,0,0,0,0,cheap_shot
+lizardfolk_raider,Lizardfolk Raider,2,grunt,1,0,0,0,
+giant_leech,Giant Leech,2,grunt,1,2,0,-2,lifesteal
+bog_witch,Bog Witch,2,caster,0,0,0,0,
+swamp_troll,Swamp Troll,2,boss,0,0,0,0,regeneration
+skeleton_warrior,Skeleton Warrior,3,grunt,1,0,0,0,
+zombie,Zombie,3,grunt,1,6,0,-2,
+necromancer,Necromancer,3,caster,0,0,0,0,
+lich,The Lich,3,boss,0,0,0,0,raise_dead
+imp,Imp,4,grunt,1,-6,0,2,
+demon_soldier,Demon Soldier,4,grunt,1,0,0,0,
+flamecaller,Flamecaller,4,caster,0,0,0,0,
+demon_prince,Demon Prince,4,boss,0,0,0,0,eruption
