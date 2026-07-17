@@ -83,8 +83,10 @@ Every enemy needs **two poses: idle and attack**. 17 enemies × 2 poses = 34 dra
 | Dungeon biome backdrop — lvl 4 Volcanic Hellscape | Same usage. | Volcanic caverns with rivers of lava, basalt spikes, ember rain, red-orange glow. | Full | [x] |
 
 All four biomes are `SourceArt/tools/generate_biome_backdrops.py`, one 320x128 tileable scene each, written out as two crops: `biome_<name>_header.png` (320x64) is live in the expedition summary's party columns; `biome_<name>_row.png` (320x128) is the dive-row backdrop, made and imported but not yet drawn — the dive scene does not exist yet.
-| Stairs down | Revealed when a level's boss dies (visual only — never descended). | Stone stairway descending into darkness, fitted to each biome or one neutral version with biome tint. | MVP | [ ] |
-| Fog of war treatment | Hides the unexplored right side of each dungeon row. | Soft-edged darkness rolling back as the party advances. Can be a shader/gradient; optional pixel-noise edge texture to keep it in style. | MVP (gradient), Later (styled edge) | [ ] |
+| Stairs down | Revealed when a level's boss dies (visual only — never descended). | Stone stairway descending into darkness, fitted to each biome or one neutral version with biome tint. | MVP | [x] `sprites/dungeon/stairs_down.png` |
+| Fog of war treatment | Hides the unexplored right side of each dungeon row. | Soft-edged darkness rolling back as the party advances. Can be a shader/gradient; optional pixel-noise edge texture to keep it in style. | MVP (gradient), Later (styled edge) | [x] `sprites/dungeon/fog_of_war_edge.png` (MVP gradient; styled edge still Later) |
+
+Both are `SourceArt\tools\generate_dive_row_overlays.py`. `fog_of_war_edge.png` is 80x128: a 64px alpha ramp to `#101014` plus a 16px solid tail the consumer repeats or stretches out to the row's right edge. Every column is uniform in y, so it takes any row height (the dive splits the screen into up to 3 equal rows) without distortion. `stairs_down.png` is one neutral 64x48 stairway, biome-tinted via `modulate` — the tint values are in the generator's `BIOME_TINTS` and belong in `data/balance.csv` when the dive scene wires them up. Both are made and imported but not yet placed: the dive scene does not exist yet.
 
 ## 4. UI — panels, buttons, chrome
 
