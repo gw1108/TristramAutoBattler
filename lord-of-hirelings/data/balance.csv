@@ -28,3 +28,9 @@ rooster_town_pos_x,1056,Rooster interactable X position in the town (px)
 rooster_town_pos_y,444,Rooster interactable Y position in the town (px)
 rooster_interact_radius,40,Distance in px within which the rooster's interact prompt shows
 rooster_crow_cooldown_sec,5,Seconds after a crow before the rooster can crow again (stand-in until the expedition/night cycle exists)
+recruits_per_day_min,1,Minimum hireable recruits appearing at the inn each day
+recruits_per_day_max,3,Maximum hireable recruits appearing at the inn each day
+recruit_spawn_center_x,860,Center X of the recruit spawn row in front of the inn (px)
+recruit_spawn_center_y,560,Center Y of the recruit spawn row in front of the inn (px)
+recruit_spawn_spacing_px,28,Horizontal spacing between spawned recruits (px)
+recruit_spawn_jitter_y_px,8,Max vertical jitter applied to each spawned recruit (px)

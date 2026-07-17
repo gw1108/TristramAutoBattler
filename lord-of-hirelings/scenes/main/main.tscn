@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/town/rooster.gd" id="8_rooster"]
 [ext_resource type="Script" path="res://scripts/town/inn.gd" id="9_inn"]
 [ext_resource type="Texture2D" uid="uid://dvo7fjhahrkxw" path="res://sprites/town/inn_lv1.png" id="10_innsprite"]
+[ext_resource type="Script" path="res://scripts/town/recruit_spawner.gd" id="11_recruits"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
 texture = ExtResource("7_groundtiles")
@@ -185,6 +186,10 @@ texture = ExtResource("10_innsprite")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Inn"]
 position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_inn")
+
+[node name="RecruitSpawner" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("11_recruits")
 
 [node name="Rooster" type="Area2D" parent="."]
 script = ExtResource("8_rooster")
