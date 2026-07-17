@@ -23,7 +23,7 @@ const SAVE_PATH := "user://campaign.save"
 ## Bumped when the layout below changes shape. An older file is discarded rather
 ## than migrated: the game has one autosave and losing it costs a day, not a
 ## campaign's worth of slots.
-const SAVE_VERSION := 1
+const SAVE_VERSION := 2
 
 ## The two autosave moments (GDD "Saving"), stored so a resume knows which of
 ## the two it is picking up and Manage Save can name it.
@@ -143,7 +143,7 @@ func _town_state() -> Dictionary:
 		"unlocked_dungeon_level": GameState.unlocked_dungeon_level,
 		"game_won": GameState.game_won,
 		"endless_tier": GameState.endless_tier,
-		"building_states": GameState.building_states.duplicate(),
+		"building_levels": GameState.building_levels.duplicate(),
 		"members": _members_for_save(),
 		"party_actions_used": Roster.party_actions_used,
 		"graveyard": graveyard.save_state() if graveyard != null else {},
@@ -161,7 +161,7 @@ func _load_town(town: Dictionary) -> void:
 		int(town.get("unlocked_dungeon_level", 1)), 1, Expedition.MAX_DUNGEON_LEVEL)
 	GameState.game_won = bool(town.get("game_won", false))
 	GameState.endless_tier = maxi(int(town.get("endless_tier", 0)), 0)
-	GameState.building_states = _loaded_building_states(town.get("building_states", {}))
+	GameState.building_levels = _loaded_building_levels(town.get("building_levels", {}))
 	Roster.members = _loaded_members(town.get("members", []))
 	Roster.party_actions_used = maxi(int(town.get("party_actions_used", 0)), 0)
 	pending_graveyard = town.get("graveyard", {})
@@ -208,10 +208,11 @@ func _loaded_members(saved: Array) -> Array[Dictionary]:
 	return out
 
 
-func _loaded_building_states(saved: Dictionary) -> Dictionary:
+func _loaded_building_levels(saved: Dictionary) -> Dictionary:
 	var out := {}
 	for building_id in saved:
-		out[String(building_id)] = int(saved[building_id]) as GameState.BuildingState
+		out[String(building_id)] = clampi(
+			int(saved[building_id]), 0, GameState.MAX_BUILDING_LEVEL)
 	return out
 
 

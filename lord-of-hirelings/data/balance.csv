@@ -2,6 +2,9 @@ id,value,notes
 player_starting_gold,19,Player treasury at campaign start
 building_rebuild_cost,10,Gold cost to rebuild a ruined building
 building_upgrade_l1_to_l2_cost,40,Gold cost to upgrade a building from level 1 to level 2
+building_upgrade_l2_to_l3_cost,100,Gold cost to upgrade a building from level 2 to level 3
+building_upgrade_l3_to_l4_cost,250,Gold cost to upgrade a building from level 3 to level 4
+building_upgrade_l4_to_l5_cost,625,Gold cost to upgrade a building from level 4 to level 5
 party_actions_per_day_base,2,Base Kick/Swap actions per day before War Table
 party_actions_per_day_war_table,3,Kick/Swap actions per day after purchasing War Table
 dungeon_turn_duration_sec,0.6,Seconds per character turn in the auto battle
@@ -52,15 +55,19 @@ inn_town_pos_y,512,Inn building Y position in the town (px; bottom-center pivot)
 weapon_shop_town_pos_x,1072,Weapon shop X position in the town (px; bottom-center pivot)
 weapon_shop_town_pos_y,712,Weapon shop Y position in the town (px; bottom-center pivot)
 weapon_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+weapon_shop_max_offered_level,3,Highest level the player may buy the weapon shop up to (3 stocks every tier; raise to 5 when the shop-wide gear lines land)
 armor_shop_town_pos_x,848,Armor shop X position in the town (px; bottom-center pivot; SW quadrant of the path junction)
 armor_shop_town_pos_y,712,Armor shop Y position in the town (px; bottom-center pivot)
 armor_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+armor_shop_max_offered_level,3,Highest level the player may buy the armor shop up to (3 stocks every tier; raise to 5 when the shop-wide gear lines land)
 jewelry_shop_town_pos_x,1280,Jewelry shop X position in the town (px; bottom-center pivot; north side of the east path arm, past the rooster)
 jewelry_shop_town_pos_y,512,Jewelry shop Y position in the town (px; bottom-center pivot)
 jewelry_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+jewelry_shop_max_offered_level,3,Highest level the player may buy the jewelry shop up to (3 stocks every tier; raise to 5 when the shop-wide gear lines land)
 training_grounds_town_pos_x,624,Training grounds X position in the town (px; bottom-center pivot; north side of the west path arm, west of the Inn)
 training_grounds_town_pos_y,512,Training grounds Y position in the town (px; bottom-center pivot)
 training_grounds_interact_radius,80,Distance in px from the yard's base within which the rebuild prompt shows (wider than the shops — the yard is 160px wide)
+training_grounds_max_offered_level,1,Highest level the player may buy the training grounds up to (1 = rebuild only; its levels unlock its own upgrade trees, which do not exist yet)
 graveyard_town_pos_x,608,Graveyard plot X position in the town (px; bottom-center pivot; south side of the west path arm, across from the Training grounds)
 graveyard_town_pos_y,712,Graveyard plot Y position in the town (px; bottom-center pivot; base aligned with the south-side shops)
 graveyard_name_reveal_radius,96,Distance in px from a grave within which the Lord reveals that headstone's name label (nearest grave only)

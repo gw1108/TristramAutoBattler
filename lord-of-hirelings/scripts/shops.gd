@@ -22,7 +22,7 @@ func _ready() -> void:
 	# with sponsored gold, a new day, and nightfall — which is when the
 	# expedition has just paid the survivors their purses and the GDD has them
 	# "head to the shops first" before bed.
-	GameState.building_state_changed.connect(func(_id: String, _state: GameState.BuildingState) -> void:
+	GameState.building_level_changed.connect(func(_id: String, _level: int) -> void:
 		run_purchases())
 	GameState.day_advanced.connect(func(_day: int) -> void: run_purchases())
 	GameState.phase_changed.connect(func(new_phase: GameState.Phase) -> void:
@@ -31,16 +31,16 @@ func _ready() -> void:
 	Roster.roster_changed.connect(run_purchases)
 
 
-## The level of the shop selling [param slot]: 0 while it is a ruin, 1 once it
-## has been rebuilt. Building levels 2-5 are a later slice — GameState tracks
-## only RUINED/BUILT today — and a rebuilt shop is level 1, which is what
-## stocks tiers 1-2 with no further investment (GDD: "every rebuild
-## immediately does something").
+## The level of the shop selling [param slot]: 0 while it is a ruin, then
+## whatever the player has paid the building up to. The rebuild buys level 1,
+## which stocks tiers 1-2 with no further investment (GDD: "every rebuild
+## immediately does something"), and each level bought at the building's own
+## prompt opens more of the ladder — see Items.stocked_max_tier.
 func shop_level(slot: String) -> int:
 	var building_id: String = Items.SLOT_BUILDINGS.get(slot, "")
 	if building_id.is_empty():
 		return 0
-	return 1 if GameState.is_building_built(building_id) else 0
+	return GameState.building_level(building_id)
 
 
 ## The player's cut of one sale (GDD "Economy"): 10% of the vendor's revenue,
