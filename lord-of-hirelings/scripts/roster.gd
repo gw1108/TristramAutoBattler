@@ -50,7 +50,9 @@ const PARTY_COUNT := 3
 const PARTY_MAX_SIZE := 3
 
 ## Hired adventurers, in hire order. Each entry:
-## { "name": String, "class": String, "level": int, "gold": int }
+## { "name": String, "class": String, "level": int, "gold": int, "xp": int }
+## `xp` is progress toward the next level only — the expedition summary spends
+## it on level-ups and writes back the remainder (BalanceNumbers growth).
 var members: Array[Dictionary] = []
 
 ## The expedition parties formed at the call to arms: PARTY_COUNT arrays of
@@ -130,6 +132,7 @@ func add_member(display_name: String, adventurer_class: String, level: int = 1, 
 		"class": adventurer_class,
 		"level": level,
 		"gold": gold,
+		"xp": 0,
 	})
 	roster_changed.emit()
 	return true

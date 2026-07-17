@@ -84,6 +84,7 @@ growth_hp_per_level_knight,3,Knight's HP gained per level after 1 (grows tougher
 growth_power_per_2_levels,1,Power gained on each even adventurer level
 growth_evasion_accuracy_per_level,12,Evasion and accuracy rating gained per adventurer level after 1
 growth_morale_per_2_levels,1,Max morale gained on each odd adventurer level after 1
+growth_xp_per_level_step,8,XP to reach the next adventurer level, multiplied by the current level (1->2 costs 8, 2->3 costs 16); levels are applied at the expedition summary
 hit_formula_accuracy_mult,1.25,Accuracy multiplier in the hit-chance formula (drives displayed accuracy/evasion %)
 hit_formula_evasion_weight,0.3,Evasion weight in the hit-chance formula denominator
 enemy_hp_growth,1.6,Multiplier applied to every enemy archetype's base HP per dungeon level (round(base * 1.6^(N-1)))

@@ -6,13 +6,14 @@ extends RefCounted
 ## whole fight is decided up front and returned as an ordered event list that
 ## the dive scene replays at the doc's 0.6s per turn.
 ##
-##     var result := Battle.resolve(Roster.parties[0], ["slime", "slime"], rng)
+##     var result := Battle.resolve(Roster.parties[0], fight["enemies"], rng)
 ##     result["outcome"]     # "victory" | "defeat" | "stalemate"
 ##     result["events"]      # ordered dicts, each with a "type" key (see below)
 ##     result["combatants"]  # every fighter's final hp/morale/alive/fled state
 ##
-## `party` takes Roster member dicts ({name, class, level}); `enemy_variants`
-## takes bestiary ids (EnemyStats). Ids in events index into `combatants`.
+## `party` takes Roster member dicts ({name, class, level}), optionally carrying
+## "hp"/"morale" in from the previous fight of a dive; `enemies` takes Encounters
+## specs (or bare bestiary ids). Ids in events index into `combatants`.
 ##
 ## Event types, in the order one round produces them: round_start, then per turn
 ## turn_start, (panic, cower | flee), (attack, attack_result... | ability |
@@ -56,17 +57,17 @@ var _current_actor := -1
 ## Resolve one battle and return {outcome, rounds, events, combatants}.
 static func resolve(
 		party: Array,
-		enemy_variants: Array,
+		enemies: Array,
 		rng: RandomNumberGenerator) -> Dictionary:
-	return Battle.new().run(party, enemy_variants, rng)
+	return Battle.new().run(party, enemies, rng)
 
 
-func run(party: Array, enemy_variants: Array, rng: RandomNumberGenerator) -> Dictionary:
+func run(party: Array, enemies: Array, rng: RandomNumberGenerator) -> Dictionary:
 	_rng = rng
 	for member in party:
 		_add_adventurer(member)
-	for variant in enemy_variants:
-		_add_enemy(variant, false)
+	for spec in enemies:
+		_add_enemy(spec, false)
 	_emit("battle_start", {"party": _ids(PARTY_SIDE), "enemies": _ids(ENEMY_SIDE)})
 	if not _check_outcome():
 		# A real fight is ended by a wipe, a flee, or the stalemate rule. The
@@ -520,6 +521,9 @@ func _check_outcome() -> bool:
 	return false
 
 
+## Optional "hp"/"morale" on the member dict carry a dive's attrition in from the
+## previous fight; without them the adventurer enters at full, which is what
+## healing to full outside the dungeon means (BalanceNumbers "Core rules").
 func _add_adventurer(member: Dictionary) -> int:
 	var adventurer_class: String = member.get("class", "")
 	var level := maxi(int(member.get("level", 1)), 1)
@@ -537,16 +541,26 @@ func _add_adventurer(member: Dictionary) -> int:
 		"archetype": "",
 		"signature": "",
 		"minion": false,
+		"trait": "",
+		"gold_mult": 1,
 		"level": level,
 		"stats": stats,
-		"hp": hp, "max_hp": hp,
-		"morale": morale, "max_morale": morale,
+		"hp": clampi(int(member.get("hp", hp)), 0, hp), "max_hp": hp,
+		"morale": clampi(int(member.get("morale", morale)), 0, morale),
+		"max_morale": morale,
 		"raise_dead_armed": false,
 	})
 
 
-func _add_enemy(variant_id: String, minion: bool) -> int:
-	var stats := EnemyStats.stats_for(variant_id)
+## [param spec] is an Encounters enemy spec — {variant, archetype, trait,
+## gold_mult, stats}, with any gold trait already folded into its stats — or a
+## bare bestiary id, which is that enemy untraited (what a summon is). The trait
+## rides along untouched by the fight: it is the rewards layer that spends it.
+func _add_enemy(spec: Variant, minion: bool) -> int:
+	var enemy: Dictionary = spec if spec is Dictionary else {"variant": spec}
+	var variant_id: String = enemy.get("variant", "")
+	var stats: Dictionary = enemy["stats"].duplicate() \
+			if enemy.has("stats") else EnemyStats.stats_for(variant_id)
 	if stats.is_empty():
 		push_error("Battle: unknown enemy variant '%s'" % variant_id)
 		return -1
@@ -560,6 +574,9 @@ func _add_enemy(variant_id: String, minion: bool) -> int:
 		"archetype": EnemyStats.archetype_of(variant_id),
 		"signature": signature,
 		"minion": minion,
+		"trait": enemy.get("trait", ""),
+		# Minions never drop gold, so they never carry a multiplier either.
+		"gold_mult": 1 if minion else int(enemy.get("gold_mult", 1)),
 		"level": EnemyStats.dungeon_of(variant_id),
 		"stats": stats,
 		"hp": hp, "max_hp": hp,
