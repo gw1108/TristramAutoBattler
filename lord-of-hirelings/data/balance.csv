@@ -90,7 +90,7 @@ growth_hp_per_level,2,HP gained per adventurer level after 1 (BalanceNumbers gro
 growth_hp_per_level_knight,3,Knight's HP gained per level after 1 (grows tougher than the rest)
 growth_power_per_2_levels,1,Power gained on each even adventurer level
 growth_evasion_accuracy_per_level,12,Evasion and accuracy rating gained per adventurer level after 1
-growth_morale_per_2_levels,1,Max morale gained on each odd adventurer level after 1
+growth_morale_per_2_levels,2,Max morale gained on each odd adventurer level after 1; 2 rather than 1 so that levelling buys morale resilience at the rate the deeper dungeons drain it
 growth_xp_per_level_step,8,XP to reach the next adventurer level, multiplied by the current level (1->2 costs 8, 2->3 costs 16); levels are applied at the expedition summary
 hit_formula_accuracy_mult,1.25,Accuracy multiplier in the hit-chance formula (drives displayed accuracy/evasion %)
 hit_formula_evasion_weight,0.3,Evasion weight in the hit-chance formula denominator
@@ -113,7 +113,7 @@ enemy_accuracy_per_level,40,Accuracy rating every enemy archetype gains per dung
 enemy_grunt_accuracy_base,60,Grunt accuracy base term; also the reference grunt the hero panel's displayed accuracy % is measured against
 enemy_caster_accuracy_base,60,Caster accuracy base term (matches the grunt)
 enemy_boss_accuracy_base,70,Boss accuracy base term
-enemy_morale_damage_per_level,1,Morale damage every enemy archetype deals per dungeon level on each landed hit (morale dmg = this * N; rounded once when the hit lands)
+enemy_morale_damage_per_level,0.5,Morale damage every enemy archetype deals per dungeon level on each landed hit (morale dmg = this * N; rounded once when the hit lands). Half a point per level because a dungeon fields ~N enemies each hitting for N: at 1.0 the morale drain grew as N^2 and no party level could outrun it
 enemy_morale_damage_boss_bonus,1,Extra morale damage a boss deals on each landed hit, on top of its per-level term
 enemy_xp_growth,1.8,Multiplier applied to every enemy archetype's base XP per dungeon level (round(base * 1.8^(N-1)))
 enemy_grunt_xp_base,1,XP a dungeon level 1 grunt awards each living party member; the unit the whole XP curve is denominated in
