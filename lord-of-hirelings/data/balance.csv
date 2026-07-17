@@ -1,0 +1,15 @@
+id,value,notes
+player_starting_gold,19,Player treasury at campaign start
+building_rebuild_cost,10,Gold cost to rebuild a ruined building
+building_upgrade_l1_to_l2_cost,40,Gold cost to upgrade a building from level 1 to level 2
+party_actions_per_day_base,2,Base Kick/Swap actions per day before War Table
+party_actions_per_day_war_table,3,Kick/Swap actions per day after purchasing War Table
+dungeon_turn_duration_sec,0.6,Seconds per character turn in the auto battle
+crit_damage_bonus_default,0.5,Default crit damage bonus (crit deals 1x + this multiplier)
+guard_chance_max,0.75,Max guard/block chance for any adventurer
+panic_morale_threshold,0.5,Morale fraction (of max) below which panic checks begin
+cowering_morale_restore_pct,0.2,Fraction of max morale restored after a cowering turn
+stalemate_rounds,3,Consecutive no-damage rounds before a party auto-flees
+sales_commission_pct,0.1,Player's cut of adventurer purchases at player-owned shops
+sales_commission_min_gold,1,Minimum gold the player earns from a single sales commission
+tax_copy_pct,0.1,Player's tax-copy percent of adventurer gold earned in the dungeon
