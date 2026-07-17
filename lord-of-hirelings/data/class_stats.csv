@@ -1,0 +1,7 @@
+class,hp,hp_regen,power,speed,armor,guard_pct,evasion,accuracy,crit_pct,crit_dmg_pct,max_morale,morale_regen
+Knight,14,1,2,3,2,25,120,100,5,50,12,1
+Captain,12,1,3,4,1,10,150,100,5,50,12,2
+Berserker,12,1,5,5,0,0,100,100,15,50,10,1
+Mage,6,0,2,4,0,0,80,110,5,50,8,1
+Rogue,10,0,4,7,0,5,180,110,20,75,9,1
+Cleric,10,1,2,6,1,10,110,100,0,0,11,2

@@ -13,3 +13,71 @@ stalemate_rounds,3,Consecutive no-damage rounds before a party auto-flees
 sales_commission_pct,0.1,Player's cut of adventurer purchases at player-owned shops
 sales_commission_min_gold,1,Minimum gold the player earns from a single sales commission
 tax_copy_pct,0.1,Player's tax-copy percent of adventurer gold earned in the dungeon
+player_move_speed,150,Lord top-down move speed in the town (px/sec)
+town_map_width,1920,Bounded town map width in px (player and camera clamp)
+town_map_height,1080,Bounded town map height in px (player and camera clamp)
+player_sprite_scale,1,Uniform scale of the Lord sprite (keep integer for pixel crispness)
+player_walk_anim_fps,8,Frames per second of the Lord walk animation
+contact_shadow_radius_x,16,Contact-shadow ellipse horizontal radius under characters (px; visual QA: 12 hid entirely behind 48px recruits' boots)
+contact_shadow_radius_y,5,Contact-shadow ellipse vertical radius under characters (px)
+contact_shadow_opacity,0.55,Total opacity of the contact-shadow ellipse (0-1; visual QA: 0.35 was invisible at 1x on the dirt path)
+town_path_width_tiles,3,Width in 16px tiles of the dirt paths crossing the town ground
+inn_town_pos_x,848,Inn building X position in the town (px; bottom-center pivot)
+inn_town_pos_y,512,Inn building Y position in the town (px; bottom-center pivot)
+weapon_shop_town_pos_x,1072,Weapon shop X position in the town (px; bottom-center pivot)
+weapon_shop_town_pos_y,712,Weapon shop Y position in the town (px; bottom-center pivot)
+weapon_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+armor_shop_town_pos_x,848,Armor shop X position in the town (px; bottom-center pivot; SW quadrant of the path junction)
+armor_shop_town_pos_y,712,Armor shop Y position in the town (px; bottom-center pivot)
+armor_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+jewelry_shop_town_pos_x,1280,Jewelry shop X position in the town (px; bottom-center pivot; north side of the east path arm, past the rooster)
+jewelry_shop_town_pos_y,512,Jewelry shop Y position in the town (px; bottom-center pivot)
+jewelry_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+training_grounds_town_pos_x,624,Training grounds X position in the town (px; bottom-center pivot; north side of the west path arm, west of the Inn)
+training_grounds_town_pos_y,512,Training grounds Y position in the town (px; bottom-center pivot)
+training_grounds_interact_radius,80,Distance in px from the yard's base within which the rebuild prompt shows (wider than the shops — the yard is 160px wide)
+graveyard_town_pos_x,608,Graveyard plot X position in the town (px; bottom-center pivot; south side of the west path arm, across from the Training grounds)
+graveyard_town_pos_y,712,Graveyard plot Y position in the town (px; bottom-center pivot; base aligned with the south-side shops)
+graveyard_name_reveal_radius,96,Distance in px from a grave within which the Lord reveals that headstone's name label (nearest grave only)
+rooster_town_pos_x,1056,Rooster interactable X position in the town (px)
+rooster_town_pos_y,444,Rooster interactable Y position in the town (px)
+rooster_interact_radius,40,Distance in px within which the rooster's interact prompt shows
+rooster_crow_cooldown_sec,5,Seconds after a crow before the rooster can crow again (paces repeat crows while dev_force_night is on)
+dev_force_night,0,Dev toggle: 1 treats the world as always night so the rooster stays usable; no longer needed now that entering the dungeon returns the world to night
+recruits_per_day_min,1,Minimum hireable recruits appearing at the inn each day
+recruits_per_day_max,3,Maximum hireable recruits appearing at the inn each day
+recruit_spawn_center_x,860,Center X of the recruit spawn row in front of the inn (px)
+recruit_spawn_center_y,560,Center Y of the recruit spawn row in front of the inn (px)
+recruit_spawn_spacing_px,52,Horizontal spacing between spawned recruits (px; visual QA at 1x: at 44 adjacent 48px sprites' weapons/shields touched and same-class pairs read as one blob)
+recruit_spawn_jitter_y_px,8,Max vertical jitter applied to each spawned recruit (px)
+recruit_hire_cost_min,7,Minimum level-1 recruit base hire cost in gold (GDD: randint(7 9))
+recruit_hire_cost_max,9,Maximum level-1 recruit base hire cost in gold (GDD: randint(7 9))
+recruit_interact_radius,40,Distance in px within which a recruit's hire prompt shows
+recruit_sprite_scale,1,Uniform scale of recruit sprites (keep integer for pixel crispness)
+roster_max_size,100,Hard cap on hired adventurers; hiring is disabled at the cap (GDD economy)
+hired_move_speed,60,Hired adventurer wander speed in the town (px/sec; slower than the Lord so they read as ambling)
+hired_idle_min_sec,1,Minimum pause between a hired adventurer's wander legs (sec)
+hired_idle_max_sec,4,Maximum pause between a hired adventurer's wander legs (sec)
+hired_wander_step_px,160,Maximum length of one hired-adventurer wander leg (px)
+hired_wander_margin_x,480,Horizontal margin from the town-map edges that hired adventurers stay inside (keeps them in the built-up center)
+hired_wander_margin_y,320,Vertical margin from the town-map edges that hired adventurers stay inside
+growth_hp_per_level,2,HP gained per adventurer level after 1 (BalanceNumbers growth)
+growth_hp_per_level_knight,3,Knight's HP gained per level after 1 (grows tougher than the rest)
+growth_power_per_2_levels,1,Power gained on each even adventurer level
+growth_evasion_accuracy_per_level,12,Evasion and accuracy rating gained per adventurer level after 1
+growth_morale_per_2_levels,1,Max morale gained on each odd adventurer level after 1
+hit_formula_accuracy_mult,1.25,Accuracy multiplier in the hit-chance formula (drives displayed accuracy/evasion %)
+hit_formula_evasion_weight,0.3,Evasion weight in the hit-chance formula denominator
+ref_grunt_accuracy_per_level,40,Reference-grunt accuracy per dungeon level (displayed-% formulas: 40R + base)
+ref_grunt_accuracy_base,60,Reference-grunt accuracy base term (displayed-% formulas)
+ref_grunt_evasion_per_level,40,Reference-grunt evasion per dungeon level (displayed-% formulas: 40R + base)
+ref_grunt_evasion_base,20,Reference-grunt evasion base term (displayed-% formulas)
+dungeon_bell_town_pos_x,1808,Dungeon bell X position in the town (px; by the east map edge where the mine portal will stand)
+dungeon_bell_town_pos_y,528,Dungeon bell Y position in the town (px; on the north lip of the east path arm)
+dungeon_bell_interact_radius,48,Distance in px within which the bell's interact prompt shows
+dungeon_entrance_town_pos_x,1872,Dungeon entrance (mine mouth) X position in the town (px; bottom-center pivot; the east map edge past the bell)
+dungeon_entrance_town_pos_y,592,Dungeon entrance (mine mouth) Y position in the town (px; bottom-center pivot; south of the bell on the east path arm)
+dungeon_entrance_interact_radius,48,Distance in px within which the dungeon entrance's interact prompt shows
+fallback_adventurers_min,1,Minimum free level 1 adventurers summoned by a call to arms with an empty roster (GDD anti-stuck rule)
+fallback_adventurers_max,2,Maximum free level 1 adventurers summoned by a call to arms with an empty roster
+party_actions_per_day,2,Kick/Swap actions the player may spend per day during the call to arms; the inn's War Table upgrade raises this to 3 (GDD)

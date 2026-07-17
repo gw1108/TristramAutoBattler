@@ -1,3 +1,406 @@
-[gd_scene format=3]
+[gd_scene load_steps=43 format=3]
+
+[ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
+[ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
+[ext_resource type="Script" path="res://scripts/town/player_lord.gd" id="3_player"]
+[ext_resource type="Texture2D" uid="uid://blps3k1g45bam" path="res://sprites/lord/lord_sheet.png" id="4_lordsheet"]
+[ext_resource type="Script" path="res://scripts/ui/town_hud.gd" id="5_hud"]
+[ext_resource type="Script" path="res://scripts/town/contact_shadow.gd" id="6_shadow"]
+[ext_resource type="Texture2D" uid="uid://oj0sb3kepsdu" path="res://sprites/town/town_ground_tiles.png" id="7_groundtiles"]
+[ext_resource type="Script" path="res://scripts/town/rooster.gd" id="8_rooster"]
+[ext_resource type="Script" path="res://scripts/town/inn.gd" id="9_inn"]
+[ext_resource type="Texture2D" uid="uid://dvo7fjhahrkxw" path="res://sprites/town/inn_lv1.png" id="10_innsprite"]
+[ext_resource type="Script" path="res://scripts/town/recruit_spawner.gd" id="11_recruits"]
+[ext_resource type="Script" path="res://scripts/town/rebuildable_building.gd" id="12_building"]
+[ext_resource type="Script" path="res://scripts/town/graveyard.gd" id="16_graveyard"]
+[ext_resource type="Script" path="res://scripts/town/hired_adventurer_spawner.gd" id="17_hired"]
+[ext_resource type="Script" path="res://scripts/ui/hero_panel.gd" id="18_heropanel"]
+[ext_resource type="Script" path="res://scripts/town/dungeon_bell.gd" id="19_bell"]
+[ext_resource type="Script" path="res://scripts/town/dungeon_entrance.gd" id="20_entrance"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
+texture = ExtResource("7_groundtiles")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+7:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ground"]
+sources/0 = SubResource("TileSetAtlasSource_ground")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rooster"]
+radius = 40.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bell"]
+radius = 48.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_entrance"]
+radius = 48.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_inn"]
+size = Vector2(110, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_weaponshop"]
+size = Vector2(100, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_armorshop"]
+size = Vector2(100, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jewelryshop"]
+size = Vector2(92, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_traininggrounds"]
+size = Vector2(150, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_graveyard"]
+size = Vector2(136, 20)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 7.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down0"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down1"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down2"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down3"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up0"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(0, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up1"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up2"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(96, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up3"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(144, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side0"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(0, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side1"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(48, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side2"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(96, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side3"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(144, 96, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lord"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down0")
+}],
+"loop": true,
+"name": &"idle_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side0")
+}],
+"loop": true,
+"name": &"idle_side",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up0")
+}],
+"loop": true,
+"name": &"idle_up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down3")
+}],
+"loop": true,
+"name": &"walk_down",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side3")
+}],
+"loop": true,
+"name": &"walk_side",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up3")
+}],
+"loop": true,
+"name": &"walk_up",
+"speed": 8.0
+}]
 
 [node name="Main" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_main")
+
+[node name="TownGround" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_ground")
+
+[node name="Inn" type="StaticBody2D" parent="."]
+script = ExtResource("9_inn")
+
+[node name="Sprite" type="Sprite2D" parent="Inn"]
+offset = Vector2(0, -64)
+texture = ExtResource("10_innsprite")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Inn"]
+position = Vector2(0, -13)
+shape = SubResource("RectangleShape2D_inn")
+
+[node name="WeaponShop" type="StaticBody2D" parent="."]
+script = ExtResource("12_building")
+building_id = "weapon_shop"
+
+[node name="Sprite" type="Sprite2D" parent="WeaponShop"]
+offset = Vector2(0, -64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WeaponShop"]
+position = Vector2(0, -13)
+shape = SubResource("RectangleShape2D_weaponshop")
+
+[node name="ArmorShop" type="StaticBody2D" parent="."]
+script = ExtResource("12_building")
+building_id = "armor_shop"
+fallback_town_pos = Vector2(848, 712)
+
+[node name="Sprite" type="Sprite2D" parent="ArmorShop"]
+offset = Vector2(0, -64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ArmorShop"]
+position = Vector2(0, -13)
+shape = SubResource("RectangleShape2D_armorshop")
+
+[node name="JewelryShop" type="StaticBody2D" parent="."]
+script = ExtResource("12_building")
+building_id = "jewelry_shop"
+fallback_town_pos = Vector2(1280, 512)
+
+[node name="Sprite" type="Sprite2D" parent="JewelryShop"]
+offset = Vector2(0, -64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="JewelryShop"]
+position = Vector2(0, -13)
+shape = SubResource("RectangleShape2D_jewelryshop")
+
+[node name="TrainingGrounds" type="StaticBody2D" parent="."]
+script = ExtResource("12_building")
+building_id = "training_grounds"
+sprite_height_px = 96
+fallback_town_pos = Vector2(624, 512)
+fallback_interact_radius = 80.0
+
+[node name="Sprite" type="Sprite2D" parent="TrainingGrounds"]
+offset = Vector2(0, -48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TrainingGrounds"]
+position = Vector2(0, -12)
+shape = SubResource("RectangleShape2D_traininggrounds")
+
+[node name="Graveyard" type="StaticBody2D" parent="."]
+script = ExtResource("16_graveyard")
+
+[node name="Sprite" type="Sprite2D" parent="Graveyard"]
+offset = Vector2(0, -48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Graveyard"]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_graveyard")
+
+[node name="RecruitSpawner" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("11_recruits")
+
+[node name="HiredAdventurers" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("17_hired")
+
+[node name="Rooster" type="Area2D" parent="."]
+script = ExtResource("8_rooster")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Rooster"]
+shape = SubResource("CircleShape2D_rooster")
+
+[node name="PromptLabel" type="Label" parent="Rooster"]
+offset_left = -80.0
+offset_top = -44.0
+offset_right = 80.0
+offset_bottom = -32.0
+theme_override_colors/font_color = Color(0.93, 0.89, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 8
+text = "[E] Wake the rooster"
+horizontal_alignment = 1
+
+[node name="DungeonBell" type="Area2D" parent="."]
+script = ExtResource("19_bell")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DungeonBell"]
+shape = SubResource("CircleShape2D_bell")
+
+[node name="PromptLabel" type="Label" parent="DungeonBell"]
+offset_left = -80.0
+offset_top = -48.0
+offset_right = 80.0
+offset_bottom = -36.0
+theme_override_colors/font_color = Color(0.93, 0.89, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 8
+text = "[E] Ring the bell"
+horizontal_alignment = 1
+
+[node name="DungeonEntrance" type="Area2D" parent="."]
+script = ExtResource("20_entrance")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DungeonEntrance"]
+shape = SubResource("CircleShape2D_entrance")
+
+[node name="PromptLabel" type="Label" parent="DungeonEntrance"]
+offset_left = -80.0
+offset_top = -56.0
+offset_right = 80.0
+offset_bottom = -44.0
+theme_override_colors/font_color = Color(0.93, 0.89, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 8
+text = "[E] Enter the dungeon"
+horizontal_alignment = 1
+
+[node name="Player" type="CharacterBody2D" parent="." groups=["player"]]
+script = ExtResource("3_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, -7)
+shape = SubResource("CircleShape2D_player")
+
+[node name="ContactShadow" type="Node2D" parent="Player"]
+script = ExtResource("6_shadow")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Player"]
+offset = Vector2(0, -24)
+sprite_frames = SubResource("SpriteFrames_lord")
+animation = &"idle_down"
+autoplay = "idle_down"
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("5_hud")
+
+[node name="DayLabel" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 216.0
+offset_bottom = 32.0
+theme_override_colors/font_color = Color(0.93, 0.89, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 16
+text = "Day 1"
+
+[node name="PhaseLabel" type="Label" parent="HUD"]
+offset_left = 224.0
+offset_top = 16.0
+offset_right = 344.0
+offset_bottom = 32.0
+theme_override_colors/font_color = Color(0.55, 0.62, 0.85, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 16
+text = "Night"
+
+[node name="GoldLabel" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 40.0
+offset_right = 216.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(0.98, 0.82, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 16
+text = "Gold: 0"
+
+[node name="HeroPanel" type="PanelContainer" parent="HUD"]
+visible = false
+script = ExtResource("18_heropanel")
