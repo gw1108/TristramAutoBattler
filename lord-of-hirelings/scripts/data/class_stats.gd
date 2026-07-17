@@ -59,24 +59,20 @@ static func reference_dungeon_level(level: int) -> int:
 
 ## displayed_accuracy% = clamp(A * 1.25 * 100 / (A + ref_evasion * 0.3), 5, 100)
 static func displayed_accuracy_pct(accuracy: float, level: int) -> int:
-	var r := reference_dungeon_level(level)
-	var ref_evasion := _balance("ref_grunt_evasion_per_level", 40.0) * r \
-			+ _balance("ref_grunt_evasion_base", 20.0)
-	var mult := _balance("hit_formula_accuracy_mult", 1.25)
-	var weight := _balance("hit_formula_evasion_weight", 0.3)
-	return roundi(clampf(
-		accuracy * mult * 100.0 / (accuracy + ref_evasion * weight), 5.0, 100.0))
+	var reference := _reference_grunt(level)
+	return roundi(CombatMath.chance_to_hit(accuracy, reference["evasion"]) * 100.0)
 
 
 ## displayed_evasion% = 100 - clamp(ref_acc * 1.25 * 100 / (ref_acc + E * 0.3), 5, 100)
 static func displayed_evasion_pct(evasion: float, level: int) -> int:
-	var r := reference_dungeon_level(level)
-	var ref_accuracy := _balance("ref_grunt_accuracy_per_level", 40.0) * r \
-			+ _balance("ref_grunt_accuracy_base", 60.0)
-	var mult := _balance("hit_formula_accuracy_mult", 1.25)
-	var weight := _balance("hit_formula_evasion_weight", 0.3)
-	return roundi(100.0 - clampf(
-		ref_accuracy * mult * 100.0 / (ref_accuracy + evasion * weight), 5.0, 100.0))
+	var reference := _reference_grunt(level)
+	return roundi(100.0 - CombatMath.chance_to_hit(reference["accuracy"], evasion) * 100.0)
+
+
+## The grunt whose ratings the displayed percentages are measured against — the
+## stock archetype row of the dungeon level this adventurer would be sent to.
+static func _reference_grunt(level: int) -> Dictionary:
+	return EnemyStats.archetype_stats(EnemyStats.GRUNT, reference_dungeon_level(level))
 
 
 ## BalanceData.get_value for static context. Godot 4.7 cannot resolve

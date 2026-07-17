@@ -68,10 +68,32 @@ growth_evasion_accuracy_per_level,12,Evasion and accuracy rating gained per adve
 growth_morale_per_2_levels,1,Max morale gained on each odd adventurer level after 1
 hit_formula_accuracy_mult,1.25,Accuracy multiplier in the hit-chance formula (drives displayed accuracy/evasion %)
 hit_formula_evasion_weight,0.3,Evasion weight in the hit-chance formula denominator
-ref_grunt_accuracy_per_level,40,Reference-grunt accuracy per dungeon level (displayed-% formulas: 40R + base)
-ref_grunt_accuracy_base,60,Reference-grunt accuracy base term (displayed-% formulas)
-ref_grunt_evasion_per_level,40,Reference-grunt evasion per dungeon level (displayed-% formulas: 40R + base)
-ref_grunt_evasion_base,20,Reference-grunt evasion base term (displayed-% formulas)
+enemy_hp_growth,1.6,Multiplier applied to every enemy archetype's base HP per dungeon level (round(base * 1.6^(N-1)))
+enemy_grunt_hp_base,8,Grunt HP at dungeon level 1 before the per-level growth multiplier
+enemy_caster_hp_base,5,Caster HP at dungeon level 1 before the per-level growth multiplier
+enemy_boss_hp_base,25,Boss HP at dungeon level 1 before the per-level growth multiplier
+enemy_power_per_level,2,Power every enemy archetype gains per dungeon level above 1
+enemy_grunt_power_base,3,Grunt power at dungeon level 1
+enemy_caster_power_base,2,Caster power at dungeon level 1 (its attack is AOE)
+enemy_boss_power_base,5,Boss power at dungeon level 1
+enemy_grunt_speed,4,Grunt speed (flat at every dungeon level; added to a d20 for initiative)
+enemy_caster_speed,3,Caster speed (flat at every dungeon level)
+enemy_boss_speed,4,Boss speed (flat at every dungeon level)
+enemy_evasion_per_level,40,Evasion rating every enemy archetype gains per dungeon level (evasion = 40N + archetype base)
+enemy_grunt_evasion_base,20,Grunt evasion base term; also the reference grunt the hero panel's displayed evasion % is measured against
+enemy_caster_evasion_base,10,Caster evasion base term
+enemy_boss_evasion_base,40,Boss evasion base term
+enemy_accuracy_per_level,40,Accuracy rating every enemy archetype gains per dungeon level (accuracy = 40N + archetype base)
+enemy_grunt_accuracy_base,60,Grunt accuracy base term; also the reference grunt the hero panel's displayed accuracy % is measured against
+enemy_caster_accuracy_base,60,Caster accuracy base term (matches the grunt)
+enemy_boss_accuracy_base,70,Boss accuracy base term
+enemy_xp_growth,1.8,Multiplier applied to every enemy archetype's base XP per dungeon level (round(base * 1.8^(N-1)))
+enemy_grunt_xp_base,1,XP a dungeon level 1 grunt awards each living party member; the unit the whole XP curve is denominated in
+enemy_caster_xp_base,2,XP a dungeon level 1 caster awards each living party member
+enemy_boss_xp_base,6,XP the dungeon level 1 boss awards each living party member
+boss_gold_min_mult,2.5,Boss gold roll minimum as a multiple of a normal enemy's maximum gold for that dungeon level
+boss_gold_max_mult,5,Boss gold roll maximum as a multiple of a normal enemy's maximum gold for that dungeon level
+minion_xp_penalty,0.5,Fraction of normal XP a summoned minion awards (floored); minions never drop gold
 dungeon_bell_town_pos_x,1808,Dungeon bell X position in the town (px; by the east map edge where the mine portal will stand)
 dungeon_bell_town_pos_y,528,Dungeon bell Y position in the town (px; on the north lip of the east path arm)
 dungeon_bell_interact_radius,48,Distance in px within which the bell's interact prompt shows
