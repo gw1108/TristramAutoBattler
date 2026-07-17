@@ -8,7 +8,7 @@ extends Node
 signal day_advanced(new_day: int)
 signal gold_changed(new_gold: int)
 signal phase_changed(new_phase: Phase)
-signal building_state_changed(building_id: String, state: BuildingState)
+signal building_level_changed(building_id: String, level: int)
 
 ## The town's time-of-day cycle (GDD): the world starts at night, the rooster
 ## crow brings the day, ringing the dungeon bell starts the call to arms
@@ -16,10 +16,10 @@ signal building_state_changed(building_id: String, state: BuildingState)
 ## returns it to night.
 enum Phase { NIGHT, DAY, CALL_TO_ARMS }
 
-## Rebuild status of a town building. Every building but the Inn starts as a
-## ruin (GDD); building nodes write through set_building_state so systems that
-## don't own the node (shop UI, commissions, upgrades) can query and react.
-enum BuildingState { RUINED, BUILT }
+## Every building maxes at level 5 (BalanceNumbers "Building upgrade costs").
+## What a level buys is the building's own business — for a shop it is the gear
+## tiers it stocks (Items.stocked_max_tier) and then its two shop-wide lines.
+const MAX_BUILDING_LEVEL := 5
 
 ## The day is a count of expeditions made, so the first expedition is day 1
 ## (GDD). The world starts at night with no expedition behind it, so the
@@ -46,9 +46,13 @@ var game_won: bool = false
 ## is scaled at all.
 var endless_tier: int = 0
 
-## building_id (e.g. "weapon_shop") -> BuildingState. Buildings register
-## themselves here from set_ruined; absent means RUINED.
-var building_states: Dictionary = {}
+## building_id (e.g. "weapon_shop") -> building level, 0..MAX_BUILDING_LEVEL.
+## Level 0 is the ruin every building but the Inn starts as (GDD) and the
+## rebuild buys level 1, so an absent building — one nothing has been spent on
+## yet — reads as 0. Buildings register themselves here from set_level, so
+## systems that don't own the node (shop stock, commissions) can query and
+## react without reaching into the town scene.
+var building_levels: Dictionary = {}
 
 ## Dev toggle: while expeditions don't exist yet nothing can return the world
 ## to night, so this keeps the rooster usable every pass through the loop.
@@ -137,14 +141,16 @@ func can_afford(amount: int) -> bool:
 	return amount <= gold
 
 
-## Records [param building_id]'s state, emitting building_state_changed only
-## on an actual change.
-func set_building_state(building_id: String, state: BuildingState) -> void:
-	if building_states.get(building_id) == state:
+## Records [param building_id]'s level, clamped to the ladder's ends and
+## emitting building_level_changed only on an actual change.
+func set_building_level(building_id: String, level: int) -> void:
+	var clamped := clampi(level, 0, MAX_BUILDING_LEVEL)
+	if building_levels.get(building_id) == clamped:
 		return
-	building_states[building_id] = state
-	building_state_changed.emit(building_id, state)
+	building_levels[building_id] = clamped
+	building_level_changed.emit(building_id, clamped)
 
 
-func is_building_built(building_id: String) -> bool:
-	return building_states.get(building_id, BuildingState.RUINED) == BuildingState.BUILT
+## [param building_id]'s level; 0 (a ruin) for any building never built.
+func building_level(building_id: String) -> int:
+	return int(building_levels.get(building_id, 0))

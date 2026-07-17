@@ -105,8 +105,8 @@ static func hero_level_gate(tier: int) -> int:
 ## "Equipment"): a ruined shop (level 0) sells nothing, level 1 stocks tiers
 ## 1-2, level 2 adds 3-4, level 3 adds tier 5. Levels 4 and 5 unlock that
 ## shop's two shop-wide lines rather than more tiers, so they stock no more
-## than level 3 does. Building levels are a later slice — Shops.shop_level
-## currently reports every rebuilt shop as level 1.
+## than level 3 does — which is why the player is only offered the ladder up to
+## 3 until those lines exist (rebuildable_building.gd).
 static func stocked_max_tier(shop_level: int) -> int:
 	if shop_level <= 0:
 		return MIN_TIER
