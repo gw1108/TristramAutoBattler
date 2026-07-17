@@ -143,3 +143,12 @@ enemy_trait_hoarder_hp_mult,1.5,Multiplier a Hoarder applies to its max HP (a fa
 enemy_trait_hoarder_speed_delta,-2,Speed a Hoarder loses
 dungeon_gate_level_per_dungeon,2,Average party level a dungeon level demands per dungeon level (gate = 2N - 1)
 dungeon_gate_level_offset,-1,Offset term of the dungeon level gate (gate = 2N - 1; level 1 needs average level 1 so it always fits)
+summary_panel_screen_fraction,0.8,Fraction of the window the expedition summary panel fills in both dimensions (GDD ~80%)
+summary_member_row_min_height,56,"Vertical space in px one adventurer's summary row reserves; a column always reserves 3 of them, whatever the party held"
+summary_xp_bar_fill_seconds,0.9,Seconds the expedition summary's XP bar takes to sweep from empty to full (a partial fill is proportionally quicker)
+summary_level_up_pause_seconds,0.35,Seconds the summary holds on a level-up before the XP bar snaps back to empty and keeps looping
+summary_member_stagger_seconds,0.2,Seconds between one adventurer's summary animation finishing and the next starting
+summary_column_stagger_seconds,0.5,Seconds between summary columns; the columns animate one at a time left to right (GDD)
+summary_death_anim_seconds,0.4,Seconds a dead adventurer's sprite takes to rotate down and tint red on the summary
+summary_coin_gold_per_coin,4.5,"Gold per visual coin in a summary coin pile (GDD: 1 coin per 3-6 gold, minimum 1 coin for any gold at all)"
+summary_coin_max,100,Most visual coins a summary coin pile ever draws however rich the haul (GDD)

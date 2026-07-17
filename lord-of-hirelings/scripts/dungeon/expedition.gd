@@ -221,11 +221,16 @@ func _award(fight: Dictionary, result: Dictionary, by_id: Dictionary) -> void:
 	var standing := {}
 	## minion combatant id -> whether its wave is the one that pays.
 	var pays := {}
+	## Whoever holds the floor right now, and so the killer of anyone who dies
+	## in it — a party member only ever dies inside somebody's turn.
+	var actor := -1
 	for event in result["events"]:
 		match event["type"]:
 			"battle_start":
 				for id in event["party"]:
 					standing[id] = true
+			"turn_start":
+				actor = event["actor"]
 			"summon":
 				var summoner := "%d:%d" % [fight.get("index", 0), event["actor"]]
 				var first := not _paid_summons.has(summoner)
@@ -242,6 +247,9 @@ func _award(fight: Dictionary, result: Dictionary, by_id: Dictionary) -> void:
 			"death":
 				if event["side"] == Battle.PARTY_SIDE:
 					standing.erase(event["combatant"])
+					# The summary names the enemy who struck the blow.
+					if by_id.has(event["combatant"]) and enemies.has(actor):
+						by_id[event["combatant"]]["killed_by"] = enemies[actor]["name"]
 				else:
 					_pay_out(enemies[event["combatant"]], standing, by_id, pays)
 
@@ -317,6 +325,9 @@ func _add_member(member: Dictionary) -> void:
 		"gold_earned": 0,
 		"alive": true,
 		"fled": false,
+		# The enemy who killed them, for the summary's status line ("" if they
+		# walked out).
+		"killed_by": "",
 	})
 
 
@@ -347,6 +358,7 @@ func _summarize() -> Array[Dictionary]:
 			"class": ledger["class"],
 			"alive": alive,
 			"fled": ledger["fled"],
+			"killed_by": ledger["killed_by"],
 			"xp_earned": ledger["xp_earned"],
 			"gold_earned": ledger["gold_earned"],
 			"gold_kept": gold_kept,
