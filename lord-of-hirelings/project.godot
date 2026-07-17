@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 AgentBridge="*res://scripts/agent/agent_bridge.gd"
 BalanceData="*res://scripts/data/balance_data.gd"
+Settings="*res://scripts/settings.gd"
 GameState="*res://scripts/game_state.gd"
 Roster="*res://scripts/roster.gd"
 Shops="*res://scripts/shops.gd"

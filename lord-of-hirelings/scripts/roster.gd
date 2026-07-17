@@ -186,6 +186,19 @@ func clear_parties() -> void:
 	parties.clear()
 
 
+## Empties the roster back to a fresh campaign (the title screen's New Game),
+## alongside GameState.reset_campaign — see the note there for why this exists.
+## The reserved and grave name sets go with it: they are the uniqueness rule's
+## record of names the player can currently see, and a new campaign can see
+## none of them.
+func reset_campaign() -> void:
+	members = []
+	parties = []
+	party_actions_used = 0
+	_reserved_names = {}
+	_grave_names = {}
+
+
 ## Members drafted into no party this expedition — who Kick swaps in.
 func reserves() -> Array[Dictionary]:
 	var drafted := {}

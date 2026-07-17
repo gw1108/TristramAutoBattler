@@ -83,8 +83,15 @@ func _on_new_game_pressed() -> void:
 ## sitting there until the new one's first autosave: a player who confirms and
 ## then quits before entering the dungeon has already abandoned it, and Continue
 ## must not offer it back to them.
+## The autoloads are cleared here rather than left to the town scene: they
+## outlive a scene change, so once the pause menu's Quit to Title made this
+## screen reachable mid-campaign, a new campaign started from here would have
+## inherited the abandoned one's gold, day, roster and rebuilt buildings.
+## Continue needs no such call — load_game() overwrites all of it.
 func _start_new_game() -> void:
 	SaveGame.delete_save()
+	GameState.reset_campaign()
+	Roster.reset_campaign()
 	get_tree().change_scene_to_file(GAMEPLAY_SCENE)
 
 

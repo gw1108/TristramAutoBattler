@@ -113,6 +113,26 @@ func record_final_clear() -> bool:
 	return won_now
 
 
+## Wipes the ledger back to a fresh campaign (the title screen's New Game).
+##
+## Autoloads outlive a scene change, so this only became necessary once the
+## pause menu's Quit to Title made the title screen reachable without quitting
+## the process: New Game had never run on anything but a fresh boot, and would
+## otherwise hand the new campaign the old town's day, treasury and buildings.
+##
+## Assigned rather than pushed through advance_day/return_to_night, the same way
+## SaveGame restores: this is not a transition, and firing the signals would run
+## listeners (the shops' purchasing pass) against a half-cleared town.
+func reset_campaign() -> void:
+	day = 0
+	gold = int(BalanceData.get_value("player_starting_gold", 19.0))
+	phase = Phase.NIGHT
+	unlocked_dungeon_level = 1
+	game_won = false
+	endless_tier = 0
+	building_levels = {}
+
+
 ## Returns the world to night. Called when an expedition concludes (GDD).
 func return_to_night() -> void:
 	if phase == Phase.NIGHT:
