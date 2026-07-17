@@ -45,3 +45,4 @@ recruit_hire_cost_min,7,Minimum level-1 recruit base hire cost in gold (GDD: ran
 recruit_hire_cost_max,9,Maximum level-1 recruit base hire cost in gold (GDD: randint(7 9))
 recruit_interact_radius,40,Distance in px within which a recruit's hire prompt shows
 recruit_sprite_scale,1,Uniform scale of recruit sprites (keep integer for pixel crispness)
+roster_max_size,100,Hard cap on hired adventurers; hiring is disabled at the cap (GDD economy)
