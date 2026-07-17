@@ -1,0 +1,42 @@
+# Workshop config for Lord of Hirelings.
+# Every key is optional; see the workshop README for the full reference.
+
+[project]
+name  = "lord-of-hirelings"
+trunk = "main"
+# THE GATE. Two stages: (1) headless import — catches broken/missing resources
+# and import errors; (2) boot the game for 2 frames — catches script parse
+# errors in autoloads, a broken main scene, and "project doesn't run at all".
+# Stage 2 is red until the first pass defines a main scene — that is
+# intentional: nothing lands until the project actually boots.
+# `godot` is a shim at C:\Users\georg\.local\bin\godot.cmd ->
+# Godot_v4.7-stable_win64_console.exe (Godot 4.7).
+verify = "godot --headless --path lord-of-hirelings --import --quit && godot --headless --path lord-of-hirelings --quit-after 2"
+
+[spice]
+personas = "gamedev"
+nouns    = "gamedev"
+
+# ---- pipelines --------------------------------------------------------------
+# "audio" is deliberately claimed by NO pipeline: audio is out of scope for
+# this phase (see .workshop/GOAL.md), so any audio-typed task just sits in the
+# backlog until a later phase adds a lane for it.
+
+# Code lane: all engine/game work, including art-flavored code ("art" = wiring
+# sprites, shaders, tweens — image GENERATION is the art-gen types below).
+[[pipelines]]
+name   = "code"
+types  = ["code", "tests", "docs", "art", "merge-conflict"]
+agent  = "claude"
+effort = "high"
+
+# Art lane: agy (Gemini) image-model passes only. art-gen/art-gen-trans are
+# built-in agy-only types; the engine picks the launch-verified image model
+# (doctor verified "Gemini 3.1 Pro (High)" on this machine). invent = false:
+# a blind driver shouldn't dream up its own tasks — image tasks come from the
+# operator or as proposals from code passes.
+[[pipelines]]
+name   = "art"
+types  = ["art-gen", "art-gen-trans"]
+agent  = "agy"
+invent = false

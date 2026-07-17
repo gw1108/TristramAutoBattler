@@ -48,6 +48,7 @@ ExportedObj/
 *.VC.db
 
 # Builds
+build/
 *.apk
 *.aab
 *.app
