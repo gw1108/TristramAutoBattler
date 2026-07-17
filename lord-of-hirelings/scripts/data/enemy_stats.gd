@@ -124,18 +124,56 @@ static func gold_range(archetype: String, n: int) -> Array[int]:
 	return [maxi(0, 2 * (level - 2)), floori(stock_max)]
 
 
-## XP awarded to each living party member: round(base_xp * 1.8^(N-1)).
-static func xp_reward(archetype: String, n: int) -> int:
+## XP awarded to each living party member: round(base_xp * 1.8^(N-1)), scaled by
+## the expedition's endless tier.
+static func xp_reward(archetype: String, n: int, tier := 0) -> int:
 	var steps := maxi(n, 1) - 1
 	var base := _balance("enemy_%s_xp_base" % archetype, 1.0)
-	return roundi(base * pow(_balance("enemy_xp_growth", 1.8), steps))
+	return endless_xp(roundi(base * pow(_balance("enemy_xp_growth", 1.8), steps)), tier)
 
 
 ## A minion (the Lich's raised skeletons) drops no gold and pays half XP,
 ## floored — and only for its first summon per expedition, which the battle
-## loop tracks.
-static func minion_xp_reward(archetype: String, n: int) -> int:
-	return floori(xp_reward(archetype, n) * _balance("minion_xp_penalty", 0.5))
+## loop tracks. The penalty lands on the tier-scaled XP rather than the base,
+## which is the order BalanceNumbers "Endless mode" specifies.
+static func minion_xp_reward(archetype: String, n: int, tier := 0) -> int:
+	return floori(xp_reward(archetype, n, tier) * _balance("minion_xp_penalty", 0.5))
+
+
+## Endless tier scaling (BalanceNumbers "Endless mode"). Endless adds no new
+## dungeon levels — there are only ever 4 — so a tier re-runs the same level with
+## tougher enemies and richer drops. The scaling is additive rather than
+## compounded, which keeps endless enemies on the same broadly linear curve as
+## uncapped adventurer levels.
+##
+## Every one of these is a no-op at tier 0, so the whole campaign before the win
+## runs the unscaled numbers the balance anchors were tuned against.
+
+## Fold tier [param tier] into a spawned enemy's stats, in place. HP and power
+## only: evasion and accuracy are untouched by endless tiers, which is why the
+## hero panel's display rule needs no endless special case.
+static func apply_endless_tier(stats: Dictionary, tier: int) -> void:
+	if tier <= 0 or stats.is_empty():
+		return
+	stats["hp"] = float(roundi(
+		stats["hp"] * (1.0 + _balance("endless_hp_per_tier", 0.25) * tier)))
+	stats["power"] = stats["power"] + _balance("endless_power_per_tier", 1.0) * tier
+
+
+## [param base_xp] at tier [param tier].
+static func endless_xp(base_xp: int, tier: int) -> int:
+	if tier <= 0:
+		return base_xp
+	return maxi(1, roundi(base_xp * (1.0 + _balance("endless_xp_per_tier", 0.2) * tier)))
+
+
+## One ROLLED gold drop at tier [param tier]. The roll is scaled first and a gold
+## trait's multiplier is applied to the result (BalanceNumbers "Endless mode"),
+## so the caller multiplies after calling this, never before.
+static func endless_gold(gold_roll: int, tier: int) -> int:
+	if tier <= 0:
+		return gold_roll
+	return roundi(gold_roll * (1.0 + _balance("endless_gold_per_tier", 0.2) * tier))
 
 
 static func _entry(variant_id: String) -> Dictionary:

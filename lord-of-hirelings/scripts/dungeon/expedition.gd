@@ -9,9 +9,10 @@ extends RefCounted
 ##     dive["completed"]  # the boss fell: this level is done
 ##     dive["members"]    # per-member ledger, level-ups already applied
 ##
-##     var summary := Expedition.resolve(Roster.parties, day, unlocked_level, rng)
+##     var summary := Expedition.resolve(Roster.parties, day, unlocked_level, rng, tier)
 ##     summary["tax_copy"]        # the player's 10%, floored exactly once
 ##     summary["unlocked_level"]  # what a boss clear opened for future expeditions
+##     summary["cleared_final"]   # a party cleared level 4: the win, then +1 tier
 ##
 ## The dive is the whole difficulty. Adventurers heal to full outside the
 ## dungeon, so nothing here is about a single fight: HP and morale carry from
@@ -52,6 +53,9 @@ var outcome := ""
 var completed := false
 
 var _rng: RandomNumberGenerator
+## The endless tier this dive is fought and paid at. 0 for the whole campaign,
+## including the winning clear of level 4 (BalanceNumbers "Endless mode").
+var _tier := 0
 ## Summoner identities that have already paid their minions' XP this dive. A
 ## "summon" is one summoning-enemy instance in one party's one expedition
 ## (BalanceNumbers "Minions"), so the key is the fight it stands in plus its id.
@@ -63,19 +67,28 @@ var _paid_summons := {}
 static func run_dive(
 		party: Array,
 		fight_list: Array[Dictionary],
-		rng: RandomNumberGenerator) -> Dictionary:
-	return Expedition.new()._run(party, fight_list, rng)
+		rng: RandomNumberGenerator,
+		tier := 0) -> Dictionary:
+	return Expedition.new()._run(party, fight_list, rng, tier)
 
 
 ## Resolve a whole expedition: every non-empty party picks its dungeon level,
 ## dives its own independent copy of it, and the results are totalled into one
-## summary. Returns {day, dives, gold_earned, tax_copy, unlocked_level}.
+## summary. Returns
+## {day, dives, gold_earned, tax_copy, unlocked_level, endless_tier, cleared_final}.
+##
+## [param endless_tier] is the tier every party in this expedition is fought and
+## paid at — one tier for the whole expedition, never per party. It does not
+## advance here: `cleared_final` is the signal the caller raises the tier off,
+## AFTER these rewards have been resolved at the tier they were earned on.
 static func resolve(
 		parties: Array,
 		day: int,
 		unlocked_level: int,
-		rng: RandomNumberGenerator) -> Dictionary:
+		rng: RandomNumberGenerator,
+		endless_tier := 0) -> Dictionary:
 	var unlocked := clampi(unlocked_level, 1, MAX_DUNGEON_LEVEL)
+	var tier := maxi(endless_tier, 0)
 	var dives: Array[Dictionary] = []
 	var gold_earned := 0
 	for i in parties.size():
@@ -87,23 +100,31 @@ static func resolve(
 		# Every party picks against the level unlocked when the expedition
 		# began, so a clear today never re-aims a party already underground.
 		var n := Encounters.choose_dungeon_level(party, unlocked)
-		var dive := run_dive(party, Encounters.build_level(n, day, rng), rng)
+		var dive := run_dive(party, Encounters.build_level(n, day, rng, tier), rng, tier)
 		dive["party_index"] = i
 		dive["dungeon_level"] = n
 		dives.append(dive)
 		for member in dive["members"]:
 			gold_earned += member["gold_earned"]
-	# One party clearing a level is enough to open the next for everyone.
+	# One party clearing a level is enough to open the next for everyone — and,
+	# on the last level, enough to win: there is no level 5 to open, so the clear
+	# itself is the only thing that marks it.
 	var opened := unlocked
+	var cleared_final := false
 	for dive in dives:
-		if dive["completed"]:
-			opened = maxi(opened, mini(dive["dungeon_level"] + 1, MAX_DUNGEON_LEVEL))
+		if not dive["completed"]:
+			continue
+		opened = maxi(opened, mini(dive["dungeon_level"] + 1, MAX_DUNGEON_LEVEL))
+		if dive["dungeon_level"] >= MAX_DUNGEON_LEVEL:
+			cleared_final = true
 	return {
 		"day": day,
 		"dives": dives,
 		"gold_earned": gold_earned,
 		"tax_copy": tax_copy(gold_earned),
 		"unlocked_level": opened,
+		"endless_tier": tier,
+		"cleared_final": cleared_final,
 	}
 
 
@@ -137,8 +158,10 @@ static func apply_levels(level: int, xp: int) -> Dictionary:
 func _run(
 		party: Array,
 		fight_list: Array[Dictionary],
-		rng: RandomNumberGenerator) -> Dictionary:
+		rng: RandomNumberGenerator,
+		tier := 0) -> Dictionary:
 	_rng = rng
+	_tier = maxi(tier, 0)
 	for member in party:
 		_add_member(member)
 	for fight in fight_list:
@@ -265,9 +288,9 @@ func _pay_out(
 	var minion: bool = enemy["minion"]
 	var xp := 0
 	if not minion:
-		xp = EnemyStats.xp_reward(archetype, n)
+		xp = EnemyStats.xp_reward(archetype, n, _tier)
 	elif pays.get(enemy["id"], false):
-		xp = EnemyStats.minion_xp_reward(archetype, n)
+		xp = EnemyStats.minion_xp_reward(archetype, n, _tier)
 	var gold_range := EnemyStats.gold_range(archetype, n)
 	var gold_mult: int = enemy.get("gold_mult", 1)
 	for id in standing:
@@ -276,10 +299,12 @@ func _pay_out(
 		var ledger: Dictionary = by_id[id]
 		ledger["xp_earned"] += xp
 		# Minions never drop gold. Everyone else's drop is rolled separately per
-		# member, so two members rarely take the same cut off one corpse.
+		# member, so two members rarely take the same cut off one corpse. The
+		# endless tier scales the roll and the trait multiplies THAT, in that
+		# order (BalanceNumbers "Endless mode").
 		if not minion:
-			ledger["gold_earned"] += \
-					_rng.randi_range(gold_range[0], gold_range[1]) * gold_mult
+			ledger["gold_earned"] += EnemyStats.endless_gold(
+					_rng.randi_range(gold_range[0], gold_range[1]), _tier) * gold_mult
 
 
 func _carry_forward(result: Dictionary, by_id: Dictionary) -> void:

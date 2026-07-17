@@ -141,6 +141,10 @@ enemy_trait_hoarder_chance,0.05,Chance a non-boss enemy rolls the Hoarder gold t
 enemy_trait_hoarder_gold_mult,3,Multiplier a Hoarder enemy applies to its rolled gold
 enemy_trait_hoarder_hp_mult,1.5,Multiplier a Hoarder applies to its max HP (a fat, slow, juicy target)
 enemy_trait_hoarder_speed_delta,-2,Speed a Hoarder loses
+endless_hp_per_tier,0.25,"Enemy max HP an endless tier adds, as a fraction of base (additive, not compounded): hp(T) = round(base_hp * (1 + 0.25T))"
+endless_power_per_tier,1,Enemy power an endless tier adds: power(T) = base_power + T
+endless_xp_per_tier,0.2,"XP an endless tier adds, as a fraction of base: xp(T) = max(1, round(base_xp * (1 + 0.2T))); a minion's half-XP penalty is applied after this"
+endless_gold_per_tier,0.2,"Gold an endless tier adds, as a fraction of the rolled drop: gold(T) = round(base_roll * (1 + 0.2T)); a gold trait's multiplier is applied after this"
 dungeon_gate_level_per_dungeon,2,Average party level a dungeon level demands per dungeon level (gate = 2N - 1)
 dungeon_gate_level_offset,-1,Offset term of the dungeon level gate (gate = 2N - 1; level 1 needs average level 1 so it always fits)
 summary_panel_screen_fraction,0.8,Fraction of the window the expedition summary panel fills in both dimensions (GDD ~80%)
@@ -152,3 +156,4 @@ summary_column_stagger_seconds,0.5,Seconds between summary columns; the columns 
 summary_death_anim_seconds,0.4,Seconds a dead adventurer's sprite takes to rotate down and tint red on the summary
 summary_coin_gold_per_coin,4.5,"Gold per visual coin in a summary coin pile (GDD: 1 coin per 3-6 gold, minimum 1 coin for any gold at all)"
 summary_coin_max,100,Most visual coins a summary coin pile ever draws however rich the haul (GDD)
+win_panel_screen_fraction,0.5,Fraction of the window width the You Win! panel fills; it is a simple text panel and sizes its own height (GDD)

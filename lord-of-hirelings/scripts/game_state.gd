@@ -34,6 +34,18 @@ var phase: Phase = Phase.NIGHT
 ## the expedition that earned it.
 var unlocked_dungeon_level: int = 1
 
+## The campaign has been won: a party has cleared dungeon level 4's boss (GDD).
+## Winning changes no rule except that it opens endless mode — the player keeps
+## playing the same town and the same four levels.
+var game_won: bool = false
+
+## Endless mode's difficulty (GDD, BalanceNumbers "Endless mode"). Every
+## expedition is fought and paid at exactly one tier, and clearing level 4 raises
+## it by 1, making the same level's enemies tougher and their drops richer. It is
+## 0 for the whole campaign INCLUDING the winning dive, so nothing before the win
+## is scaled at all.
+var endless_tier: int = 0
+
 ## building_id (e.g. "weapon_shop") -> BuildingState. Buildings register
 ## themselves here from set_ruined; absent means RUINED.
 var building_states: Dictionary = {}
@@ -79,6 +91,22 @@ func call_to_arms() -> bool:
 func unlock_dungeon_level(level: int) -> void:
 	unlocked_dungeon_level = clampi(
 		maxi(level, unlocked_dungeon_level), 1, Expedition.MAX_DUNGEON_LEVEL)
+
+
+## Records an expedition in which at least one party fully cleared dungeon level
+## 4 (the summary's `cleared_final`). Returns whether this one WON the campaign,
+## which is true exactly once — the caller announces the win off that.
+##
+## Call this only after the expedition's rewards have been resolved: the clear is
+## fought and paid at the tier it started on, and only then does the tier rise
+## (BalanceNumbers "Endless mode"). The rise is per expedition and not per
+## clearing party, matching the rule that one party beating the boss is enough to
+## complete the level — so three parties clearing on the same day is still +1.
+func record_final_clear() -> bool:
+	var won_now := not game_won
+	game_won = true
+	endless_tier += 1
+	return won_now
 
 
 ## Returns the world to night. Called when an expedition concludes (GDD).

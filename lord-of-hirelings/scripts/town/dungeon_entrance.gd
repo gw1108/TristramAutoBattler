@@ -68,9 +68,12 @@ func enter() -> Dictionary:
 	_prompt.visible = false
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
+	# The whole expedition is fought at the tier it started on; clearing level 4
+	# raises it only afterwards, in _apply (BalanceNumbers "Endless mode").
 	var summary := Expedition.resolve(
-		Roster.parties, GameState.day, GameState.unlocked_dungeon_level, rng)
-	_apply(summary)
+		Roster.parties, GameState.day, GameState.unlocked_dungeon_level, rng,
+		GameState.endless_tier)
+	var won_now := _apply(summary)
 	# Nightfall dissolves the parties (Roster clears them off the phase change),
 	# so everything the summary owes the town is paid before this.
 	GameState.return_to_night()
@@ -79,16 +82,40 @@ func enter() -> Dictionary:
 	var panel := get_tree().get_first_node_in_group("expedition_summary")
 	if panel != null:
 		panel.open(summary)
+	if won_now:
+		_announce_win(panel)
 	return summary
+
+
+## The GDD announces the win with its own panel "the moment the winning
+## expedition's summary is closed", so it queues behind that panel rather than
+## fighting it for the screen. Connected rather than awaited: enter() hands its
+## summary straight back to its caller and must not become a coroutine.
+##
+## The world is already at night by here, so this is an announcement and nothing
+## more — closing it strands no phase.
+func _announce_win(summary_panel: Node) -> void:
+	var panel := get_tree().get_first_node_in_group("win_panel")
+	if panel == null:
+		return
+	if summary_panel != null and summary_panel.visible:
+		summary_panel.closed.connect(panel.open, CONNECT_ONE_SHOT)
+		return
+	panel.open()
 
 
 ## The summary is the source of truth for what the dive changed: the player's
 ## tax-copy, each survivor's level/XP/purse (Expedition has already spent their
 ## XP on level-ups and their gold is a total, not a delta), the dead, and the
-## dungeon level a boss clear opened.
-func _apply(summary: Dictionary) -> void:
+## dungeon level a boss clear opened. Returns whether this expedition won the
+## campaign — true exactly once, on the first clear of dungeon level 4.
+func _apply(summary: Dictionary) -> bool:
 	GameState.add_gold(summary["tax_copy"])
 	GameState.unlock_dungeon_level(summary["unlocked_level"])
+	# Clearing the last level opens no new one — it wins the game and raises the
+	# endless tier instead. This lands after the rewards above because the dive
+	# was fought and paid at the tier it began on.
+	var won_now: bool = summary["cleared_final"] and GameState.record_final_clear()
 	var dead: Array[String] = []
 	for dive in summary["dives"]:
 		for row in dive["members"]:
@@ -106,6 +133,7 @@ func _apply(summary: Dictionary) -> void:
 	# later parties still unpaid.
 	for display_name in dead:
 		Roster.kill_member(display_name)
+	return won_now
 
 
 ## The roster entry behind a summary row, or {} if it is already gone. Matched by
