@@ -8,3 +8,6 @@ Autoload identifiers (e.g. BalanceData) fail to compile inside static functions 
 
 ### Godot web export
 Files read via FileAccess (e.g. data/balance.csv) must have importer="keep" in their .import and match the preset's include_filter, or the web build silently runs on code fallbacks; Godot's default csv_translation import replaces the raw file in the pck.
+
+### Headless verification harnesses
+Do the work in `_process` (return true to stop), not `_initialize` — autoload `_ready` has not run at `_initialize` time, so BalanceData is empty and every `get_value` silently returns the caller's default, quietly verifying the fallbacks instead of the CSV.

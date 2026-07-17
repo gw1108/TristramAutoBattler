@@ -121,3 +121,24 @@ dungeon_entrance_interact_radius,48,Distance in px within which the dungeon entr
 fallback_adventurers_min,1,Minimum free level 1 adventurers summoned by a call to arms with an empty roster (GDD anti-stuck rule)
 fallback_adventurers_max,2,Maximum free level 1 adventurers summoned by a call to arms with an empty roster
 party_actions_per_day,2,Kick/Swap actions the player may spend per day during the call to arms; the inn's War Table upgrade raises this to 3 (GDD)
+encounter_grunts_per_dungeon_level,1,Grunts every regular fight gains per dungeon level (grunts = base + 1 x N)
+encounter_fight1_grunt_base,1,"Grunt count base term for regular fight 1 (1 + N grunts; at dungeon level 1 these slots are all Slimes)"
+encounter_fight2_grunt_base,1,Grunt count base term for regular fight 2 (1 + N grunts)
+encounter_fight3_grunt_base,2,Grunt count base term for regular fight 3 (2 + N grunts)
+encounter_fight4_grunt_base,1,Grunt count base term for regular fight 4 (1 + N grunts)
+encounter_fight5_grunt_base,2,Grunt count base term for regular fight 5 (2 + N grunts)
+encounter_fight1_casters,0,Casters in regular fight 1 (caster counts are fixed at every dungeon level)
+encounter_fight2_casters,1,Casters in regular fight 2
+encounter_fight3_casters,0,Casters in regular fight 3
+encounter_fight4_casters,2,Casters in regular fight 4
+encounter_fight5_casters,2,Casters in regular fight 5
+encounter_fifth_fight_min_dungeon,3,"Lowest dungeon level that runs a fifth regular fight; below it a level is 4 fights and a boss, from it 5 and a boss"
+encounter_boss_escort_grunts,1,Grunts escorting the boss in the boss battle (does not scale with dungeon level)
+enemy_trait_gilded_chance,0.12,Chance a non-boss enemy rolls the Gilded gold trait when it spawns (day 1 suppresses all trait rolls)
+enemy_trait_gilded_gold_mult,2,Multiplier a Gilded enemy applies to its rolled gold
+enemy_trait_hoarder_chance,0.05,Chance a non-boss enemy rolls the Hoarder gold trait; rolled after Gilded on the same single roll
+enemy_trait_hoarder_gold_mult,3,Multiplier a Hoarder enemy applies to its rolled gold
+enemy_trait_hoarder_hp_mult,1.5,Multiplier a Hoarder applies to its max HP (a fat, slow, juicy target)
+enemy_trait_hoarder_speed_delta,-2,Speed a Hoarder loses
+dungeon_gate_level_per_dungeon,2,Average party level a dungeon level demands per dungeon level (gate = 2N - 1)
+dungeon_gate_level_offset,-1,Offset term of the dungeon level gate (gate = 2N - 1; level 1 needs average level 1 so it always fits)
