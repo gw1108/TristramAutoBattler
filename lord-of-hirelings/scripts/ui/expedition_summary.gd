@@ -60,15 +60,18 @@ const COLOR_DEAD_TINT := Color(1.0, 0.42, 0.42)
 
 const SHEET_CELL_PX := 48
 
-## The dungeon level biomes (GDD "Dungeon level biome backdrops"), top-to-bottom
-## gradient stops: 1 gentle grassy forest, 2 swampy forest, 3 underground undead
-## crypt, 4 volcanic lava fields. Levels 1-2 are the mockup's own gradients.
-const BIOME_STOPS := {
-	1: [Color("7fb069"), Color("4a7a3a"), Color("2e5426")],
-	2: [Color("5a6b52"), Color("3a4a35"), Color("232e20")],
-	3: [Color("4a4658"), Color("2f2c3a"), Color("1b1a24")],
-	4: [Color("8a3a1e"), Color("4a1f14"), Color("21100c")],
+## The dungeon level biomes (GDD "Dungeon level biome backdrops"): 1 gentle
+## grassy forest, 2 swampy forest, 3 underground undead crypt, 4 volcanic lava
+## fields. These are the 64px header crops of the same art the dungeon dive rows
+## use — SourceArt/tools/generate_biome_backdrops.py draws each biome once and
+## writes both crops, so a level's header can never drift from its dive row.
+const BIOME_HEADERS := {
+	1: preload("res://sprites/dungeon/biome_forest_header.png"),
+	2: preload("res://sprites/dungeon/biome_swamp_header.png"),
+	3: preload("res://sprites/dungeon/biome_crypt_header.png"),
+	4: preload("res://sprites/dungeon/biome_volcanic_header.png"),
 }
+## mock.css .biome, and the height the header art is authored at.
 const BIOME_HEIGHT := 64
 
 ## The GDD's interchangeable verbs for a killing blow. Picked by a stable hash of
@@ -201,24 +204,19 @@ func _build_columns(dives: Array) -> void:
 		_columns.append(entries)
 
 
-## The dungeon level this party traversed, as a band of its biome's colors with
-## the level called out in the corner (mockup).
+## The dungeon level this party traversed, as its biome backdrop with the level
+## called out in the corner (mockup).
 func _biome_header(dungeon_level: int) -> Control:
 	var header := Control.new()
 	header.custom_minimum_size.y = BIOME_HEIGHT
-	var gradient := Gradient.new()
-	var stops: Array = BIOME_STOPS.get(dungeon_level, BIOME_STOPS[1])
-	gradient.offsets = PackedFloat32Array([0.0, 0.6, 1.0])
-	gradient.colors = PackedColorArray([stops[0], stops[1], stops[2]])
-	var texture := GradientTexture2D.new()
-	texture.gradient = gradient
-	texture.fill_from = Vector2(0, 0)
-	texture.fill_to = Vector2(0, 1)
-	texture.width = 1
-	texture.height = BIOME_HEIGHT
+	# The art tiles rather than stretches. A column is only as wide as the dive
+	# count and the window make it, so scaling to fit would mean a different
+	# fractional stretch per run — the uneven-pixel tell VISUAL_RULES.md bans.
+	# The backdrops are authored to wrap horizontally, so the seam never shows.
+	header.clip_contents = true
 	var rect := TextureRect.new()
-	rect.texture = texture
-	rect.stretch_mode = TextureRect.STRETCH_SCALE
+	rect.texture = BIOME_HEADERS.get(dungeon_level, BIOME_HEADERS[1])
+	rect.stretch_mode = TextureRect.STRETCH_TILE
 	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	header.add_child(rect)
 	var level_label := _label("LEVEL %d" % dungeon_level, Color(1, 1, 1, 0.75),
