@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://scripts/ui/hero_panel.gd" id="18_heropanel"]
 [ext_resource type="Script" path="res://scripts/town/dungeon_bell.gd" id="19_bell"]
 [ext_resource type="Script" path="res://scripts/town/dungeon_entrance.gd" id="20_entrance"]
+[ext_resource type="Script" path="res://scripts/ui/expedition_summary.gd" id="21_summary"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
 texture = ExtResource("7_groundtiles")
@@ -404,3 +405,10 @@ text = "Gold: 0"
 [node name="HeroPanel" type="PanelContainer" parent="HUD"]
 visible = false
 script = ExtResource("18_heropanel")
+
+[node name="ExpeditionSummary" type="Control" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("21_summary")

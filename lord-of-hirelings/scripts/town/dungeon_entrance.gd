@@ -74,6 +74,11 @@ func enter() -> Dictionary:
 	# Nightfall dissolves the parties (Roster clears them off the phase change),
 	# so everything the summary owes the town is paid before this.
 	GameState.return_to_night()
+	# The panel is the payoff screen, not the bookkeeping: the roster has already
+	# been paid above, and this animates what landed over the settled town.
+	var panel := get_tree().get_first_node_in_group("expedition_summary")
+	if panel != null:
+		panel.open(summary)
 	return summary
 
 
