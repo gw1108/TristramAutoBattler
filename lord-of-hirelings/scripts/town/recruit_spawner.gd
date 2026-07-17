@@ -2,7 +2,9 @@ extends Node2D
 ## Spawns hireable recruit NPCs near the inn when a new day starts (GDD town
 ## phase: the rooster crow brings adventurers looking for work). Yesterday's
 ## unhired recruits are cleared first so repeat crows never pile bodies up
-## in the same spot. Counts and placement come from balance.csv.
+## in the same spot. Unhired recruits do not persist: they leave at nightfall
+## (GDD balance notes), so the spawner also clears on the NIGHT phase change.
+## Counts and placement come from balance.csv.
 
 const RecruitScript := preload("res://scripts/town/recruit.gd")
 
@@ -11,6 +13,13 @@ var _rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
 	GameState.day_advanced.connect(_on_day_advanced)
+	GameState.phase_changed.connect(_on_phase_changed)
+
+
+func _on_phase_changed(new_phase: GameState.Phase) -> void:
+	if new_phase == GameState.Phase.NIGHT:
+		for child in get_children():
+			child.queue_free()
 
 
 func _on_day_advanced(_new_day: int) -> void:
