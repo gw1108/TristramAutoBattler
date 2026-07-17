@@ -1,0 +1,37 @@
+class,tier,weapon,armor,jewelry
+Knight,0,Rusted Longsword,Dented Hauberk,Frayed Sword-Belt
+Knight,1,Squire's Longsword,Studded Brigandine,Squire's Belt
+Knight,2,Tempered Broadsword,Tempered Mail,Tempered Warbelt
+Knight,3,Knightly Bastard Sword,Knight's Plate,Knight's Girdle
+Knight,4,Oathkeeper Greatsword,Bulwark Plate,Bulwark Cincture
+Knight,5,Dawnbreaker,Aegis of the Unbroken,Girdle of the Unbroken
+Captain,0,Cracked Spear,Frayed Gambeson,Tarnished Whistle
+Captain,1,Footman's Spear,Ranger's Leathers,Footman's Medallion
+Captain,2,Sergeant's Halberd,Officer's Coat,Sergeant's Torc
+Captain,3,Banner Pike,Captain's Cuirass,Banner-Bearer's Amulet
+Captain,4,Warlord's Glaive,Warden's Harness,Warlord's Gorget
+Captain,5,Standard of the Last Charge,Mantle of the Rallying Cry,Voice of the Last Charge
+Berserker,0,Chipped Axe,Torn Furs,Bent Iron Ring
+Berserker,1,Woodsman's Axe,Wolfhide Wrap,Woodsman's Band
+Berserker,2,Twin Hatchets,Bonecarved Harness,Bonecarved Ring
+Berserker,3,Butcher's Cleavers,Warpainted Plate,Butcher's Signet
+Berserker,4,Skullsplitter Maul,Berserker's Girdle,Skullsplitter Band
+Berserker,5,"Ruin, the Red Claymore",Hide of the Unkilled,Ring of Red Ruin
+Mage,0,Splintered Wand,Moth-Eaten Robes,Clouded Bead
+Mage,1,Apprentice's Rod,Apprentice's Robes,Apprentice's Pendant
+Mage,2,Emberwood Staff,Warded Vestments,Emberwood Charm
+Mage,3,Stormglass Staff,Runewoven Robes,Stormglass Pendant
+Mage,4,Archmage's Focus,Archmage's Regalia,Archmage's Sigil
+Mage,5,Cataclysm,Shroud of the Ninth Circle,Heart of Cataclysm
+Rogue,0,Notched Knife,Patchwork Cloak,Bent Copper Ring
+Rogue,1,Cutpurse's Dagger,Cutpurse's Leathers,Cutpurse's Band
+Rogue,2,Paired Stilettos,Shadowed Jerkin,Shadowed Signet
+Rogue,3,Duelist's Rapier,Duelist's Half-Cloak,Duelist's Ring
+Rogue,4,Venomfang Blades,Nightstalker's Leathers,Venomfang Band
+Rogue,5,Quietus,Veil of the Unseen,Ring of the Unseen
+Cleric,0,Cracked Censer,Threadbare Habit,Cracked Prayer-Bead
+Cleric,1,Acolyte's Mace,Acolyte's Vestments,Acolyte's Pendant
+Cleric,2,Blessed Censer,Blessed Chainmail,Blessed Icon
+Cleric,3,Reliquary Mace,Reliquary Plate,Reliquary Pendant
+Cleric,4,Bishop's Scepter,Bishop's Raiment,Bishop's Chain
+Cleric,5,Hand of the Radiant,Raiment of the Undimmed,Heart of the Radiant
