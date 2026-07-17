@@ -1,4 +1,4 @@
-"""Generate the recruit adventurer sprite sheet (4 class-flavored variants).
+"""Generate the recruit adventurer sprite sheet (all 6 class variants).
 
 Recruits at the inn are adventurers, so each variant follows its class row in
 design/LordofHirelings_ArtStyleGuide.md §6 (silhouette is sacred):
@@ -8,9 +8,12 @@ design/LordofHirelings_ArtStyleGuide.md §6 (silhouette is sacred):
 - Berserker: wide-base triangle, huge bare arms, giant axe carried high
 - Mage: tall narrow robe cone, featureless void hood, one thin staff vertical
 - Rogue: small sharp triangles, crouched and low, cloak hem in points
+- Captain: square + upward line, tallest polearm, horn breaking the hip line
+- Cleric: circle, round hood and soft robe curves, raised open book
 - light from top-left, 3-step hue-shifted ramps, selective non-black outline
 
-Sheet layout: 1 row x 4 cols (knight, berserker, mage, rogue) = 192x48.
+Sheet layout: 1 row x 6 cols (knight, berserker, mage, rogue, captain,
+cleric) = 288x48 — new classes append so existing frame indices stay stable.
 
 Output: lord-of-hirelings/sprites/recruits/recruit_variants.png
         SourceArt/previews/recruit_variants_preview_8x.png (for review)
@@ -247,9 +250,90 @@ def draw_rogue():
     return f
 
 
+def draw_captain():
+    """Square + one upward line; the polearm is the tallest silhouette."""
+    A_SH = (58, 68, 90, 255)        # steel (shared with the Knight)
+    A_MD = (106, 118, 141, 255)
+    A_LT = (160, 172, 190, 255)
+    T_SH = (52, 70, 104, 255)       # officer tabard blue (heraldry ramp)
+    T_MD = (74, 96, 132, 255)
+    T_LT = (104, 130, 164, 255)
+    W_SH = (64, 44, 32, 255)        # polearm haft / signal horn wood
+    W_MD = (97, 69, 45, 255)
+    W_LT = (134, 101, 64, 255)
+    f = Fig((30, 34, 48, 255), (58, 68, 90, 255))
+
+    f.box(17, 20, 37, GROUND, A_SH, A_SH, A_MD)         # lighter frame than
+    f.box(25, 28, 37, GROUND, A_SH, A_SH, A_MD)         # the Knight's stance
+    f.box(16, 29, 22, 37, T_SH, T_MD, T_LT)             # square tabard torso
+    for y in range(24, 37):                             # gold officer stripe
+        f.put(22, y, G_MD)
+        f.put(23, y, G_LT)
+    f.box(14, 31, 20, 23, A_SH, A_MD, A_LT)             # slim pauldrons
+
+    f.ellipse(22.5, 14.0, 4.0, 4.4, S_SH, S_MD, S_LT)   # open face (no visor)
+    f.put(21, 14, (30, 34, 48, 255))                    # eyes
+    f.put(25, 14, (30, 34, 48, 255))
+    f.box(17, 28, 8, 10, A_SH, A_MD, A_LT)              # kettle-helm brim
+    f.box(19, 26, 5, 8, A_SH, A_MD, A_LT)               # helm crown
+
+    for y in range(1, GROUND):                          # polearm: one tall
+        f.put(37, y, W_MD if y % 3 else W_SH)           # vertical, tip above
+        f.put(38, y, W_SH)                              # every other head
+    for y in range(1, 8):                               # leaf spearhead
+        span = 2 - abs(y - 4) // 2
+        for x in range(36 - span, 38 + span + 1):
+            f.put(x, y, A_LT if x < 37 else A_MD)
+    f.box(37, 40, 8, 9, G_MD, G_MD, G_LT)               # gold socket collar
+    f.box(29, 35, 24, 27, A_SH, A_MD, A_LT)             # arm out to the haft
+    f.box(35, 39, 26, 30, A_SH, A_MD, A_LT)             # gauntlet grips it
+
+    f.ellipse(12.0, 35.0, 4.0, 2.6, W_SH, W_MD, W_LT)   # signal horn breaks
+    f.put(8, 34, G_MD)                                  # the hip line; gold
+    f.put(8, 35, G_LT)                                  # mouthpiece band
+    for i in range(4):                                  # baldric strap up to
+        f.put(14 + i, 32 - i, W_MD)                     # the torso
+    return f
+
+
+def draw_cleric():
+    """Circle everywhere: round hood, soft robe curves, raised open book."""
+    R_SH = (118, 102, 86, 255)      # undyed cream wool robe
+    R_MD = (170, 152, 120, 255)
+    R_LT = (214, 198, 160, 255)
+    P_SH = (176, 162, 134, 255)     # parchment pages
+    P_LT = (234, 224, 196, 255)
+    f = Fig((72, 60, 48, 255), (118, 102, 86, 255))
+
+    f.ellipse(CX, 36.0, 9.5, 8.5, R_SH, R_MD, R_LT)     # soft bell of robe,
+    f.ellipse(CX, 26.0, 7.0, 7.0, R_SH, R_MD, R_LT)     # no straight hemline
+    for x in range(15, 33):                             # knotted rope belt
+        if (x, 31) in f.px:
+            f.put(x, 31, G_MD if x % 3 else G_LT)
+
+    f.ellipse(CX, 14.0, 5.6, 5.4, R_SH, R_MD, R_LT)     # round hood
+    f.ellipse(CX, 15.0, 3.2, 3.4, S_SH, S_MD, S_LT)     # open friendly face
+    f.put(22, 15, (72, 60, 48, 255))                    # eyes
+    f.put(25, 15, (72, 60, 48, 255))
+
+    f.ellipse(30.0, 20.0, 2.6, 4.6, R_SH, R_MD, R_LT)   # sleeve raised toward
+    f.box(31, 33, 14, 16, S_SH, S_MD, S_LT)             # the book, hand under
+    for y in range(9, 14):                              # open book held high,
+        for x in range(29, 39):                         # breaking the outline
+            if x in (33, 34):
+                f.put(x, y + 1, R_SH)                   # spine valley dips
+            else:
+                f.put(x, y, P_LT if x < 33 else P_SH)
+    for x in (29, 38):                                  # gilt page edges
+        f.put(x, 9, G_LT)
+        f.put(x, 13, G_MD)
+    return f
+
+
 def main():
     root = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
-    figs = [draw_knight(), draw_berserker(), draw_mage(), draw_rogue()]
+    figs = [draw_knight(), draw_berserker(), draw_mage(), draw_rogue(),
+            draw_captain(), draw_cleric()]
     sheet = Image.new("RGBA", (len(figs) * CELL, CELL), (0, 0, 0, 0))
     for col, fig in enumerate(figs):
         sheet.paste(fig.render(), (col * CELL, 0))

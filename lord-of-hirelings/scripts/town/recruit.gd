@@ -11,18 +11,16 @@ const PROMPT_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
 const ContactShadowScript := preload("res://scripts/town/contact_shadow.gd")
 
 ## 4 class-flavored adventurer variants (knight, berserker, mage, rogue) in a
-## 1x4 sheet of 48px cells, bottom-center pivot. One variant per spawn slot so
+## 1x6 sheet of 48px cells, bottom-center pivot. One variant per spawn slot so
 ## a day's batch reads as distinct people. Source: generate_recruit_sprites.py.
 const VARIANT_SHEET := preload("res://sprites/recruits/recruit_variants.png")
-const VARIANT_COUNT := 4
+const VARIANT_COUNT := 6
 const SHEET_CELL_PX := 48
 
-## Sheet column per class, so the sprite reads as the rolled class. Captain
-## and Cleric have no dedicated variant yet and borrow the closest silhouette
-## (armored knight / robed mage) until the sheet grows to six.
+## Sheet column per class, so the sprite reads as the rolled class.
 const CLASS_VARIANTS := {
-	"Knight": 0, "Captain": 0, "Berserker": 1,
-	"Mage": 2, "Cleric": 2, "Rogue": 3,
+	"Knight": 0, "Berserker": 1, "Mage": 2,
+	"Rogue": 3, "Captain": 4, "Cleric": 5,
 }
 
 var variant_index := 0
