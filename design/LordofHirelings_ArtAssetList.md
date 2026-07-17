@@ -77,10 +77,12 @@ Every enemy needs **two poses: idle and attack**. 17 enemies × 2 poses = 34 dra
 | Call-to-arms bell | Interactable next to the dungeon entrance. | Bronze bell on a wooden post or small arch, rope hanging. Rung state = tilted with motion arcs (tween). | MVP | [ ] code-drawn placeholder in `scripts/town/dungeon_bell.gd` |
 | Town background — day | The town view backdrop during the day (post-crow, expedition-time). | Full daytime version of the town background: bright sky, sun, daylight palette. | MVP | [ ] |
 | Town background — night | The town view backdrop at night (rooster usable, adventurers sleep). | Full nighttime version of the same background: dark blue sky, moon and stars, lit windows and lantern glows painted directly into the sprite. Swapped 1:1 with the day background — no code lighting pass. | MVP | [ ] |
-| Dungeon biome backdrop — lvl 1 Gentle Forest | Side-scrolling row backdrop for the dive; also cropped as the party-column header in the expedition summary. | Sunny grassy field with scattered trees, soft hills, forest edge. Gentle and green — the "easy" read. | MVP | [ ] |
-| Dungeon biome backdrop — lvl 2 Swamp | Same usage. | Swampy forest: standing water, hanging moss, dead trees, mist, murky green-brown palette. | Full | [ ] |
-| Dungeon biome backdrop — lvl 3 Undead Crypt | Same usage. | Underground crypt: stone pillars, sarcophagi, bone piles, cold blue-green torchlight. | Full | [ ] |
-| Dungeon biome backdrop — lvl 4 Volcanic Hellscape | Same usage. | Volcanic caverns with rivers of lava, basalt spikes, ember rain, red-orange glow. | Full | [ ] |
+| Dungeon biome backdrop — lvl 1 Gentle Forest | Side-scrolling row backdrop for the dive; also cropped as the party-column header in the expedition summary. | Sunny grassy field with scattered trees, soft hills, forest edge. Gentle and green — the "easy" read. | MVP | [x] |
+| Dungeon biome backdrop — lvl 2 Swamp | Same usage. | Swampy forest: standing water, hanging moss, dead trees, mist, murky green-brown palette. | Full | [x] |
+| Dungeon biome backdrop — lvl 3 Undead Crypt | Same usage. | Underground crypt: stone pillars, sarcophagi, bone piles, cold blue-green torchlight. | Full | [x] |
+| Dungeon biome backdrop — lvl 4 Volcanic Hellscape | Same usage. | Volcanic caverns with rivers of lava, basalt spikes, ember rain, red-orange glow. | Full | [x] |
+
+All four biomes are `SourceArt/tools/generate_biome_backdrops.py`, one 320x128 tileable scene each, written out as two crops: `biome_<name>_header.png` (320x64) is live in the expedition summary's party columns; `biome_<name>_row.png` (320x128) is the dive-row backdrop, made and imported but not yet drawn — the dive scene does not exist yet.
 | Stairs down | Revealed when a level's boss dies (visual only — never descended). | Stone stairway descending into darkness, fitted to each biome or one neutral version with biome tint. | MVP | [ ] |
 | Fog of war treatment | Hides the unexplored right side of each dungeon row. | Soft-edged darkness rolling back as the party advances. Can be a shader/gradient; optional pixel-noise edge texture to keep it in style. | MVP (gradient), Later (styled edge) | [ ] |
 
