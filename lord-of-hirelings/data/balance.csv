@@ -37,3 +37,6 @@ recruit_spawn_center_x,860,Center X of the recruit spawn row in front of the inn
 recruit_spawn_center_y,560,Center Y of the recruit spawn row in front of the inn (px)
 recruit_spawn_spacing_px,28,Horizontal spacing between spawned recruits (px)
 recruit_spawn_jitter_y_px,8,Max vertical jitter applied to each spawned recruit (px)
+recruit_hire_cost_min,7,Minimum level-1 recruit base hire cost in gold (GDD: randint(7 9))
+recruit_hire_cost_max,9,Maximum level-1 recruit base hire cost in gold (GDD: randint(7 9))
+recruit_interact_radius,40,Distance in px within which a recruit's hire prompt shows
