@@ -66,6 +66,11 @@ func enter() -> Dictionary:
 	if not _can_enter():
 		return {}
 	_prompt.visible = false
+	# Autosave 1 of the GDD's two (SaveGame): the parties are marching and no
+	# combat has happened at all, so nothing about the dive below exists to be
+	# saved. A player who quits mid-dive resumes right here and the expedition is
+	# re-rolled from the top.
+	SaveGame.save_dive_entry()
 	var rng := RandomNumberGenerator.new()
 	rng.randomize()
 	# The whole expedition is fought at the tier it started on; clearing level 4
@@ -77,14 +82,27 @@ func enter() -> Dictionary:
 	# Nightfall dissolves the parties (Roster clears them off the phase change),
 	# so everything the summary owes the town is paid before this.
 	GameState.return_to_night()
+	# Autosave 2 of the GDD's two (SaveGame): the town is settled and the only
+	# thing still owed to the player is the readout below, so this lands
+	# immediately before the panel opens.
+	SaveGame.save_expedition_summary(summary, won_now)
 	# The panel is the payoff screen, not the bookkeeping: the roster has already
 	# been paid above, and this animates what landed over the settled town.
+	replay_summary(summary, won_now)
+	return summary
+
+
+## Shows a resolved expedition's summary and, if that expedition won the
+## campaign, queues the announcement behind it. Public because it is also how a
+## resumed autosave 2 re-shows its readout from the top, animations and all
+## (GDD "Saving"): [param won] has to be passed in because the win fires exactly
+## once and GameState.game_won is already true by the time a resume gets here.
+func replay_summary(summary: Dictionary, won: bool) -> void:
 	var panel := get_tree().get_first_node_in_group("expedition_summary")
 	if panel != null:
 		panel.open(summary)
-	if won_now:
+	if won:
 		_announce_win(panel)
-	return summary
 
 
 ## The GDD announces the win with its own panel "the moment the winning

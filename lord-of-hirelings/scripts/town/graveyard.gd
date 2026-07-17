@@ -43,6 +43,7 @@ var _name_reveal_radius := 0.0
 
 
 func _ready() -> void:
+	add_to_group("graveyard")
 	position = Vector2(
 		BalanceData.get_value("graveyard_town_pos_x", 608.0),
 		BalanceData.get_value("graveyard_town_pos_y", 712.0))
@@ -50,6 +51,11 @@ func _ready() -> void:
 	_name_reveal_radius = BalanceData.get_value("graveyard_name_reveal_radius", 96.0)
 	Roster.member_died.connect(add_grave)
 	GameState.day_advanced.connect(_on_day_advanced)
+	# The plot is town state that outlives a session, but this node does not
+	# exist when SaveGame restores the campaign, so it collects its own graves
+	# on the way up.
+	restore_state(SaveGame.pending_graveyard)
+	SaveGame.pending_graveyard = {}
 
 
 func _process(_delta: float) -> void:
@@ -84,7 +90,46 @@ func add_grave(display_name: String) -> void:
 		(_graves[slot]["node"] as Node2D).queue_free()
 	_burial_count += 1
 	Roster.record_grave_name(display_name)
+	_raise_grave(slot, display_name)
 
+
+## The plot as save data (SaveGame): who lies in which slot, whether their mound
+## is still fresh, and the burial count — which outlives the 12 slots it wraps
+## through, because it is what decides the grave the next death overwrites.
+func save_state() -> Dictionary:
+	var records: Array = []
+	for slot in _graves:
+		var grave: Dictionary = _graves[slot]
+		records.append({
+			"slot": slot,
+			"name": grave["name"],
+			"fresh": (grave["sprite"] as Sprite2D).frame == FRESH_MOUND_FRAME,
+		})
+	return {"graves": records, "burial_count": _burial_count}
+
+
+## Rebuilds the plot from save_state data. Only ever called on the way up, into
+## an empty plot; an empty or absent dictionary leaves it empty, which is what a
+## campaign that has buried nobody looks like.
+func restore_state(state: Dictionary) -> void:
+	for record in state.get("graves", []):
+		var slot := int(record.get("slot", -1))
+		var display_name := String(record.get("name", ""))
+		if slot < 0 or slot >= GRAVE_CAPACITY or display_name.is_empty():
+			continue
+		Roster.record_grave_name(display_name)
+		_raise_grave(slot, display_name)
+		# Yesterday's dead are already under their stones; only somebody buried
+		# by the expedition this save was written for is still a fresh mound.
+		if not bool(record.get("fresh", false)):
+			(_graves[slot]["sprite"] as Sprite2D).frame = _headstone_frame(display_name)
+	_burial_count = maxi(int(state.get("burial_count", 0)), 0)
+
+
+## Puts [param display_name]'s grave in [param slot] as a fresh mound. Assumes
+## the slot is free — add_grave clears the old occupant first, and a restore
+## builds into an empty plot.
+func _raise_grave(slot: int, display_name: String) -> void:
 	var grave_node := Node2D.new()
 	grave_node.position = GRAVE_OFFSETS[slot]
 

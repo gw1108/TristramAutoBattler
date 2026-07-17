@@ -23,6 +23,7 @@ BalanceData="*res://scripts/data/balance_data.gd"
 GameState="*res://scripts/game_state.gd"
 Roster="*res://scripts/roster.gd"
 Shops="*res://scripts/shops.gd"
+SaveGame="*res://scripts/save_game.gd"
 
 [display]
 

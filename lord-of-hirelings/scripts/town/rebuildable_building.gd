@@ -56,7 +56,11 @@ func _ready() -> void:
 	area.body_exited.connect(_on_body_exited)
 	add_child(area)
 	GameState.gold_changed.connect(_on_gold_changed)
-	set_ruined(true)
+	# GameState is the source of truth rather than this node, so a rebuild the
+	# player paid for in an earlier session is still standing when the campaign
+	# autosave restores it. A fresh campaign has no state recorded here, and
+	# is_building_built answers RUINED for that — which is the GDD's start.
+	set_ruined(not GameState.is_building_built(building_id))
 
 
 func _exit_tree() -> void:
