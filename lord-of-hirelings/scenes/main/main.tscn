@@ -1,9 +1,10 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
 [ext_resource type="Script" path="res://scripts/town/player_lord.gd" id="3_player"]
 [ext_resource type="Texture2D" uid="uid://blps3k1g45bam" path="res://sprites/lord/lord_sheet.png" id="4_lordsheet"]
+[ext_resource type="Script" path="res://scripts/ui/town_hud.gd" id="5_hud"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_down0"]
 atlas = ExtResource("4_lordsheet")
@@ -151,6 +152,33 @@ autoplay = "idle_down"
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
 [node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("5_hud")
+
+[node name="DayLabel" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 216.0
+offset_bottom = 32.0
+theme_override_colors/font_color = Color(0.93, 0.89, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 16
+text = "Day 1"
+
+[node name="GoldLabel" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 40.0
+offset_right = 216.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(0.98, 0.82, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 16
+text = "Gold: 0"
 
 [node name="PlaceholderLabel" type="Label" parent="HUD"]
 anchors_preset = 8
