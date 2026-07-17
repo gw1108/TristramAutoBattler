@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3]
+[gd_scene load_steps=36 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://scripts/town/recruit_spawner.gd" id="11_recruits"]
 [ext_resource type="Script" path="res://scripts/town/weapon_shop.gd" id="12_weaponshop"]
 [ext_resource type="Script" path="res://scripts/town/armor_shop.gd" id="13_armorshop"]
+[ext_resource type="Script" path="res://scripts/town/jewelry_shop.gd" id="14_jewelryshop"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
 texture = ExtResource("7_groundtiles")
@@ -47,6 +48,9 @@ size = Vector2(100, 26)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_armorshop"]
 size = Vector2(100, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jewelryshop"]
+size = Vector2(92, 26)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -214,6 +218,16 @@ offset = Vector2(0, -64)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ArmorShop"]
 position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_armorshop")
+
+[node name="JewelryShop" type="StaticBody2D" parent="."]
+script = ExtResource("14_jewelryshop")
+
+[node name="Sprite" type="Sprite2D" parent="JewelryShop"]
+offset = Vector2(0, -64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="JewelryShop"]
+position = Vector2(0, -13)
+shape = SubResource("RectangleShape2D_jewelryshop")
 
 [node name="RecruitSpawner" type="Node2D" parent="."]
 y_sort_enabled = true
