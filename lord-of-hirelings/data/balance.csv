@@ -13,3 +13,6 @@ stalemate_rounds,3,Consecutive no-damage rounds before a party auto-flees
 sales_commission_pct,0.1,Player's cut of adventurer purchases at player-owned shops
 sales_commission_min_gold,1,Minimum gold the player earns from a single sales commission
 tax_copy_pct,0.1,Player's tax-copy percent of adventurer gold earned in the dungeon
+player_move_speed,150,Lord top-down move speed in the town (px/sec)
+town_map_width,1920,Bounded town map width in px (player and camera clamp)
+town_map_height,1080,Bounded town map height in px (player and camera clamp)
