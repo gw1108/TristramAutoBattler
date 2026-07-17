@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3]
+[gd_scene load_steps=43 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
@@ -16,6 +16,7 @@
 [ext_resource type="Script" path="res://scripts/town/hired_adventurer_spawner.gd" id="17_hired"]
 [ext_resource type="Script" path="res://scripts/ui/hero_panel.gd" id="18_heropanel"]
 [ext_resource type="Script" path="res://scripts/town/dungeon_bell.gd" id="19_bell"]
+[ext_resource type="Script" path="res://scripts/town/dungeon_entrance.gd" id="20_entrance"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
 texture = ExtResource("7_groundtiles")
@@ -43,6 +44,9 @@ sources/0 = SubResource("TileSetAtlasSource_ground")
 radius = 40.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bell"]
+radius = 48.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_entrance"]
 radius = 48.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_inn"]
@@ -315,6 +319,26 @@ theme_override_constants/shadow_offset_y = 1
 theme_override_fonts/font = ExtResource("2_body")
 theme_override_font_sizes/font_size = 8
 text = "[E] Ring the bell"
+horizontal_alignment = 1
+
+[node name="DungeonEntrance" type="Area2D" parent="."]
+script = ExtResource("20_entrance")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DungeonEntrance"]
+shape = SubResource("CircleShape2D_entrance")
+
+[node name="PromptLabel" type="Label" parent="DungeonEntrance"]
+offset_left = -80.0
+offset_top = -56.0
+offset_right = 80.0
+offset_bottom = -44.0
+theme_override_colors/font_color = Color(0.93, 0.89, 0.75, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 8
+text = "[E] Enter the dungeon"
 horizontal_alignment = 1
 
 [node name="Player" type="CharacterBody2D" parent="." groups=["player"]]
