@@ -10,8 +10,6 @@ extends StaticBody2D
 ## res://sprites/town/<id>_{ruined,normal}.png and position/radius come from
 ## the <id>_town_pos_x/_town_pos_y/_interact_radius rows in balance.csv.
 
-const PROMPT_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
-
 ## Balance-row prefix and sprite filename stem, e.g. "weapon_shop".
 @export var building_id := ""
 
@@ -42,17 +40,11 @@ func _ready() -> void:
 		BalanceData.get_value(building_id + "_town_pos_y", fallback_town_pos.y))
 	rebuild_cost = int(BalanceData.get_value("building_rebuild_cost", 10.0))
 	_prompt = Label.new()
-	_prompt.position = Vector2(-100, -sprite_height_px - 12)
-	_prompt.size = Vector2(200, 12)
-	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_prompt.add_theme_color_override("font_color", Color(0.93, 0.89, 0.75))
-	_prompt.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
-	_prompt.add_theme_constant_override("shadow_offset_x", 1)
-	_prompt.add_theme_constant_override("shadow_offset_y", 1)
-	_prompt.add_theme_font_override("font", PROMPT_FONT)
-	_prompt.add_theme_font_size_override("font_size", 8)
+	_prompt.position = Vector2(0, -sprite_height_px - 16)
+	InteractPrompt.style(_prompt)
 	_prompt.visible = false
 	add_child(_prompt)
+	set_process(false)
 	var area := Area2D.new()
 	var shape := CollisionShape2D.new()
 	var circle := CircleShape2D.new()
@@ -67,8 +59,20 @@ func _ready() -> void:
 	set_ruined(true)
 
 
+func _exit_tree() -> void:
+	InteractPrompt.unregister(self)
+
+
+func _process(_delta: float) -> void:
+	# Only the nearest in-range interactable shows its prompt (runs only
+	# while the player is in range).
+	_prompt.visible = _ruined and InteractPrompt.is_nearest(self)
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if _player_near and _ruined and event.is_action_pressed("interact"):
+	# Gate on the visible prompt so overlapping interactables never answer
+	# the same [E] press.
+	if _player_near and _ruined and _prompt.visible and event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
 		rebuild()
 
@@ -87,6 +91,7 @@ func set_ruined(ruined: bool) -> void:
 		GameState.BuildingState.RUINED if ruined else GameState.BuildingState.BUILT)
 	_sprite.texture = _ruined_texture if ruined else _normal_texture
 	_refresh_prompt()
+	_sync_registration()
 
 
 func _refresh_prompt() -> void:
@@ -94,9 +99,18 @@ func _refresh_prompt() -> void:
 		_prompt.visible = false
 		return
 	if GameState.can_afford(rebuild_cost):
-		_prompt.text = "[E] Rebuild — %dg" % rebuild_cost
+		InteractPrompt.set_text(_prompt, "[E] Rebuild — %dg" % rebuild_cost)
 	else:
-		_prompt.text = "Rebuild — %dg (not enough gold)" % rebuild_cost
+		InteractPrompt.set_text(_prompt, "Rebuild — %dg (not enough gold)" % rebuild_cost)
+
+
+## A built (non-ruined) building shows no prompt, so it must not compete
+## for the nearest-prompt slot either.
+func _sync_registration() -> void:
+	if _player_near and _ruined:
+		InteractPrompt.register(self)
+	else:
+		InteractPrompt.unregister(self)
 
 
 func _on_gold_changed(_new_gold: int) -> void:
@@ -109,11 +123,15 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	_player_near = true
 	_refresh_prompt()
-	_prompt.visible = _ruined
+	_sync_registration()
+	_prompt.visible = _ruined and InteractPrompt.is_nearest(self)
+	set_process(true)
 
 
 func _on_body_exited(body: Node2D) -> void:
 	if not body.is_in_group("player"):
 		return
 	_player_near = false
+	_sync_registration()
 	_prompt.visible = false
+	set_process(false)

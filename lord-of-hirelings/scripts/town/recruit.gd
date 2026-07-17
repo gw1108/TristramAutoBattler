@@ -7,7 +7,6 @@ extends Area2D
 ## hiring is disabled while the roster sits at its hard cap. The hero panel
 ## comes in a later slice.
 
-const PROMPT_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
 const ContactShadowScript := preload("res://scripts/town/contact_shadow.gd")
 
 ## 4 class-flavored adventurer variants (knight, berserker, mage, rogue) in a
@@ -58,19 +57,13 @@ func _ready() -> void:
 	shape.shape = circle
 	add_child(shape)
 	_prompt = Label.new()
-	# Just above the 48px sprite so the text never covers the face. Wide
-	# enough for "[E] Hire <name> (<class>) — NNg" at the 8px font.
-	_prompt.position = Vector2(-140, -SHEET_CELL_PX - 12)
-	_prompt.size = Vector2(280, 12)
-	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_prompt.add_theme_color_override("font_color", Color(0.93, 0.89, 0.75))
-	_prompt.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.6))
-	_prompt.add_theme_constant_override("shadow_offset_x", 1)
-	_prompt.add_theme_constant_override("shadow_offset_y", 1)
-	_prompt.add_theme_font_override("font", PROMPT_FONT)
-	_prompt.add_theme_font_size_override("font_size", 8)
+	# Just above the 48px sprite so the text never covers the face;
+	# InteractPrompt.set_text re-centers it on every text change.
+	_prompt.position = Vector2(0, -SHEET_CELL_PX - 16)
+	InteractPrompt.style(_prompt)
 	_prompt.visible = false
 	add_child(_prompt)
+	set_process(false)
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	GameState.gold_changed.connect(_on_gold_changed)
@@ -81,12 +74,19 @@ func _exit_tree() -> void:
 	# Leaving unhired frees the name for future rolls; a hired name stays
 	# taken through the roster itself.
 	Roster.release_name(display_name)
+	InteractPrompt.unregister(self)
+
+
+func _process(_delta: float) -> void:
+	# Interact radii of adjacent recruits overlap; only the nearest one
+	# shows its prompt (runs only while the player is in range).
+	_prompt.visible = InteractPrompt.is_nearest(self)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _player_near and event.is_action_pressed("interact"):
-		# Interact radii of adjacent recruits overlap; claim the press so a
-		# single [E] can never hire the whole row at once.
+	# Gate on the visible prompt so the [E] press always goes to the one
+	# interactable whose prompt the player is reading, never the whole row.
+	if _player_near and _prompt.visible and event.is_action_pressed("interact"):
 		get_viewport().set_input_as_handled()
 		hire()
 
@@ -103,11 +103,11 @@ func hire() -> void:
 
 func _refresh_prompt() -> void:
 	if Roster.is_full():
-		_prompt.text = "Roster full (%d)" % Roster.max_size()
+		InteractPrompt.set_text(_prompt, "Roster full (%d)" % Roster.max_size())
 	elif GameState.can_afford(hire_cost):
-		_prompt.text = "[E] Hire %s (%s) — %dg" % [display_name, adventurer_class, hire_cost]
+		InteractPrompt.set_text(_prompt, "[E] Hire %s (%s) — %dg" % [display_name, adventurer_class, hire_cost])
 	else:
-		_prompt.text = "%s (%s) — %dg (not enough gold)" % [display_name, adventurer_class, hire_cost]
+		InteractPrompt.set_text(_prompt, "%s (%s) — %dg (not enough gold)" % [display_name, adventurer_class, hire_cost])
 
 
 func _on_gold_changed(_new_gold: int) -> void:
@@ -125,11 +125,15 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	_player_near = true
 	_refresh_prompt()
-	_prompt.visible = true
+	InteractPrompt.register(self)
+	_prompt.visible = InteractPrompt.is_nearest(self)
+	set_process(true)
 
 
 func _on_body_exited(body: Node2D) -> void:
 	if not body.is_in_group("player"):
 		return
 	_player_near = false
+	InteractPrompt.unregister(self)
 	_prompt.visible = false
+	set_process(false)

@@ -30,6 +30,7 @@ func _ready() -> void:
 	(_shape.shape as CircleShape2D).radius = BalanceData.get_value(
 		"rooster_interact_radius", 40.0)
 	_crow_cooldown_sec = BalanceData.get_value("rooster_crow_cooldown_sec", 5.0)
+	InteractPrompt.style(_prompt)
 	_prompt.visible = false
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
@@ -41,10 +42,13 @@ func _process(delta: float) -> void:
 		_cooldown -= delta
 		if _cooldown <= 0.0:
 			_refresh_prompt()
+	if _player_near:
+		# Only the nearest in-range interactable shows its prompt.
+		_prompt.visible = InteractPrompt.is_nearest(self)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _player_near and _can_crow() and event.is_action_pressed("interact"):
+	if _player_near and _prompt.visible and _can_crow() and event.is_action_pressed("interact"):
 		crow()
 
 
@@ -66,11 +70,11 @@ func crow() -> void:
 
 func _refresh_prompt() -> void:
 	if not GameState.is_night():
-		_prompt.text = PROMPT_DAY
+		InteractPrompt.set_text(_prompt, PROMPT_DAY)
 	elif _cooldown > 0.0:
-		_prompt.text = PROMPT_DOZING
+		InteractPrompt.set_text(_prompt, PROMPT_DOZING)
 	else:
-		_prompt.text = PROMPT_READY
+		InteractPrompt.set_text(_prompt, PROMPT_READY)
 
 
 func _on_phase_changed(_new_phase: GameState.Phase) -> void:
@@ -90,11 +94,13 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	_player_near = true
 	_refresh_prompt()
-	_prompt.visible = true
+	InteractPrompt.register(self)
+	_prompt.visible = InteractPrompt.is_nearest(self)
 
 
 func _on_body_exited(body: Node2D) -> void:
 	if not body.is_in_group("player"):
 		return
 	_player_near = false
+	InteractPrompt.unregister(self)
 	_prompt.visible = false
