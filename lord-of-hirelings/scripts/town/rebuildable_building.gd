@@ -1,34 +1,48 @@
 extends StaticBody2D
-## The Jewelry shop (goldsmith/jeweller). Starts ruined per the GDD — every
-## building but the Inn begins as a ruin. Walk up and press interact to spend
-## the rebuild cost from the treasury (GameState.spend_gold) and restore the
-## building. Shop inventory/UI come in later slices.
-## A static prop with a base-footprint collider, like the other shops.
+## Shared script for the rebuildable town buildings (weapon shop, armor shop,
+## jewelry shop, training grounds). Every building but the Inn starts ruined
+## per the GDD. Walk up and press interact to spend the rebuild cost from the
+## treasury (GameState.spend_gold) and restore the building. Shop
+## inventory/UI come in later slices.
+## A static prop with a base-footprint collider, like the Inn.
+##
+## Parameterized by building_id: textures load from
+## res://sprites/town/<id>_{ruined,normal}.png and position/radius come from
+## the <id>_town_pos_x/_town_pos_y/_interact_radius rows in balance.csv.
 
-const BUILDING_ID := "jewelry_shop"
-const RUINED_TEXTURE := preload("res://sprites/town/jewelry_shop_ruined.png")
-const NORMAL_TEXTURE := preload("res://sprites/town/jewelry_shop_normal.png")
 const PROMPT_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
 
-## Sprite is 128px tall with a bottom-center pivot; the prompt floats just
-## above the roofline so it never covers the building art.
-const SPRITE_HEIGHT_PX := 128
+## Balance-row prefix and sprite filename stem, e.g. "weapon_shop".
+@export var building_id := ""
+
+## Sprite height in px (bottom-center pivot); the prompt floats just above
+## the roofline so it never covers the building art.
+@export var sprite_height_px := 128
+
+## Missing-row fallbacks only — balance.csv is the source of truth; keep
+## these in sync with the building's rows there.
+@export var fallback_town_pos := Vector2(1072, 712)
+@export var fallback_interact_radius := 72.0
 
 @onready var _sprite: Sprite2D = $Sprite
 
 var rebuild_cost := 0
+var _ruined_texture: Texture2D
+var _normal_texture: Texture2D
 var _ruined := true
 var _prompt: Label
 var _player_near := false
 
 
 func _ready() -> void:
+	_ruined_texture = load("res://sprites/town/%s_ruined.png" % building_id)
+	_normal_texture = load("res://sprites/town/%s_normal.png" % building_id)
 	position = Vector2(
-		BalanceData.get_value("jewelry_shop_town_pos_x", 1280.0),
-		BalanceData.get_value("jewelry_shop_town_pos_y", 512.0))
+		BalanceData.get_value(building_id + "_town_pos_x", fallback_town_pos.x),
+		BalanceData.get_value(building_id + "_town_pos_y", fallback_town_pos.y))
 	rebuild_cost = int(BalanceData.get_value("building_rebuild_cost", 10.0))
 	_prompt = Label.new()
-	_prompt.position = Vector2(-100, -SPRITE_HEIGHT_PX - 12)
+	_prompt.position = Vector2(-100, -sprite_height_px - 12)
 	_prompt.size = Vector2(200, 12)
 	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_prompt.add_theme_color_override("font_color", Color(0.93, 0.89, 0.75))
@@ -42,7 +56,8 @@ func _ready() -> void:
 	var area := Area2D.new()
 	var shape := CollisionShape2D.new()
 	var circle := CircleShape2D.new()
-	circle.radius = BalanceData.get_value("jewelry_shop_interact_radius", 72.0)
+	circle.radius = BalanceData.get_value(
+		building_id + "_interact_radius", fallback_interact_radius)
 	shape.shape = circle
 	area.add_child(shape)
 	area.body_entered.connect(_on_body_entered)
@@ -58,7 +73,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		rebuild()
 
 
-## Attempts the rebuild; on success the ruin becomes the standing shop.
+## Attempts the rebuild; on success the ruin becomes the standing building.
 ## Public so tests/harnesses can trigger it.
 func rebuild() -> void:
 	if _ruined and GameState.spend_gold(rebuild_cost):
@@ -68,9 +83,9 @@ func rebuild() -> void:
 func set_ruined(ruined: bool) -> void:
 	_ruined = ruined
 	GameState.set_building_state(
-		BUILDING_ID,
+		building_id,
 		GameState.BuildingState.RUINED if ruined else GameState.BuildingState.BUILT)
-	_sprite.texture = RUINED_TEXTURE if ruined else NORMAL_TEXTURE
+	_sprite.texture = _ruined_texture if ruined else _normal_texture
 	_refresh_prompt()
 
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3]
+[gd_scene load_steps=37 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
@@ -11,10 +11,7 @@
 [ext_resource type="Script" path="res://scripts/town/inn.gd" id="9_inn"]
 [ext_resource type="Texture2D" uid="uid://dvo7fjhahrkxw" path="res://sprites/town/inn_lv1.png" id="10_innsprite"]
 [ext_resource type="Script" path="res://scripts/town/recruit_spawner.gd" id="11_recruits"]
-[ext_resource type="Script" path="res://scripts/town/weapon_shop.gd" id="12_weaponshop"]
-[ext_resource type="Script" path="res://scripts/town/armor_shop.gd" id="13_armorshop"]
-[ext_resource type="Script" path="res://scripts/town/jewelry_shop.gd" id="14_jewelryshop"]
-[ext_resource type="Script" path="res://scripts/town/training_grounds.gd" id="15_traininggrounds"]
+[ext_resource type="Script" path="res://scripts/town/rebuildable_building.gd" id="12_building"]
 [ext_resource type="Script" path="res://scripts/town/graveyard.gd" id="16_graveyard"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
@@ -208,7 +205,8 @@ position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_inn")
 
 [node name="WeaponShop" type="StaticBody2D" parent="."]
-script = ExtResource("12_weaponshop")
+script = ExtResource("12_building")
+building_id = "weapon_shop"
 
 [node name="Sprite" type="Sprite2D" parent="WeaponShop"]
 offset = Vector2(0, -64)
@@ -218,7 +216,9 @@ position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_weaponshop")
 
 [node name="ArmorShop" type="StaticBody2D" parent="."]
-script = ExtResource("13_armorshop")
+script = ExtResource("12_building")
+building_id = "armor_shop"
+fallback_town_pos = Vector2(848, 712)
 
 [node name="Sprite" type="Sprite2D" parent="ArmorShop"]
 offset = Vector2(0, -64)
@@ -228,7 +228,9 @@ position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_armorshop")
 
 [node name="JewelryShop" type="StaticBody2D" parent="."]
-script = ExtResource("14_jewelryshop")
+script = ExtResource("12_building")
+building_id = "jewelry_shop"
+fallback_town_pos = Vector2(1280, 512)
 
 [node name="Sprite" type="Sprite2D" parent="JewelryShop"]
 offset = Vector2(0, -64)
@@ -238,7 +240,11 @@ position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_jewelryshop")
 
 [node name="TrainingGrounds" type="StaticBody2D" parent="."]
-script = ExtResource("15_traininggrounds")
+script = ExtResource("12_building")
+building_id = "training_grounds"
+sprite_height_px = 96
+fallback_town_pos = Vector2(624, 512)
+fallback_interact_radius = 80.0
 
 [node name="Sprite" type="Sprite2D" parent="TrainingGrounds"]
 offset = Vector2(0, -48)
