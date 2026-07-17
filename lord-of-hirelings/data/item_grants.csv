@@ -1,0 +1,13 @@
+class,slot,stat,tier_0,tier_1,tier_2,tier_3,tier_4,tier_5
+*,weapon,power,0,1,2,3,4,6
+Knight,weapon,armor,0,0,1,1,2,2
+Captain,weapon,armor,0,0,1,1,2,2
+*,armor,armor,0,1,1,2,2,3
+*,armor,guard_pct,0,0,5,5,10,15
+Knight,jewelry,guard_pct,0,3,6,9,12,18
+Captain,jewelry,horn_morale,0,1,2,3,4,6
+Captain,jewelry,horn_power,0,0,1,1,2,2
+Berserker,jewelry,crit_dmg_pct,0,10,20,30,40,60
+Mage,jewelry,power,0,1,2,3,4,6
+Rogue,jewelry,crit_pct,0,3,6,9,12,18
+Cleric,jewelry,heal_morale,0,1,2,3,4,6

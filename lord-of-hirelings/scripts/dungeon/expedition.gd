@@ -210,6 +210,7 @@ func _run_fight(fight: Dictionary, roster: Array[Dictionary]) -> Dictionary:
 			# Frozen for the dive: this is the level they walked in on, whatever
 			# XP they have banked since.
 			"level": ledger["start_level"],
+			"gear": ledger["gear"],
 			"hp": ledger["hp"],
 			"morale": ledger["morale"],
 		})
@@ -339,6 +340,9 @@ func _add_member(member: Dictionary) -> void:
 		"name": member.get("name", adventurer_class),
 		"class": adventurer_class,
 		"start_level": level,
+		# The kit they walked in wearing, frozen for the dive like their level:
+		# there is no shopping underground.
+		"gear": member.get("gear", {}),
 		"start_xp": maxi(int(member.get("xp", 0)), 0),
 		"start_gold": maxi(int(member.get("gold", 0)), 0),
 		# Everyone enters fresh: the roster heals to full outside the dungeon.
