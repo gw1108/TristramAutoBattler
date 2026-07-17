@@ -38,7 +38,7 @@ const EPITHETS := [
 ]
 
 ## Hired adventurers, in hire order. Each entry:
-## { "name": String, "class": String, "level": int }
+## { "name": String, "class": String, "level": int, "gold": int }
 var members: Array[Dictionary] = []
 
 ## Display names currently reserved by unhired recruits standing at the inn,
@@ -89,13 +89,16 @@ func release_name(display_name: String) -> void:
 
 
 ## Appends a hired adventurer. Returns false (and records nothing) at the cap.
-func add_member(display_name: String, adventurer_class: String, level: int = 1) -> bool:
+## `gold` is starting personal gold — the pre-discount base cost when the hire
+## was sponsored (GDD two-purse economy), 0 for a plain hire.
+func add_member(display_name: String, adventurer_class: String, level: int = 1, gold: int = 0) -> bool:
 	if is_full():
 		return false
 	members.append({
 		"name": display_name,
 		"class": adventurer_class,
 		"level": level,
+		"gold": gold,
 	})
 	roster_changed.emit()
 	return true

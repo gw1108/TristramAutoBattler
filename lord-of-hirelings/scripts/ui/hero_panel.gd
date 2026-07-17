@@ -1,5 +1,5 @@
 extends PanelContainer
-## Hero stat panel (mockups/hero-panel.html Variant A; GDD hero panel).
+## Hero stat panel (mockups/hero-panel.html Variants A and B; GDD hero panel).
 ## Opens when the player left-clicks a hired adventurer wandering the town —
 ## mouse only, no keyboard interact required. Header: first name as title,
 ## epithet as subtitle, class sprite + level on the left, personal gold on
@@ -9,6 +9,10 @@ extends PanelContainer
 ## panel closes it; clicking another adventurer switches to them (the close
 ## runs on unhandled input, the open on physics picking, which the viewport
 ## processes afterwards).
+## Variant B: left-clicking an unhired recruit at the inn opens the same
+## panel via open_for_recruit with a "Looking for work" activity plus a hire
+## section — class name, one-line class description, and Hire / Hire and
+## Sponsor buttons (mouse-only hire path alongside the recruit's [E] prompt).
 
 const TITLE_FONT := preload("res://fonts/pixel-operator/PixelOperator-Bold.ttf")
 const BODY_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
@@ -38,6 +42,17 @@ const TIER0_ITEMS := {
 	"Cleric": ["Cracked Censer", "Threadbare Habit", "Cracked Prayer-Bead"],
 }
 
+## One-line class descriptions for the Variant B hire section, phrased after
+## the GDD "Class roles" lines (Mage's is the mockup's verbatim).
+const CLASS_DESCRIPTIONS := {
+	"Knight": "Tanky, with defensive abilities to shield the party.",
+	"Captain": "Restores morale and boosts his comrades' damage.",
+	"Berserker": "Hits hard, and can take a hit in return.",
+	"Mage": "Hurls elemental ruin at every enemy at once. Devastating, but fragile.",
+	"Rogue": "High single-target damage, with decent health and defense.",
+	"Cleric": "No attack of their own; keeps the party alive with heals and blessings.",
+}
+
 var _icon: TextureRect
 var _class_label: Label
 var _level_label: Label
@@ -47,6 +62,14 @@ var _subtitle_label: Label
 var _stat_labels := {}
 var _item_labels: Array[Label] = []
 var _activity_label: Label
+var _hire_section: VBoxContainer
+var _hire_class_label: Label
+var _hire_desc_label: Label
+var _hire_button: Button
+var _sponsor_button: Button
+## The inn recruit this panel is currently open for (Variant B), or null in
+## the plain Variant A stat view.
+var _recruit: Node
 
 
 func _ready() -> void:
@@ -65,17 +88,49 @@ func _ready() -> void:
 	panel.content_margin_bottom = 8.0
 	add_theme_stylebox_override("panel", panel)
 	_build()
+	# Keep the hire buttons' enabled state honest while the panel sits open.
+	GameState.gold_changed.connect(func(_g: int) -> void: _refresh_hire_buttons())
+	Roster.roster_changed.connect(_refresh_hire_buttons)
 
 
 ## Opens (or retargets) the panel for the roster member with this name.
 func open(display_name: String) -> void:
 	for member in Roster.members:
 		if member["name"] == display_name:
+			_recruit = null
+			_hire_section.hide()
+			_activity_label.text = "Wandering the town"
 			_populate(member)
-			show()
-			reset_size()
-			position = ((get_viewport_rect().size - size) / 2.0).floor()
+			_present()
 			return
+
+
+## Opens (or retargets) the panel in hire mode for an unhired inn recruit
+## (mockup Variant B). Reads name/class/cost straight off the recruit node —
+## there is no Roster entry yet.
+func open_for_recruit(recruit: Node) -> void:
+	_recruit = recruit
+	_populate({
+		"name": recruit.display_name,
+		"class": recruit.adventurer_class,
+		"level": 1,
+	})
+	_activity_label.text = "Looking for work"
+	_hire_class_label.text = recruit.adventurer_class
+	_hire_desc_label.text = CLASS_DESCRIPTIONS.get(recruit.adventurer_class, "")
+	# BalanceNumbers "Hire + Sponsor": double the cost, and the recruit
+	# arrives carrying their base cost as personal gold.
+	_hire_button.text = "Hire (%d Gold)" % recruit.hire_cost
+	_sponsor_button.text = "Hire and Sponsor (%d Gold)" % (recruit.hire_cost * 2)
+	_refresh_hire_buttons()
+	_hire_section.show()
+	_present()
+
+
+func _present() -> void:
+	show()
+	reset_size()
+	position = ((get_viewport_rect().size - size) / 2.0).floor()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -145,6 +200,23 @@ func _build() -> void:
 	_activity_label = _label(
 		"Wandering the town", COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
 	root.add_child(_activity_label)
+	# Variant B hire section — hidden in the plain stat view.
+	_hire_section = VBoxContainer.new()
+	_hire_section.add_theme_constant_override("separation", 6)
+	_hire_section.hide()
+	root.add_child(_hire_section)
+	_hire_section.add_child(_separator())
+	_hire_class_label = _label("", COLOR_TEXT, HORIZONTAL_ALIGNMENT_CENTER)
+	_hire_section.add_child(_hire_class_label)
+	_hire_desc_label = _label("", COLOR_MUTED, HORIZONTAL_ALIGNMENT_CENTER)
+	_hire_desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_hire_section.add_child(_hire_desc_label)
+	_hire_button = _hire_button_node(COLOR_GOLD)
+	_hire_button.pressed.connect(_on_hire_pressed.bind(false))
+	_hire_section.add_child(_hire_button)
+	_sponsor_button = _hire_button_node(COLOR_TEXT)
+	_sponsor_button.pressed.connect(_on_hire_pressed.bind(true))
+	_hire_section.add_child(_sponsor_button)
 
 
 func _populate(member: Dictionary) -> void:
@@ -193,6 +265,55 @@ func _populate(member: Dictionary) -> void:
 	var items: Array = TIER0_ITEMS.get(adventurer_class, ["", "", ""])
 	for i in 3:
 		_item_labels[i].text = items[i]
+
+
+func _on_hire_pressed(sponsored: bool) -> void:
+	if _recruit == null or not is_instance_valid(_recruit):
+		hide()
+		return
+	if _recruit.hire(sponsored):
+		hide()
+
+
+## Greys the hire buttons out while the roster is full or the treasury cannot
+## cover each button's own price (mockup Variant B).
+func _refresh_hire_buttons() -> void:
+	if not visible or not _hire_section.visible:
+		return
+	if _recruit == null or not is_instance_valid(_recruit):
+		# The recruit was hired via [E] (or despawned) under the open panel.
+		hide()
+		return
+	var full: bool = Roster.is_full()
+	_hire_button.disabled = full or not GameState.can_afford(_recruit.hire_cost)
+	_sponsor_button.disabled = full or not GameState.can_afford(_recruit.hire_cost * 2)
+
+
+func _hire_button_node(text_color: Color) -> Button:
+	var button := Button.new()
+	button.add_theme_font_override("font", BODY_FONT)
+	button.add_theme_font_size_override("font_size", 8)
+	button.add_theme_color_override("font_color", text_color)
+	button.add_theme_color_override("font_hover_color", text_color)
+	button.add_theme_color_override("font_pressed_color", text_color)
+	button.add_theme_color_override("font_disabled_color", COLOR_MUTED)
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Color("34343e")
+	normal.border_color = COLOR_BORDER
+	normal.set_border_width_all(1)
+	normal.set_content_margin_all(4.0)
+	button.add_theme_stylebox_override("normal", normal)
+	var hover: StyleBoxFlat = normal.duplicate()
+	hover.bg_color = Color("40404c")
+	button.add_theme_stylebox_override("hover", hover)
+	var pressed: StyleBoxFlat = normal.duplicate()
+	pressed.bg_color = Color("1d1d24")
+	button.add_theme_stylebox_override("pressed", pressed)
+	var disabled: StyleBoxFlat = normal.duplicate()
+	disabled.bg_color = Color("2b2b33")
+	disabled.border_color = Color(COLOR_BORDER, 0.5)
+	button.add_theme_stylebox_override("disabled", disabled)
+	return button
 
 
 func _label(text: String, color: Color, alignment: int) -> Label:

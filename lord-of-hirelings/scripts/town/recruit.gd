@@ -4,8 +4,9 @@ extends Area2D
 ## the six classes), and base cost (GDD: randint(7, 9) at level 1) are all
 ## rolled once at generation. Press interact to hire: gold is spent via
 ## GameState.spend_gold and the adventurer joins the Roster autoload —
-## hiring is disabled while the roster sits at its hard cap. The hero panel
-## comes in a later slice.
+## hiring is disabled while the roster sits at its hard cap. Left-clicking
+## the sprite opens the hero panel in its Variant B hire mode (mockups/
+## hero-panel.html), a mouse-only hire path alongside the [E] prompt.
 
 const ContactShadowScript := preload("res://scripts/town/contact_shadow.gd")
 
@@ -21,6 +22,10 @@ const CLASS_VARIANTS := {
 	"Knight": 0, "Berserker": 1, "Mage": 2,
 	"Rogue": 3, "Captain": 4, "Cleric": 5,
 }
+
+## Layer the click-pick Area2D sits on (matches hired_adventurer.gd): physics
+## picking ignores objects with no layer, and this bit is masked by nothing.
+const CLICK_PICK_LAYER := 1 << 7
 
 var variant_index := 0
 var hire_cost := 0
@@ -56,6 +61,20 @@ func _ready() -> void:
 	circle.radius = BalanceData.get_value("recruit_interact_radius", 40.0)
 	shape.shape = circle
 	add_child(shape)
+	# Left-click-to-inspect: a pickable Area2D sized to the sprite (not the
+	# whole interact radius) opens the hero panel's hire view.
+	var click_area := Area2D.new()
+	click_area.collision_layer = CLICK_PICK_LAYER
+	click_area.collision_mask = 0
+	click_area.input_pickable = true
+	var click_shape := CollisionShape2D.new()
+	var click_rect := RectangleShape2D.new()
+	click_rect.size = Vector2(SHEET_CELL_PX, SHEET_CELL_PX) * sprite_scale
+	click_shape.shape = click_rect
+	click_shape.position = Vector2(0.0, -SHEET_CELL_PX * sprite_scale / 2.0)
+	click_area.add_child(click_shape)
+	click_area.input_event.connect(_on_click_area_input)
+	add_child(click_area)
 	_prompt = Label.new()
 	# Just above the 48px sprite so the text never covers the face;
 	# InteractPrompt.set_text re-centers it on every text change.
@@ -92,13 +111,27 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## Attempts the hire: refuses at the roster cap, spends gold, then records
-## the adventurer on the Roster. Public so tests/harnesses can trigger it.
-func hire() -> void:
+## the adventurer on the Roster. A sponsored hire costs double and hands the
+## adventurer their pre-discount base cost as personal gold (BalanceNumbers
+## "Hire + Sponsor"). Returns whether the hire went through. Public so the
+## hero panel and tests/harnesses can trigger it.
+func hire(sponsored: bool = false) -> bool:
 	if Roster.is_full():
-		return
-	if GameState.spend_gold(hire_cost):
-		Roster.add_member(display_name, adventurer_class)
-		queue_free()
+		return false
+	var price := hire_cost * 2 if sponsored else hire_cost
+	if not GameState.spend_gold(price):
+		return false
+	Roster.add_member(display_name, adventurer_class, 1, hire_cost if sponsored else 0)
+	queue_free()
+	return true
+
+
+func _on_click_area_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton \
+			and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var panel := get_tree().get_first_node_in_group("hero_panel")
+		if panel != null:
+			panel.open_for_recruit(self)
 
 
 func _refresh_prompt() -> void:
