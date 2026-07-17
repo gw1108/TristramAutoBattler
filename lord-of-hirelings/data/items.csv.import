@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://by413cu8se5wy"
+
+[deps]
+
+files=["res://data/items.tier.translation", "res://data/items.weapon.translation", "res://data/items.armor.translation", "res://data/items.jewelry.translation"]
+
+source_file="res://data/items.csv"
+dest_files=["res://data/items.tier.translation", "res://data/items.weapon.translation", "res://data/items.armor.translation", "res://data/items.jewelry.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

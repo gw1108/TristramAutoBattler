@@ -50,9 +50,12 @@ const PARTY_COUNT := 3
 const PARTY_MAX_SIZE := 3
 
 ## Hired adventurers, in hire order. Each entry:
-## { "name": String, "class": String, "level": int, "gold": int, "xp": int }
+## { "name": String, "class": String, "level": int, "gold": int, "xp": int,
+##   "gear": { "weapon": int, "armor": int, "jewelry": int } }
 ## `xp` is progress toward the next level only — the expedition summary spends
 ## it on level-ups and writes back the remainder (BalanceNumbers growth).
+## `gear` is the tier worn in each slot, 0-Items.MAX_TIER; everyone arrives in
+## tier 0 in all three and Shops raises them as they buy (GDD equipment).
 var members: Array[Dictionary] = []
 
 ## The expedition parties formed at the call to arms: PARTY_COUNT arrays of
@@ -133,7 +136,10 @@ func add_member(display_name: String, adventurer_class: String, level: int = 1, 
 		"level": level,
 		"gold": gold,
 		"xp": 0,
+		"gear": {"weapon": 0, "armor": 0, "jewelry": 0},
 	})
+	# Shops runs its purchasing pass off this, so a sponsored hire can walk
+	# straight from the inn to a shop with the gold they arrived holding (GDD).
 	roster_changed.emit()
 	return true
 

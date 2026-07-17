@@ -5,7 +5,7 @@ extends PanelContainer
 ## epithet as subtitle, class sprite + level on the left, personal gold on
 ## the right. Below: the BalanceNumbers stat block (evasion/accuracy shown as
 ## percentages vs the reference grunt via ClassStats), the always-three-row
-## tier-0 inventory, and the current activity. Any left-click outside the
+## inventory naming the tier worn in each slot, and the current activity. Any left-click outside the
 ## panel closes it; clicking another adventurer switches to them (the close
 ## runs on unhandled input, the open on physics picking, which the viewport
 ## processes afterwards).
@@ -31,19 +31,6 @@ const COLOR_GOLD := Color(0.98, 0.82, 0.35)
 
 const PANEL_WIDTH := 232.0
 const SHEET_CELL_PX := 48
-
-## Tier-0 item names per class, [weapon, armor, jewelry] (BalanceNumbers
-## "Item names"). The inventory always lists all three slots because every
-## adventurer arrives wearing tier 0 in each; higher tiers come with the
-## shop-inventory slice.
-const TIER0_ITEMS := {
-	"Knight": ["Rusted Longsword", "Dented Hauberk", "Frayed Sword-Belt"],
-	"Captain": ["Cracked Spear", "Frayed Gambeson", "Tarnished Whistle"],
-	"Berserker": ["Chipped Axe", "Torn Furs", "Bent Iron Ring"],
-	"Mage": ["Splintered Wand", "Moth-Eaten Robes", "Clouded Bead"],
-	"Rogue": ["Notched Knife", "Patchwork Cloak", "Bent Copper Ring"],
-	"Cleric": ["Cracked Censer", "Threadbare Habit", "Cracked Prayer-Bead"],
-}
 
 ## One-line class descriptions for the Variant B hire section, phrased after
 ## the GDD "Class roles" lines (Mage's is the mockup's verbatim).
@@ -277,8 +264,8 @@ func _populate(member: Dictionary) -> void:
 	_icon.texture = atlas
 	_class_label.text = adventurer_class
 	_level_label.text = "Lv %d" % level
-	# GDD two-purse economy: fresh hires carry no personal gold yet; dungeon
-	# drops will write a "gold" key onto the roster entry in a later slice.
+	# GDD two-purse economy: the adventurer's own purse, which the dungeon
+	# fills and the shops drain — never the player's treasury.
 	_gold_label.text = "%dg" % int(member.get("gold", 0))
 	var stats := ClassStats.stats_at_level(adventurer_class, level)
 	if stats.is_empty():
@@ -301,9 +288,14 @@ func _populate(member: Dictionary) -> void:
 		_stat_labels["crit_dmg_pct"].text = "Crit Dmg: +%d%%" % int(stats["crit_dmg_pct"])
 	else:
 		_stat_labels["crit_dmg_pct"].text = "Crit Dmg: -"
-	var items: Array = TIER0_ITEMS.get(adventurer_class, ["", "", ""])
-	for i in 3:
-		_item_labels[i].text = items[i]
+	# The inventory always lists all three slots: everyone is wearing at least
+	# tier 0 in each, and tier 0 has names of its own (GDD "Item Naming"). A
+	# recruit has no roster entry and so no gear dict — they are still in tier 0.
+	var gear: Dictionary = member.get("gear", {})
+	for i in Items.SLOTS.size():
+		var slot: String = Items.SLOTS[i]
+		_item_labels[i].text = Items.item_name(
+			adventurer_class, slot, int(gear.get(slot, 0)))
 
 
 func _on_hire_pressed(sponsored: bool) -> void:

@@ -30,6 +30,13 @@ lich_raise_dead_hp_threshold,0.5,HP fraction the Lich must cross below (and surv
 demon_prince_eruption_turn_interval,3,The Demon Prince's attack erupts across the whole party on every Nth turn of his own within a battle
 sales_commission_pct,0.1,Player's cut of adventurer purchases at player-owned shops
 sales_commission_min_gold,1,Minimum gold the player earns from a single sales commission
+item_tier_1_cost,8,Gold an adventurer pays for a tier 1 item (same price in all three shops)
+item_tier_2_cost,16,Gold an adventurer pays for a tier 2 item
+item_tier_3_cost,32,Gold an adventurer pays for a tier 3 item
+item_tier_4_cost,64,Gold an adventurer pays for a tier 4 item
+item_tier_5_cost,128,Gold an adventurer pays for a tier 5 item
+item_gate_level_per_tier,2,Adventurer levels the item hero gate demands per tier (gate = this * tier + item_gate_level_offset; mirrors the dungeon gate's 2N-1)
+item_gate_level_offset,-1,Constant added to the item hero gate
 tax_copy_pct,0.1,Player's tax-copy percent of adventurer gold earned in the dungeon
 player_move_speed,150,Lord top-down move speed in the town (px/sec)
 town_map_width,1920,Bounded town map width in px (player and camera clamp)
