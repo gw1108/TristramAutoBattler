@@ -30,6 +30,10 @@ extends Control
 ## XP is placed. Fled adventurers still level up — they keep every point banked
 ## before they ran.
 
+## The player dismissed the panel. The win panel is timed to this exact moment
+## (GDD: it appears "the moment the winning expedition's summary is closed").
+signal closed
+
 const TITLE_FONT := preload("res://fonts/pixel-operator/PixelOperator-Bold.ttf")
 const BODY_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
 const VARIANT_SHEET := preload("res://sprites/recruits/recruit_variants.png")
@@ -440,6 +444,7 @@ func _on_close_pressed() -> void:
 	# Stops whatever is still animating: every await re-checks the generation.
 	_generation += 1
 	hide()
+	closed.emit()
 
 
 func _class_icon(adventurer_class: String) -> AtlasTexture:

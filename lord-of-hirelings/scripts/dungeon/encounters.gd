@@ -4,7 +4,7 @@ extends Object
 ## the dive, per BalanceNumbers "Encounters", "Enemy gold traits" and "Dungeon
 ## level selection (party AI)".
 ##
-##     var fights := Encounters.build_level(1, day, rng)
+##     var fights := Encounters.build_level(1, day, rng, endless_tier)
 ##     fights[0]["index"]        # 1-based; fights[-1]["is_boss"] is true
 ##     fights[0]["enemies"][0]   # {variant, archetype, trait, gold_mult, stats}
 ##
@@ -33,14 +33,20 @@ const MAX_REGULAR_FIGHTS := 5
 
 
 ## The whole level as an ordered fight list: the regular fights, then the boss.
-## Each fight is {index (1-based), is_boss, enemies}.
-static func build_level(n: int, day: int, rng: RandomNumberGenerator) -> Array[Dictionary]:
+## Each fight is {index (1-based), is_boss, enemies}. [param tier] is the
+## expedition's endless tier, which toughens every enemy it spawns; it is 0 for
+## the whole campaign up to and including the winning dive.
+static func build_level(
+		n: int,
+		day: int,
+		rng: RandomNumberGenerator,
+		tier := 0) -> Array[Dictionary]:
 	var level := maxi(n, 1)
 	var fights: Array[Dictionary] = []
 	var regular := regular_fight_count(level)
 	for index in range(1, regular + 1):
-		fights.append(_regular_fight(index, level, day, rng))
-	fights.append(_boss_fight(regular + 1, level, day, rng))
+		fights.append(_regular_fight(index, level, day, rng, tier))
+	fights.append(_boss_fight(regular + 1, level, day, rng, tier))
 	return fights
 
 
@@ -114,25 +120,35 @@ static func average_level(party: Array) -> float:
 	return float(total) / float(party.size())
 
 
-static func _regular_fight(index: int, level: int, day: int, rng: RandomNumberGenerator) -> Dictionary:
+static func _regular_fight(
+		index: int,
+		level: int,
+		day: int,
+		rng: RandomNumberGenerator,
+		tier: int) -> Dictionary:
 	var enemies: Array[Dictionary] = []
 	for _i in grunt_count(index, level):
-		enemies.append(_spawn(_roll_grunt(index, level, rng), day, rng))
+		enemies.append(_spawn(_roll_grunt(index, level, rng), day, rng, tier))
 	var casters := caster_count(index)
 	if casters > 0:
 		var caster_id := EnemyStats.variant_of(EnemyStats.CASTER, level)
 		for _i in casters:
-			enemies.append(_spawn(caster_id, day, rng))
+			enemies.append(_spawn(caster_id, day, rng, tier))
 	return {"index": index, "is_boss": false, "enemies": enemies}
 
 
 ## The boss battle: boss + 1 grunt escort, at every dungeon level (it does not
 ## scale). The boss never rolls a trait; the escort rolls like any other grunt.
-static func _boss_fight(index: int, level: int, day: int, rng: RandomNumberGenerator) -> Dictionary:
+static func _boss_fight(
+		index: int,
+		level: int,
+		day: int,
+		rng: RandomNumberGenerator,
+		tier: int) -> Dictionary:
 	var enemies: Array[Dictionary] = []
-	enemies.append(_spawn(EnemyStats.variant_of(EnemyStats.BOSS, level), day, rng, false))
+	enemies.append(_spawn(EnemyStats.variant_of(EnemyStats.BOSS, level), day, rng, tier, false))
 	for _i in maxi(0, roundi(_balance("encounter_boss_escort_grunts", 1.0))):
-		enemies.append(_spawn(_roll_grunt(index, level, rng), day, rng))
+		enemies.append(_spawn(_roll_grunt(index, level, rng), day, rng, tier))
 	return {"index": index, "is_boss": true, "enemies": enemies}
 
 
@@ -152,12 +168,23 @@ static func _spawn(
 		variant_id: String,
 		day: int,
 		rng: RandomNumberGenerator,
+		tier: int,
 		can_roll_trait := true) -> Dictionary:
 	var trait_id := _roll_trait(day, rng) if can_roll_trait else TRAIT_NONE
 	var stats := EnemyStats.stats_for(variant_id)
 	if stats.is_empty():
 		push_error("Encounters: unknown enemy variant '%s'" % variant_id)
-	elif trait_id == TRAIT_HOARDER:
+		return {
+			"variant": variant_id,
+			"archetype": "",
+			"trait": trait_id,
+			"gold_mult": trait_gold_multiplier(trait_id),
+			"stats": stats,
+		}
+	# The endless tier lands BEFORE the trait: a Hoarder's +50% is taken off its
+	# already tier-scaled HP and rounded again (BalanceNumbers "Endless mode").
+	EnemyStats.apply_endless_tier(stats, tier)
+	if trait_id == TRAIT_HOARDER:
 		# Fat and slow: the trait buys the party time to earn the ×3 purse.
 		stats["hp"] = float(roundi(stats["hp"] * _balance("enemy_trait_hoarder_hp_mult", 1.5)))
 		stats["speed"] = stats["speed"] + _balance("enemy_trait_hoarder_speed_delta", -2.0)
