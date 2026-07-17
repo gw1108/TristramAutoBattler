@@ -226,10 +226,14 @@ func _act_captain(c: Dictionary) -> void:
 
 ## Rallying Horn: morale to every living party member and +1 power on each of
 ## their next attacks. The power buff is one shared stacking instance, so a
-## second Horn raises its magnitude and refreshes its duration.
+## second Horn raises its magnitude and refreshes its duration. Both halves are
+## what the Captain's amulet buys: a tier 5 Horn restores 8 morale and grants
+## +3 power, rather than 2 and +1 (BalanceNumbers "Jewelry grants").
 func _rallying_horn(c: Dictionary) -> void:
-	var morale := int(BalanceData.get_value("captain_horn_morale", 2.0))
-	var power := BalanceData.get_value("captain_horn_power", 1.0)
+	var morale := int(BalanceData.get_value("captain_horn_morale", 2.0)
+			+ c["gear"].get("horn_morale", 0.0))
+	var power: float = BalanceData.get_value("captain_horn_power", 1.0) \
+			+ c["gear"].get("horn_power", 0.0)
 	var duration := int(BalanceData.get_value("captain_horn_power_duration_turns", 1.0))
 	var targets: Array[int] = []
 	for ally in _active(PARTY_SIDE):
@@ -246,7 +250,9 @@ func _rallying_horn(c: Dictionary) -> void:
 
 ## Heal power + 1 to the lowest-HP living ally (itself included), or Blessing
 ## when the whole party is untouched. The heal is deterministic — no ±1 roll,
-## no crit.
+## no crit. The Cleric's amulet rides the heal and only the heal: it restores
+## morale to the same target, never to a Blessing's (BalanceNumbers "Jewelry
+## grants").
 func _act_cleric(c: Dictionary) -> void:
 	var wounded: Array[Dictionary] = []
 	var lowest := 0
@@ -265,8 +271,13 @@ func _act_cleric(c: Dictionary) -> void:
 	var amount := roundi(_effective_stats(c)["power"]
 			+ BalanceData.get_value("cleric_heal_power_bonus", 1.0))
 	var healed := _heal(target, amount)
+	var morale := mini(
+		int(c["gear"].get("heal_morale", 0.0)),
+		int(target["max_morale"]) - int(target["morale"]))
+	target["morale"] += morale
 	_emit("heal", {
 		"actor": c["id"], "target": target["id"], "amount": healed, "hp": target["hp"],
+		"morale_restored": morale, "morale": target["morale"],
 	})
 
 
@@ -531,12 +542,20 @@ func _add_adventurer(member: Dictionary) -> int:
 	if stats.is_empty():
 		push_error("Battle: unknown adventurer class '%s'" % adventurer_class)
 		return -1
+	# What they bought with their own gold. The stat-block half is folded in here
+	# and never referenced again; the ability riders stay on the combatant because
+	# the Horn and the heal read them, not the stats (BalanceNumbers "Equipment").
+	var gear := Items.grants(adventurer_class, member.get("gear", {}))
+	for key in ClassStats.STAT_KEYS:
+		if gear.has(key):
+			stats[key] += gear[key]
 	var hp := roundi(stats.get("hp", 1.0))
 	var morale := roundi(stats.get("max_morale", 0.0))
 	return _add_combatant({
 		"side": PARTY_SIDE,
 		"name": member.get("name", adventurer_class),
 		"class": adventurer_class,
+		"gear": gear,
 		"variant": "",
 		"archetype": "",
 		"signature": "",
@@ -570,6 +589,8 @@ func _add_enemy(spec: Variant, minion: bool) -> int:
 		"side": ENEMY_SIDE,
 		"name": EnemyStats.display_name(variant_id),
 		"class": "",
+		# Enemies buy nothing: their stats are the bestiary row, whole.
+		"gear": {},
 		"variant": variant_id,
 		"archetype": EnemyStats.archetype_of(variant_id),
 		"signature": signature,
