@@ -21,6 +21,9 @@ func _ready() -> void:
 
 
 func _on_day_advanced(new_day: int) -> void:
+	# The starting night sits at day 0 — no expedition has been made yet, and the
+	# day counter is a count of expeditions (GDD) — so it reads "Day 0" until the
+	# first crow rather than claiming a day that has not begun.
 	_day_label.text = "Day %d" % new_day
 
 

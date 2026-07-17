@@ -21,7 +21,10 @@ enum Phase { NIGHT, DAY, CALL_TO_ARMS }
 ## don't own the node (shop UI, commissions, upgrades) can query and react.
 enum BuildingState { RUINED, BUILT }
 
-var day: int = 1
+## The day is a count of expeditions made, so the first expedition is day 1
+## (GDD). The world starts at night with no expedition behind it, so the
+## counter starts at 0 and the first rooster crow brings day 1.
+var day: int = 0
 var gold: int = 0
 var phase: Phase = Phase.NIGHT
 
