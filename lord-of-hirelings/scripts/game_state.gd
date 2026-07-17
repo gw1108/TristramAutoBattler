@@ -8,14 +8,24 @@ extends Node
 signal day_advanced(new_day: int)
 signal gold_changed(new_gold: int)
 signal phase_changed(new_phase: Phase)
+signal building_state_changed(building_id: String, state: BuildingState)
 
 ## The town's time-of-day cycle (GDD): the world starts at night, the rooster
 ## crow brings the day, and finishing an expedition returns it to night.
 enum Phase { NIGHT, DAY }
 
+## Rebuild status of a town building. Every building but the Inn starts as a
+## ruin (GDD); building nodes write through set_building_state so systems that
+## don't own the node (shop UI, commissions, upgrades) can query and react.
+enum BuildingState { RUINED, BUILT }
+
 var day: int = 1
 var gold: int = 0
 var phase: Phase = Phase.NIGHT
+
+## building_id (e.g. "weapon_shop") -> BuildingState. Buildings register
+## themselves here from set_ruined; absent means RUINED.
+var building_states: Dictionary = {}
 
 ## Dev toggle: while expeditions don't exist yet nothing can return the world
 ## to night, so this keeps the rooster usable every pass through the loop.
@@ -68,3 +78,16 @@ func spend_gold(amount: int) -> bool:
 
 func can_afford(amount: int) -> bool:
 	return amount <= gold
+
+
+## Records [param building_id]'s state, emitting building_state_changed only
+## on an actual change.
+func set_building_state(building_id: String, state: BuildingState) -> void:
+	if building_states.get(building_id) == state:
+		return
+	building_states[building_id] = state
+	building_state_changed.emit(building_id, state)
+
+
+func is_building_built(building_id: String) -> bool:
+	return building_states.get(building_id, BuildingState.RUINED) == BuildingState.BUILT

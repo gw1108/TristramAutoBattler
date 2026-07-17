@@ -5,6 +5,7 @@ extends StaticBody2D
 ## building. Shop inventory/UI come in later slices.
 ## A static prop with a base-footprint collider, like the Weapon shop.
 
+const BUILDING_ID := "armor_shop"
 const RUINED_TEXTURE := preload("res://sprites/town/armor_shop_ruined.png")
 const NORMAL_TEXTURE := preload("res://sprites/town/armor_shop_normal.png")
 const PROMPT_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
@@ -66,6 +67,9 @@ func rebuild() -> void:
 
 func set_ruined(ruined: bool) -> void:
 	_ruined = ruined
+	GameState.set_building_state(
+		BUILDING_ID,
+		GameState.BuildingState.RUINED if ruined else GameState.BuildingState.BUILT)
 	_sprite.texture = RUINED_TEXTURE if ruined else NORMAL_TEXTURE
 	_refresh_prompt()
 
