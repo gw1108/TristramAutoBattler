@@ -16,3 +16,5 @@ tax_copy_pct,0.1,Player's tax-copy percent of adventurer gold earned in the dung
 player_move_speed,150,Lord top-down move speed in the town (px/sec)
 town_map_width,1920,Bounded town map width in px (player and camera clamp)
 town_map_height,1080,Bounded town map height in px (player and camera clamp)
+player_sprite_scale,1,Uniform scale of the Lord sprite (keep integer for pixel crispness)
+player_walk_anim_fps,8,Frames per second of the Lord walk animation

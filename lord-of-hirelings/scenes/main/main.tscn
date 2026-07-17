@@ -1,8 +1,135 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
 [ext_resource type="Script" path="res://scripts/town/player_lord.gd" id="3_player"]
+[ext_resource type="Texture2D" uid="uid://blps3k1g45bam" path="res://sprites/lord/lord_sheet.png" id="4_lordsheet"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down0"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down1"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down2"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_down3"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up0"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(0, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up1"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(48, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up2"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(96, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up3"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(144, 48, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side0"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(0, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side1"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(48, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side2"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(96, 96, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_side3"]
+atlas = ExtResource("4_lordsheet")
+region = Rect2(144, 96, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lord"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down0")
+}],
+"loop": true,
+"name": &"idle_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side0")
+}],
+"loop": true,
+"name": &"idle_side",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up0")
+}],
+"loop": true,
+"name": &"idle_up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_down3")
+}],
+"loop": true,
+"name": &"walk_down",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_side3")
+}],
+"loop": true,
+"name": &"walk_side",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up3")
+}],
+"loop": true,
+"name": &"walk_up",
+"speed": 8.0
+}]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -15,12 +142,11 @@ color = Color(0.13, 0.15, 0.11, 1)
 [node name="Player" type="CharacterBody2D" parent="."]
 script = ExtResource("3_player")
 
-[node name="PlaceholderVisual" type="ColorRect" parent="Player"]
-offset_left = -8.0
-offset_top = -8.0
-offset_right = 8.0
-offset_bottom = 8.0
-color = Color(0.75, 0.62, 0.28, 1)
+[node name="Sprite" type="AnimatedSprite2D" parent="Player"]
+offset = Vector2(0, -24)
+sprite_frames = SubResource("SpriteFrames_lord")
+animation = &"idle_down"
+autoplay = "idle_down"
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 
