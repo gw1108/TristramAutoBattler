@@ -6,8 +6,9 @@ extends Area2D
 ##
 ## The prompt only shows during the call to arms and only with at least one
 ## non-empty party — at night or during recruitment the mine is just scenery.
-## Until the dive scene exists, entering runs a stub expedition that returns the
-## world to night, closing the day loop.
+## Until the dive scene exists, entering resolves the whole expedition in one
+## call (Expedition.resolve) and applies its summary, then returns the world to
+## night; the scene will replay the fights the summary already contains.
 
 const PROMPT_ENTER := "[E] Enter the dungeon"
 
@@ -59,14 +60,56 @@ func _can_enter() -> bool:
 
 
 ## Sends the formed parties down the mine. Public so tests/harnesses can
-## trigger it. Stub until the dive scene exists: the expedition resolves
-## instantly and the world returns to night (Roster clears the parties off the
-## NIGHT phase change).
-func enter() -> void:
+## trigger it. Returns the expedition summary (the summary panel's data, once it
+## exists), or an empty dictionary if the expedition could not march.
+func enter() -> Dictionary:
 	if not _can_enter():
-		return
+		return {}
 	_prompt.visible = false
+	var rng := RandomNumberGenerator.new()
+	rng.randomize()
+	var summary := Expedition.resolve(
+		Roster.parties, GameState.day, GameState.unlocked_dungeon_level, rng)
+	_apply(summary)
+	# Nightfall dissolves the parties (Roster clears them off the phase change),
+	# so everything the summary owes the town is paid before this.
 	GameState.return_to_night()
+	return summary
+
+
+## The summary is the source of truth for what the dive changed: the player's
+## tax-copy, each survivor's level/XP/purse (Expedition has already spent their
+## XP on level-ups and their gold is a total, not a delta), the dead, and the
+## dungeon level a boss clear opened.
+func _apply(summary: Dictionary) -> void:
+	GameState.add_gold(summary["tax_copy"])
+	GameState.unlock_dungeon_level(summary["unlocked_level"])
+	var dead: Array[String] = []
+	for dive in summary["dives"]:
+		for row in dive["members"]:
+			if not row["alive"]:
+				dead.append(row["name"])
+				continue
+			var member := _member_named(row["name"])
+			if member.is_empty():
+				continue
+			member["level"] = row["level"]
+			member["xp"] = row["xp"]
+			member["gold"] = row["gold"]
+	# Burials come last: kill_member fires member_died and roster_changed, and a
+	# listener that reads the roster back would otherwise see the survivors of
+	# later parties still unpaid.
+	for display_name in dead:
+		Roster.kill_member(display_name)
+
+
+## The roster entry behind a summary row, or {} if it is already gone. Matched by
+## display name, which the roster's uniqueness rule guarantees is a key.
+func _member_named(display_name: String) -> Dictionary:
+	for member in Roster.members:
+		if member["name"] == display_name:
+			return member
+	return {}
 
 
 func _on_phase_changed(_new_phase: GameState.Phase) -> void:

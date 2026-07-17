@@ -28,6 +28,12 @@ var day: int = 0
 var gold: int = 0
 var phase: Phase = Phase.NIGHT
 
+## The deepest dungeon level the parties may pick, 1..Expedition.MAX_DUNGEON_LEVEL.
+## The party AI aims at this ceiling (Encounters.choose_dungeon_level); killing a
+## level's boss opens the next one for every future expedition, so this outlives
+## the expedition that earned it.
+var unlocked_dungeon_level: int = 1
+
 ## building_id (e.g. "weapon_shop") -> BuildingState. Buildings register
 ## themselves here from set_ruined; absent means RUINED.
 var building_states: Dictionary = {}
@@ -67,8 +73,15 @@ func call_to_arms() -> bool:
 	return true
 
 
-## Returns the world to night. Called when an expedition concludes (GDD);
-## until expeditions exist, only dev tooling has a reason to call this.
+## Records the level an expedition's boss clear opened (the dungeon entrance
+## feeds it the expedition summary's unlocked_level). Never regresses, and never
+## reaches past the four levels the bestiary actually has.
+func unlock_dungeon_level(level: int) -> void:
+	unlocked_dungeon_level = clampi(
+		maxi(level, unlocked_dungeon_level), 1, Expedition.MAX_DUNGEON_LEVEL)
+
+
+## Returns the world to night. Called when an expedition concludes (GDD).
 func return_to_night() -> void:
 	if phase == Phase.NIGHT:
 		return
