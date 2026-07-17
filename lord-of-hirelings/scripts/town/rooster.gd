@@ -1,12 +1,14 @@
 extends Area2D
 ## The rooster: the town's day-start interactable (GDD day cycle). Walk up
 ## and press interact to make it crow, which starts a new day via
-## GameState.advance_day(). The GDD gates crowing on night returning after
-## an expedition; until the expedition/night cycle exists, a cooldown from
-## balance.csv stands in for that rule so the day counter is exercisable.
+## GameState.advance_day(). Crowing is gated on GameState.is_night() (the GDD
+## cycle: night -> crow -> day -> expedition -> night); a short cooldown from
+## balance.csv additionally paces repeat crows while GameState.dev_force_night
+## keeps the loop playtestable.
 
 const PROMPT_READY := "[E] Wake the rooster"
 const PROMPT_DOZING := "The rooster dozes..."
+const PROMPT_DAY := "The rooster waits for nightfall..."
 
 ## Placeholder palette until the rooster sprites land (art asset list).
 const BODY_COLOR := Color("7a3b2e")
@@ -31,28 +33,48 @@ func _ready() -> void:
 	_prompt.visible = false
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+	GameState.phase_changed.connect(_on_phase_changed)
 
 
 func _process(delta: float) -> void:
 	if _cooldown > 0.0:
 		_cooldown -= delta
 		if _cooldown <= 0.0:
-			_prompt.text = PROMPT_READY
+			_refresh_prompt()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _player_near and _cooldown <= 0.0 and event.is_action_pressed("interact"):
+	if _player_near and _can_crow() and event.is_action_pressed("interact"):
 		crow()
+
+
+func _can_crow() -> bool:
+	return _cooldown <= 0.0 and GameState.is_night()
 
 
 ## Crows and starts the new day. Public so tests/harnesses can trigger it.
 func crow() -> void:
+	if not GameState.is_night():
+		return
 	GameState.advance_day()
 	_cooldown = _crow_cooldown_sec
-	_prompt.text = PROMPT_DOZING
+	_refresh_prompt()
 	var tween := create_tween()
 	tween.tween_property(self, "scale", Vector2(1.15, 1.25), 0.08)
 	tween.tween_property(self, "scale", Vector2.ONE, 0.15)
+
+
+func _refresh_prompt() -> void:
+	if not GameState.is_night():
+		_prompt.text = PROMPT_DAY
+	elif _cooldown > 0.0:
+		_prompt.text = PROMPT_DOZING
+	else:
+		_prompt.text = PROMPT_READY
+
+
+func _on_phase_changed(_new_phase: GameState.Phase) -> void:
+	_refresh_prompt()
 
 
 func _draw() -> void:
@@ -67,7 +89,7 @@ func _on_body_entered(body: Node2D) -> void:
 	if not body.is_in_group("player"):
 		return
 	_player_near = true
-	_prompt.text = PROMPT_READY if _cooldown <= 0.0 else PROMPT_DOZING
+	_refresh_prompt()
 	_prompt.visible = true
 
 
