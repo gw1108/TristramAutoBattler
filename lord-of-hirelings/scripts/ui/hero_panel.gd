@@ -71,6 +71,7 @@ var _hire_desc_label: Label
 var _hire_button: Button
 var _sponsor_button: Button
 var _party_section: VBoxContainer
+var _party_label: Label
 var _kick_button: Button
 var _swap_button: Button
 var _actions_label: Label
@@ -242,7 +243,8 @@ func _build() -> void:
 	var party_row := HBoxContainer.new()
 	party_row.add_theme_constant_override("separation", 6)
 	_party_section.add_child(party_row)
-	party_row.add_child(_label("Party:", COLOR_MUTED, HORIZONTAL_ALIGNMENT_LEFT))
+	_party_label = _label("Party:", COLOR_MUTED, HORIZONTAL_ALIGNMENT_LEFT)
+	party_row.add_child(_party_label)
 	_kick_button = _hire_button_node(COLOR_TEXT)
 	_kick_button.text = "Kick"
 	_kick_button.pressed.connect(_on_party_action_pressed.bind(true))
@@ -327,10 +329,13 @@ func _on_party_action_pressed(is_kick: bool) -> void:
 ## actually holding a party slot; Kick additionally greys out with no reserves
 ## to swap in, and both grey out once the day's actions are spent (GDD).
 func _refresh_party_row() -> void:
-	if _member_name.is_empty() or GameState.phase != GameState.Phase.CALL_TO_ARMS \
-			or Roster.party_index_of(_member_name) < 0:
+	var party_index := -1 if _member_name.is_empty() \
+			else Roster.party_index_of(_member_name)
+	if party_index < 0 or GameState.phase != GameState.Phase.CALL_TO_ARMS:
 		_party_section.hide()
 		return
+	# party_index_of is 0-based; the parties read as 1..3 to the player.
+	_party_label.text = "Party: %d" % (party_index + 1)
 	var actions_left := Roster.party_actions_left()
 	_actions_label.text = "%d/%d Actions Today" % [actions_left, Roster.party_actions_max()]
 	_kick_button.disabled = actions_left <= 0 or Roster.reserves().is_empty()
