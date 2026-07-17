@@ -54,6 +54,12 @@ Tests are **not required**. Do not use TDD / test-first / red-green-refactor on 
 - **Never propose writing a test before the implementation** for this project.
 - Feel, balance, and "is it fun" are verified by running and playing the game, not by assertion.
 
+### Headless verification harnesses (autoload timing)
+
+**Run a throwaway harness as a scene — `godot --headless --path lord-of-hirelings res://verify_x.tscn`, doing the work in `_ready` — not via `--script`.** `--script` never registers the project's autoloads, so any script under test that calls a bare `BalanceData.get_value` outside a static function (`battle.gd`) fails to compile and every call into it silently collapses. If you must use `--script` with `extends SceneTree`, do the work in `_process` (return `true` to stop), **not `_initialize`** — autoload `_ready` has not run at `_initialize` time, so BalanceData is empty and every `get_value` silently returns the caller's default.
+
+Why this matters more than it looks: it never presents as a failure. It presents as a *hang* (from `push_warning` spam with backtraces), and because the code fallbacks mirror the CSV by convention, the harness still reports 0 failures while proving nothing about the data — you have verified the defaults, not `balance.csv`. Any pass verifying balance-driven code can hit this.
+
 ---
 
 ## Workflow Orchestration
