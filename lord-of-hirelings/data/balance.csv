@@ -54,3 +54,9 @@ recruit_hire_cost_max,9,Maximum level-1 recruit base hire cost in gold (GDD: ran
 recruit_interact_radius,40,Distance in px within which a recruit's hire prompt shows
 recruit_sprite_scale,1,Uniform scale of recruit sprites (keep integer for pixel crispness)
 roster_max_size,100,Hard cap on hired adventurers; hiring is disabled at the cap (GDD economy)
+hired_move_speed,60,Hired adventurer wander speed in the town (px/sec; slower than the Lord so they read as ambling)
+hired_idle_min_sec,1,Minimum pause between a hired adventurer's wander legs (sec)
+hired_idle_max_sec,4,Maximum pause between a hired adventurer's wander legs (sec)
+hired_wander_step_px,160,Maximum length of one hired-adventurer wander leg (px)
+hired_wander_margin_x,480,Horizontal margin from the town-map edges that hired adventurers stay inside (keeps them in the built-up center)
+hired_wander_margin_y,320,Vertical margin from the town-map edges that hired adventurers stay inside
