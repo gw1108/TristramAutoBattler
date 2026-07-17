@@ -12,7 +12,7 @@ The design documents in `design/` fully specify the game. Do not invent player-f
 - `design/LordofHirelings_GildedTech.md` and `design/LordofHirelings_HoarderFattenTech.md` — enemy gold-trait tech specs.
 - `mockups/` — HTML mockups referenced by the GDD (hero panel, dungeon HUD). Match them.
 
-Also binding: `CLAUDE.md` at the repo root (tunables go in `data/balance.csv` via `BalanceData.get_value`, testing philosophy, project map) and `VISUAL_RULES.md` (pixel-art rendering rules — read it before importing or rendering any texture, sprite, or VFX).
+Also binding: tunables go in `data/balance.csv` via `BalanceData.get_value`, testing philosophy, project map and `VISUAL_RULES.md` (pixel-art rendering rules — read it before importing or rendering any texture, sprite, or VFX).
 
 ## Scope for this phase
 
@@ -22,7 +22,6 @@ Also binding: `CLAUDE.md` at the repo root (tunables go in `data/balance.csv` vi
 
 ## Environment notes
 
-- Godot 4.7 is on PATH as `godot` (a shim to `Godot_v4.7-stable_win64_console.exe`), e.g. `godot --headless --path lord-of-hirelings ...`.
 - The `agent_play/` harness exists for agent-driven playtesting of the running game; use it when verifying feel/behavior end-to-end.
 
 ## Working style
