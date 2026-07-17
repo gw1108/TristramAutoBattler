@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scripts/town/contact_shadow.gd" id="6_shadow"]
 [ext_resource type="Texture2D" uid="uid://oj0sb3kepsdu" path="res://sprites/town/town_ground_tiles.png" id="7_groundtiles"]
 [ext_resource type="Script" path="res://scripts/town/rooster.gd" id="8_rooster"]
+[ext_resource type="Script" path="res://scripts/town/inn.gd" id="9_inn"]
+[ext_resource type="Texture2D" uid="uid://dvo7fjhahrkxw" path="res://sprites/town/inn_lv1.png" id="10_innsprite"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ground"]
 texture = ExtResource("7_groundtiles")
@@ -33,6 +35,12 @@ sources/0 = SubResource("TileSetAtlasSource_ground")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rooster"]
 radius = 40.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_inn"]
+size = Vector2(110, 26)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 7.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_down0"]
 atlas = ExtResource("4_lordsheet")
@@ -161,10 +169,22 @@ animations = [{
 }]
 
 [node name="Main" type="Node2D"]
+y_sort_enabled = true
 script = ExtResource("1_main")
 
 [node name="TownGround" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_ground")
+
+[node name="Inn" type="StaticBody2D" parent="."]
+script = ExtResource("9_inn")
+
+[node name="Sprite" type="Sprite2D" parent="Inn"]
+offset = Vector2(0, -64)
+texture = ExtResource("10_innsprite")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Inn"]
+position = Vector2(0, -13)
+shape = SubResource("RectangleShape2D_inn")
 
 [node name="Rooster" type="Area2D" parent="."]
 script = ExtResource("8_rooster")
@@ -188,6 +208,10 @@ horizontal_alignment = 1
 
 [node name="Player" type="CharacterBody2D" parent="." groups=["player"]]
 script = ExtResource("3_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, -7)
+shape = SubResource("CircleShape2D_player")
 
 [node name="ContactShadow" type="Node2D" parent="Player"]
 script = ExtResource("6_shadow")

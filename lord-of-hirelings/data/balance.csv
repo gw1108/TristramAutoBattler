@@ -22,6 +22,8 @@ contact_shadow_radius_x,12,Contact-shadow ellipse horizontal radius under charac
 contact_shadow_radius_y,4,Contact-shadow ellipse vertical radius under characters (px)
 contact_shadow_opacity,0.35,Total opacity of the contact-shadow ellipse (0-1)
 town_path_width_tiles,3,Width in 16px tiles of the dirt paths crossing the town ground
+inn_town_pos_x,848,Inn building X position in the town (px; bottom-center pivot)
+inn_town_pos_y,512,Inn building Y position in the town (px; bottom-center pivot)
 rooster_town_pos_x,1056,Rooster interactable X position in the town (px)
 rooster_town_pos_y,444,Rooster interactable Y position in the town (px)
 rooster_interact_radius,40,Distance in px within which the rooster's interact prompt shows
