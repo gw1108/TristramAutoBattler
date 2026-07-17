@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
 [ext_resource type="FontFile" uid="uid://3c11ex0j08bw" path="res://source-assets/fonts/pixel-operator/PixelOperator8-Bold.ttf" id="2_title"]
 [ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="3_body"]
+[ext_resource type="Texture2D" uid="uid://bsgqh5haanjwf" path="res://sprites/ui/title_backdrop.png" id="4_backdrop"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 content_margin_left = 16.0
@@ -25,14 +26,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.0784314, 0.0666667, 0.0901961, 1)
+texture = ExtResource("4_backdrop")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
