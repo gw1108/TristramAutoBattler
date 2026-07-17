@@ -33,6 +33,9 @@ armor_shop_interact_radius,72,Distance in px from the shop's base within which t
 jewelry_shop_town_pos_x,1280,Jewelry shop X position in the town (px; bottom-center pivot; north side of the east path arm, past the rooster)
 jewelry_shop_town_pos_y,512,Jewelry shop Y position in the town (px; bottom-center pivot)
 jewelry_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+training_grounds_town_pos_x,624,Training grounds X position in the town (px; bottom-center pivot; north side of the west path arm, west of the Inn)
+training_grounds_town_pos_y,512,Training grounds Y position in the town (px; bottom-center pivot)
+training_grounds_interact_radius,80,Distance in px from the yard's base within which the rebuild prompt shows (wider than the shops — the yard is 160px wide)
 rooster_town_pos_x,1056,Rooster interactable X position in the town (px)
 rooster_town_pos_y,444,Rooster interactable Y position in the town (px)
 rooster_interact_radius,40,Distance in px within which the rooster's interact prompt shows
