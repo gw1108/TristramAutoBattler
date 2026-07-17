@@ -113,6 +113,8 @@ enemy_accuracy_per_level,40,Accuracy rating every enemy archetype gains per dung
 enemy_grunt_accuracy_base,60,Grunt accuracy base term; also the reference grunt the hero panel's displayed accuracy % is measured against
 enemy_caster_accuracy_base,60,Caster accuracy base term (matches the grunt)
 enemy_boss_accuracy_base,70,Boss accuracy base term
+enemy_morale_damage_per_level,1,Morale damage every enemy archetype deals per dungeon level on each landed hit (morale dmg = this * N; rounded once when the hit lands)
+enemy_morale_damage_boss_bonus,1,Extra morale damage a boss deals on each landed hit, on top of its per-level term
 enemy_xp_growth,1.8,Multiplier applied to every enemy archetype's base XP per dungeon level (round(base * 1.8^(N-1)))
 enemy_grunt_xp_base,1,XP a dungeon level 1 grunt awards each living party member; the unit the whole XP curve is denominated in
 enemy_caster_xp_base,2,XP a dungeon level 1 caster awards each living party member
