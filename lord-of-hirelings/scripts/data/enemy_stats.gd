@@ -46,7 +46,7 @@ static func archetype_stats(archetype: String, n: int) -> Dictionary:
 		"crit_dmg_pct": 0.0,
 		# Enemies are immune to morale but deal it; only this side of it exists.
 		# Left fractional: CombatMath rounds it once, at the moment a hit lands.
-		"morale_damage": _balance("enemy_morale_damage_per_level", 1.0) * level \
+		"morale_damage": _balance("enemy_morale_damage_per_level", 0.5) * level \
 				+ (_balance("enemy_morale_damage_boss_bonus", 1.0) \
 						if archetype == BOSS else 0.0),
 	}

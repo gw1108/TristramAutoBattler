@@ -29,7 +29,8 @@ static func base_stats(adventurer_class: String) -> Dictionary:
 
 ## BalanceNumbers "Adventurer growth per level" applied to the level-1 base:
 ## +2 HP per level (Knight +3), +1 power on even levels, +12 evasion and
-## accuracy per level, +1 max morale on odd levels after 1.
+## accuracy per level, +2 max morale on odd levels after 1 (the doc's +1, raised
+## by the morale-attrition tuning pass — see BalanceNumbers "Tuning notes").
 static func stats_at_level(adventurer_class: String, level: int) -> Dictionary:
 	var stats := base_stats(adventurer_class)
 	if stats.is_empty():
@@ -45,7 +46,7 @@ static func stats_at_level(adventurer_class: String, level: int) -> Dictionary:
 	var rating_growth := _balance("growth_evasion_accuracy_per_level", 12.0)
 	stats["evasion"] += rating_growth * levels_gained
 	stats["accuracy"] += rating_growth * levels_gained
-	stats["max_morale"] += _balance("growth_morale_per_2_levels", 1.0) \
+	stats["max_morale"] += _balance("growth_morale_per_2_levels", 2.0) \
 			* (levels_gained / 2)
 	return stats
 
