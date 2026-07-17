@@ -31,5 +31,5 @@ func _on_day_advanced(_new_day: int) -> void:
 		recruit.position = center + Vector2(
 			(i - (count - 1) / 2.0) * spacing,
 			_rng.randf_range(-jitter_y, jitter_y))
-		recruit.tunic_index = i
+		recruit.variant_index = i
 		add_child(recruit)

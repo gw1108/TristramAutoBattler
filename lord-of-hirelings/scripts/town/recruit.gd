@@ -6,16 +6,16 @@ extends Area2D
 ## hero panel come in later slices; for now a hired recruit simply leaves.
 
 const PROMPT_FONT := preload("res://fonts/pixel-operator/PixelOperator8.ttf")
+const ContactShadowScript := preload("res://scripts/town/contact_shadow.gd")
 
-## Placeholder palette until the recruit sprites land (art asset list).
-## One tunic color per spawn slot so a day's batch reads as distinct people.
-const TUNIC_COLORS: Array[Color] = [
-	Color("5b7a3b"), Color("3b5b7a"), Color("7a5b3b"), Color("6b3b7a"),
-]
-const SKIN_COLOR := Color("d8a878")
-const BOOT_COLOR := Color("4a3527")
+## 4 class-flavored adventurer variants (knight, berserker, mage, rogue) in a
+## 1x4 sheet of 48px cells, bottom-center pivot. One variant per spawn slot so
+## a day's batch reads as distinct people. Source: generate_recruit_sprites.py.
+const VARIANT_SHEET := preload("res://sprites/recruits/recruit_variants.png")
+const VARIANT_COUNT := 4
+const SHEET_CELL_PX := 48
 
-var tunic_index := 0
+var variant_index := 0
 var hire_cost := 0
 
 var _prompt: Label
@@ -26,13 +26,26 @@ func _ready() -> void:
 	var cost_min := int(BalanceData.get_value("recruit_hire_cost_min", 7.0))
 	var cost_max := int(BalanceData.get_value("recruit_hire_cost_max", 9.0))
 	hire_cost = randi_range(cost_min, maxi(cost_min, cost_max))
+	# First child so the shadow renders beneath the sprite (style guide §4).
+	add_child(ContactShadowScript.new())
+	var sprite := Sprite2D.new()
+	sprite.texture = VARIANT_SHEET
+	sprite.hframes = VARIANT_COUNT
+	sprite.frame = variant_index % VARIANT_COUNT
+	# Lift the centered cell so its bottom edge sits on the pivot (feet on
+	# the ground at this node's position, like every character in the game).
+	sprite.offset = Vector2(0, -SHEET_CELL_PX / 2.0)
+	var sprite_scale := BalanceData.get_value("recruit_sprite_scale", 1.0)
+	sprite.scale = Vector2(sprite_scale, sprite_scale)
+	add_child(sprite)
 	var shape := CollisionShape2D.new()
 	var circle := CircleShape2D.new()
 	circle.radius = BalanceData.get_value("recruit_interact_radius", 40.0)
 	shape.shape = circle
 	add_child(shape)
 	_prompt = Label.new()
-	_prompt.position = Vector2(-80, -40)
+	# Just above the 48px sprite so the text never covers the face.
+	_prompt.position = Vector2(-80, -SHEET_CELL_PX - 12)
 	_prompt.size = Vector2(160, 12)
 	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_prompt.add_theme_color_override("font_color", Color(0.93, 0.89, 0.75))
@@ -88,12 +101,3 @@ func _on_body_exited(body: Node2D) -> void:
 		return
 	_player_near = false
 	_prompt.visible = false
-
-
-func _draw() -> void:
-	# Placeholder adventurer silhouette, bottom-center pivot (~12x22px).
-	var tunic := TUNIC_COLORS[tunic_index % TUNIC_COLORS.size()]
-	draw_rect(Rect2(-4, -4, 3, 4), BOOT_COLOR)
-	draw_rect(Rect2(1, -4, 3, 4), BOOT_COLOR)
-	draw_rect(Rect2(-5, -16, 10, 12), tunic)
-	draw_circle(Vector2(0, -19), 4.0, SKIN_COLOR)
