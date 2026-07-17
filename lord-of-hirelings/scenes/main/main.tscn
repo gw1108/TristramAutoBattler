@@ -1,3 +1,27 @@
-[gd_scene format=3]
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/main/main.gd" id="1_main"]
+[ext_resource type="FontFile" uid="uid://c8r2wt20dmekw" path="res://source-assets/fonts/pixel-operator/PixelOperator8.ttf" id="2_body"]
 
 [node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="PlaceholderLabel" type="Label" parent="HUD"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -8.0
+offset_right = 200.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_fonts/font = ExtResource("2_body")
+theme_override_font_sizes/font_size = 16
+text = "Town (placeholder)"
+horizontal_alignment = 1
