@@ -173,3 +173,4 @@ summary_death_anim_seconds,0.4,Seconds a dead adventurer's sprite takes to rotat
 summary_coin_gold_per_coin,4.5,"Gold per visual coin in a summary coin pile (GDD: 1 coin per 3-6 gold, minimum 1 coin for any gold at all)"
 summary_coin_max,100,Most visual coins a summary coin pile ever draws however rich the haul (GDD)
 win_panel_screen_fraction,0.5,Fraction of the window width the You Win! panel fills; it is a simple text panel and sizes its own height (GDD)
+pause_menu_screen_fraction,0.5,Fraction of the window width the Esc pause menu panel fills; its pages size their own height (same shape as the You Win! panel)
