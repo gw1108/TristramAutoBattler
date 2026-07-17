@@ -27,6 +27,9 @@ inn_town_pos_y,512,Inn building Y position in the town (px; bottom-center pivot)
 weapon_shop_town_pos_x,1072,Weapon shop X position in the town (px; bottom-center pivot)
 weapon_shop_town_pos_y,712,Weapon shop Y position in the town (px; bottom-center pivot)
 weapon_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
+armor_shop_town_pos_x,848,Armor shop X position in the town (px; bottom-center pivot; SW quadrant of the path junction)
+armor_shop_town_pos_y,712,Armor shop Y position in the town (px; bottom-center pivot)
+armor_shop_interact_radius,72,Distance in px from the shop's base within which the rebuild prompt shows
 rooster_town_pos_x,1056,Rooster interactable X position in the town (px)
 rooster_town_pos_y,444,Rooster interactable Y position in the town (px)
 rooster_interact_radius,40,Distance in px within which the rooster's interact prompt shows
