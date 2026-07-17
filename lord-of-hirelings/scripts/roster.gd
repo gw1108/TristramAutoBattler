@@ -10,6 +10,9 @@ signal roster_changed
 ## A hired adventurer died and left the roster; the graveyard listens to this
 ## to raise a grave.
 signal member_died(display_name: String)
+## Parties were (re)formed by the call to arms; the dungeon dive and the
+## party-actions UI read the parties array when this fires.
+signal parties_formed
 
 ## The six adventurer classes (BalanceNumbers "Base stats per class").
 ## Recruit class is rolled uniformly from these, independently per recruit.
@@ -37,9 +40,21 @@ const EPITHETS := [
 	"the Fortunate", "the Overdue",
 ]
 
+## Formation geometry (GDD call to arms): up to 3 parties of 1-3 adventurers,
+## so the shuffle-draft seats at most 9. Structural, not tunable — the dungeon
+## dive's row split and the expedition summary's columns are built around 3.
+const PARTY_COUNT := 3
+const PARTY_MAX_SIZE := 3
+
 ## Hired adventurers, in hire order. Each entry:
 ## { "name": String, "class": String, "level": int, "gold": int }
 var members: Array[Dictionary] = []
+
+## The expedition parties formed at the call to arms: PARTY_COUNT arrays of
+## 0-PARTY_MAX_SIZE references into members. Empty between expeditions. An
+## empty party is treated as if it does not exist (GDD): no dive row, no
+## summary column.
+var parties: Array[Array] = []
 
 ## Display names currently reserved by unhired recruits standing at the inn,
 ## so two visible recruits can never share a name (GDD uniqueness rule).
@@ -48,6 +63,13 @@ var _reserved_names := {}
 ## Display names currently carved on graveyard headstones; the graveyard
 ## records/releases these as graves are added and overwritten.
 var _grave_names := {}
+
+
+func _ready() -> void:
+	# Parties only exist for the expedition; nightfall dissolves them.
+	GameState.phase_changed.connect(func(new_phase: GameState.Phase) -> void:
+		if new_phase == GameState.Phase.NIGHT:
+			clear_parties())
 
 
 func max_size() -> int:
@@ -115,6 +137,59 @@ func kill_member(display_name: String) -> bool:
 			roster_changed.emit()
 			return true
 	return false
+
+
+## Forms the expedition parties (GDD call to arms). If the town has no hired
+## adventurers, 1-2 free level 1 fallback adventurers are first added to the
+## roster permanently — the player can never get permanently stuck. Then the
+## shuffle-draft: shuffle the hired list, and the first 9 (or all, if fewer)
+## each join a party picked uniformly at random among those still under 3
+## members. Adventurers beyond the first 9 stay in town as reserves.
+func form_parties() -> void:
+	if members.is_empty():
+		_add_fallback_adventurers()
+	parties.clear()
+	for _i in PARTY_COUNT:
+		parties.append([])
+	var pool := members.duplicate()
+	pool.shuffle()
+	for i in mini(pool.size(), PARTY_COUNT * PARTY_MAX_SIZE):
+		var open: Array[Array] = []
+		for party in parties:
+			if party.size() < PARTY_MAX_SIZE:
+				open.append(party)
+		open.pick_random().append(pool[i])
+	parties_formed.emit()
+
+
+## Drops the formed parties; called when the expedition resolves and the
+## world returns to night.
+func clear_parties() -> void:
+	parties.clear()
+
+
+## Members drafted into no party this expedition — who Kick swaps in.
+func reserves() -> Array[Dictionary]:
+	var drafted := {}
+	for party in parties:
+		for member in party:
+			drafted[member["name"]] = true
+	var out: Array[Dictionary] = []
+	for member in members:
+		if not drafted.has(member["name"]):
+			out.append(member)
+	return out
+
+
+## GDD free-fallback rule: a call to arms with an empty roster always summons
+## 1 or 2 free level 1 adventurers (uniform roll), same class and name
+## generators as recruits, tier 0 gear, 0 personal gold, hired permanently.
+func _add_fallback_adventurers() -> void:
+	var count := randi_range(
+		int(BalanceData.get_value("fallback_adventurers_min", 1.0)),
+		int(BalanceData.get_value("fallback_adventurers_max", 2.0)))
+	for _i in count:
+		add_member(generate_unique_name(), roll_class(), 1, 0)
 
 
 ## Marks a name as carved on a headstone so later rolls avoid it (GDD rule).

@@ -34,6 +34,10 @@ var adventurer_class := ""
 
 var _prompt: Label
 var _player_near := false
+var _click_area: Area2D
+## Set once the call to arms sends this recruit walking off screen; a
+## leaving recruit can no longer be hired or inspected (GDD).
+var _leaving := false
 
 
 func _ready() -> void:
@@ -64,6 +68,7 @@ func _ready() -> void:
 	# Left-click-to-inspect: a pickable Area2D sized to the sprite (not the
 	# whole interact radius) opens the hero panel's hire view.
 	var click_area := Area2D.new()
+	_click_area = click_area
 	click_area.collision_layer = CLICK_PICK_LAYER
 	click_area.collision_mask = 0
 	click_area.input_pickable = true
@@ -116,7 +121,9 @@ func _unhandled_input(event: InputEvent) -> void:
 ## "Hire + Sponsor"). Returns whether the hire went through. Public so the
 ## hero panel and tests/harnesses can trigger it.
 func hire(sponsored: bool = false) -> bool:
-	if Roster.is_full():
+	# From the moment the call to arms begins, hiring is impossible until
+	# the next day's crow (GDD) — a walking-away recruit can't be hired.
+	if _leaving or Roster.is_full():
 		return false
 	var price := hire_cost * 2 if sponsored else hire_cost
 	if not GameState.spend_gold(price):
@@ -124,6 +131,28 @@ func hire(sponsored: bool = false) -> bool:
 	Roster.add_member(display_name, adventurer_class, 1, hire_cost if sponsored else 0)
 	queue_free()
 	return true
+
+
+## Sends the recruit walking off toward the nearest horizontal map edge and
+## frees them on arrival (GDD call to arms: every unhired recruit immediately
+## walks off screen). All interaction is disabled the moment this is called.
+func leave() -> void:
+	if _leaving:
+		return
+	_leaving = true
+	set_deferred("monitoring", false)
+	_click_area.input_pickable = false
+	_prompt.visible = false
+	set_process(false)
+	set_process_unhandled_input(false)
+	InteractPrompt.unregister(self)
+	var map_width := BalanceData.get_value("town_map_width", 1920.0)
+	var edge_x: float = -SHEET_CELL_PX if position.x < map_width / 2.0 \
+			else map_width + SHEET_CELL_PX
+	var speed := BalanceData.get_value("hired_move_speed", 60.0)
+	var tween := create_tween()
+	tween.tween_property(self, "position:x", edge_x, absf(edge_x - position.x) / speed)
+	tween.tween_callback(queue_free)
 
 
 func _on_click_area_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:

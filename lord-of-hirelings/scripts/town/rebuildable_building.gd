@@ -78,8 +78,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## Attempts the rebuild; on success the ruin becomes the standing building.
-## Public so tests/harnesses can trigger it.
+## Public so tests/harnesses can trigger it. The call to arms locks all town
+## changes for the expedition (GDD), so rebuilding waits for the next night.
 func rebuild() -> void:
+	if GameState.phase == GameState.Phase.CALL_TO_ARMS:
+		return
 	if _ruined and GameState.spend_gold(rebuild_cost):
 		set_ruined(false)
 

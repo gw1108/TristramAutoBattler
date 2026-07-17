@@ -72,3 +72,8 @@ ref_grunt_accuracy_per_level,40,Reference-grunt accuracy per dungeon level (disp
 ref_grunt_accuracy_base,60,Reference-grunt accuracy base term (displayed-% formulas)
 ref_grunt_evasion_per_level,40,Reference-grunt evasion per dungeon level (displayed-% formulas: 40R + base)
 ref_grunt_evasion_base,20,Reference-grunt evasion base term (displayed-% formulas)
+dungeon_bell_town_pos_x,1808,Dungeon bell X position in the town (px; by the east map edge where the mine portal will stand)
+dungeon_bell_town_pos_y,528,Dungeon bell Y position in the town (px; on the north lip of the east path arm)
+dungeon_bell_interact_radius,48,Distance in px within which the bell's interact prompt shows
+fallback_adventurers_min,1,Minimum free level 1 adventurers summoned by a call to arms with an empty roster (GDD anti-stuck rule)
+fallback_adventurers_max,2,Maximum free level 1 adventurers summoned by a call to arms with an empty roster

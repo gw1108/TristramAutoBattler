@@ -11,8 +11,10 @@ signal phase_changed(new_phase: Phase)
 signal building_state_changed(building_id: String, state: BuildingState)
 
 ## The town's time-of-day cycle (GDD): the world starts at night, the rooster
-## crow brings the day, and finishing an expedition returns it to night.
-enum Phase { NIGHT, DAY }
+## crow brings the day, ringing the dungeon bell starts the call to arms
+## (locking all town changes for the expedition), and finishing an expedition
+## returns it to night.
+enum Phase { NIGHT, DAY, CALL_TO_ARMS }
 
 ## Rebuild status of a town building. Every building but the Inn starts as a
 ## ruin (GDD); building nodes write through set_building_state so systems that
@@ -49,6 +51,17 @@ func advance_day() -> void:
 	phase = Phase.DAY
 	day_advanced.emit(day)
 	phase_changed.emit(phase)
+
+
+## Starts the call to arms (the dungeon bell). Only valid during the day —
+## the bell only works after the rooster has crowed, never at night (GDD),
+## and ringing twice does nothing. Returns whether the phase changed.
+func call_to_arms() -> bool:
+	if phase != Phase.DAY:
+		return false
+	phase = Phase.CALL_TO_ARMS
+	phase_changed.emit(phase)
+	return true
 
 
 ## Returns the world to night. Called when an expedition concludes (GDD);

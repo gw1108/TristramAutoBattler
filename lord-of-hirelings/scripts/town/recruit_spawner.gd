@@ -20,6 +20,11 @@ func _on_phase_changed(new_phase: GameState.Phase) -> void:
 	if new_phase == GameState.Phase.NIGHT:
 		for child in get_children():
 			child.queue_free()
+	elif new_phase == GameState.Phase.CALL_TO_ARMS:
+		# Ringing the bell ends the day's recruitment: every unhired recruit
+		# immediately walks off screen and can no longer be hired (GDD).
+		for child in get_children():
+			child.leave()
 
 
 func _on_day_advanced(_new_day: int) -> void:
