@@ -27,6 +27,28 @@ var _path_cy := 0
 
 func _ready() -> void:
 	_fill_town_ground()
+	# Deferred so every town node has had its _ready: the dive is re-run by the
+	# mine entrance and the readout is drawn by the summary panel, and neither
+	# exists yet while this node is coming up.
+	_resume_autosave.call_deferred()
+
+
+## Picks up where the campaign autosave left off (GDD "Saving"). SaveGame has
+## already restored the town onto the autoloads before this scene was even
+## loaded — so the town below built itself from the save exactly as it builds
+## itself from a fresh campaign — and what is left is the marker for which of
+## the two autosave moments this is.
+func _resume_autosave() -> void:
+	var resume := SaveGame.take_resume()
+	var entrance := $DungeonEntrance
+	match String(resume.get("point", "")):
+		SaveGame.POINT_DIVE:
+			# Nothing about the dive was saved, so there is nothing to restore:
+			# the parties simply march again and it is re-rolled from the top.
+			entrance.enter()
+		SaveGame.POINT_SUMMARY:
+			entrance.replay_summary(
+				resume.get("summary", {}), bool(resume.get("won", false)))
 
 
 func _fill_town_ground() -> void:
