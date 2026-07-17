@@ -15,9 +15,9 @@ var _opacity := 0.0
 
 func _ready() -> void:
 	_radius = Vector2(
-		BalanceData.get_value("contact_shadow_radius_x", 12.0),
-		BalanceData.get_value("contact_shadow_radius_y", 4.0))
-	_opacity = BalanceData.get_value("contact_shadow_opacity", 0.35)
+		BalanceData.get_value("contact_shadow_radius_x", 16.0),
+		BalanceData.get_value("contact_shadow_radius_y", 5.0))
+	_opacity = BalanceData.get_value("contact_shadow_opacity", 0.55)
 	queue_redraw()
 
 

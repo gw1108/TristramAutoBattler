@@ -18,9 +18,9 @@ town_map_width,1920,Bounded town map width in px (player and camera clamp)
 town_map_height,1080,Bounded town map height in px (player and camera clamp)
 player_sprite_scale,1,Uniform scale of the Lord sprite (keep integer for pixel crispness)
 player_walk_anim_fps,8,Frames per second of the Lord walk animation
-contact_shadow_radius_x,12,Contact-shadow ellipse horizontal radius under characters (px)
-contact_shadow_radius_y,4,Contact-shadow ellipse vertical radius under characters (px)
-contact_shadow_opacity,0.35,Total opacity of the contact-shadow ellipse (0-1)
+contact_shadow_radius_x,16,Contact-shadow ellipse horizontal radius under characters (px; visual QA: 12 hid entirely behind 48px recruits' boots)
+contact_shadow_radius_y,5,Contact-shadow ellipse vertical radius under characters (px)
+contact_shadow_opacity,0.55,Total opacity of the contact-shadow ellipse (0-1; visual QA: 0.35 was invisible at 1x on the dirt path)
 town_path_width_tiles,3,Width in 16px tiles of the dirt paths crossing the town ground
 inn_town_pos_x,848,Inn building X position in the town (px; bottom-center pivot)
 inn_town_pos_y,512,Inn building Y position in the town (px; bottom-center pivot)
@@ -39,7 +39,7 @@ recruits_per_day_min,1,Minimum hireable recruits appearing at the inn each day
 recruits_per_day_max,3,Maximum hireable recruits appearing at the inn each day
 recruit_spawn_center_x,860,Center X of the recruit spawn row in front of the inn (px)
 recruit_spawn_center_y,560,Center Y of the recruit spawn row in front of the inn (px)
-recruit_spawn_spacing_px,44,Horizontal spacing between spawned recruits (px; 48px sprite cells need more room than the old 12px placeholder)
+recruit_spawn_spacing_px,52,Horizontal spacing between spawned recruits (px; visual QA at 1x: at 44 adjacent 48px sprites' weapons/shields touched and same-class pairs read as one blob)
 recruit_spawn_jitter_y_px,8,Max vertical jitter applied to each spawned recruit (px)
 recruit_hire_cost_min,7,Minimum level-1 recruit base hire cost in gold (GDD: randint(7 9))
 recruit_hire_cost_max,9,Maximum level-1 recruit base hire cost in gold (GDD: randint(7 9))

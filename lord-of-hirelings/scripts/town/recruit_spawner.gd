@@ -31,7 +31,7 @@ func _on_day_advanced(_new_day: int) -> void:
 	var center := Vector2(
 		BalanceData.get_value("recruit_spawn_center_x", 860.0),
 		BalanceData.get_value("recruit_spawn_center_y", 560.0))
-	var spacing := BalanceData.get_value("recruit_spawn_spacing_px", 28.0)
+	var spacing := BalanceData.get_value("recruit_spawn_spacing_px", 52.0)
 	var jitter_y := BalanceData.get_value("recruit_spawn_jitter_y_px", 8.0)
 	for i in count:
 		var recruit := RecruitScript.new() as Node2D
