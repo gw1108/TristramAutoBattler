@@ -209,44 +209,52 @@ def draw_mage():
 
 
 def draw_rogue():
-    """Small sharp triangles: crouched, compact, the lowest outline here."""
-    L_SH = (52, 44, 34, 255)        # leathers
-    L_MD = (84, 70, 50, 255)
-    L_LT = (115, 98, 68, 255)
-    C_SH = (38, 52, 40, 255)        # cloak (desaturated green)
-    C_MD = (58, 78, 56, 255)
-    C_LT = (82, 104, 70, 255)
-    A_LT = (160, 172, 190, 255)     # dagger steel
-    A_MD = (106, 118, 141, 255)
-    f = Fig((28, 36, 30, 255), (48, 62, 48, 255))
+    """Small sharp triangles: crouched, compact, the lowest outline here.
 
-    f.box(17, 20, 40, GROUND, L_SH, L_SH, L_MD)         # bent legs / boots
-    f.box(26, 29, 40, GROUND, L_SH, L_SH, L_MD)
-    for y in range(24, 41):                             # crouched cloaked mass
-        t = (y - 24) / 16.0
+    Palette deliberately avoids the grass-green band of town_ground_tiles.png
+    ((92,124,60)/(76,104,50)): slate-gray cloak with a clearly lighter lit
+    side, warm russet leather jerkin, bright dagger glint — so the figure
+    passes the squint test on grass instead of reading as a bush.
+    """
+    L_SH = (96, 62, 38, 255)        # warm russet leather
+    L_MD = (142, 96, 54, 255)
+    L_LT = (192, 146, 92, 255)
+    C_SH = (54, 58, 66, 255)        # cloak (cool slate gray, no green)
+    C_MD = (88, 94, 102, 255)
+    C_LT = (134, 140, 148, 255)
+    A_LT = (206, 216, 230, 255)     # dagger steel, glinting
+    A_MD = (140, 152, 172, 255)
+    f = Fig((32, 34, 40, 255), (60, 64, 72, 255))
+
+    f.box(17, 20, 38, GROUND, L_SH, L_SH, L_MD)         # bent legs / boots
+    f.box(26, 29, 38, GROUND, L_SH, L_SH, L_MD)
+    for y in range(20, 39):                             # crouched cloaked mass
+        t = (y - 20) / 18.0
         hw = 5.0 + 4.5 * t
         for x in range(48):
             nx = (x - CX) / hw
             if abs(nx) <= 1.0:
                 f.put(x, y, shade3(nx, 0.0, C_SH, C_MD, C_LT))
-    for tip_x, tip_y in ((15, 44), (21, 42), (28, 44), (32, 41)):
-        for y in range(40, tip_y + 1):                  # hem breaks into
+    for tip_x, tip_y in ((15, 43), (21, 41), (28, 43), (32, 40)):
+        for y in range(38, tip_y + 1):                  # hem breaks into
             hw = (tip_y - y) // 2 + 1                   # sharp points
             for x in range(tip_x - hw, tip_x + hw + 1):
                 f.put(x, y, C_SH if x > tip_x else C_MD)
-    f.box(19, 28, 28, 34, L_SH, L_MD, L_LT)             # leather jerkin
+    f.box(19, 28, 25, 32, L_SH, L_MD, L_LT)             # leather jerkin
+    for x in range(20, 28):                             # pale strap catches
+        f.put(x, 27 - (x - 20) // 3, L_LT)              # light across the chest
 
-    f.ellipse(CX, 21.0, 5.2, 4.6, C_SH, C_MD, C_LT)     # hood, pulled up
+    f.ellipse(CX, 17.0, 5.2, 4.6, C_SH, C_MD, C_LT)     # hood, pulled up
     for x in range(21, 27):                             # shadowed human face
-        for y in range(20, 24):
-            f.put(x, y, S_SH if y > 21 and 22 <= x <= 25 else L_SH)
-    f.put(22, 21, (28, 36, 30, 255))                    # eyes catch the dark
-    f.put(25, 21, (28, 36, 30, 255))
+        for y in range(16, 20):
+            f.put(x, y, S_SH if y > 17 and 22 <= x <= 25 else C_SH)
+    f.put(22, 17, (32, 34, 40, 255))                    # eyes catch the dark
+    f.put(25, 17, (32, 34, 40, 255))
 
-    f.box(29, 31, 30, 32, S_SH, S_MD, S_MD)             # hand + dagger
-    for i in range(5):                                  # notching the outline
-        f.put(32 + i, 29 - i, A_LT)
-        f.put(32 + i, 30 - i, A_MD)
+    f.box(29, 31, 27, 29, S_SH, S_MD, S_MD)             # hand + dagger
+    for i in range(6):                                  # notching the outline
+        f.put(32 + i, 26 - i, A_LT)
+        f.put(32 + i, 27 - i, A_MD)
     return f
 
 
